@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动中心积分奖励原型 - 功能说明</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f6f9;color:#20242a;font:14px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}main{max-width:1160px;margin:0 auto;padding:36px 24px 72px}.back{display:inline-block;margin-bottom:18px;color:#2d6cdf;text-decoration:none}h1{margin:0 0 8px;font-size:28px}h2{margin:0 0 16px;font-size:19px}h3{margin:0 0 8px;font-size:15px}.lead{margin:0 0 26px;color:#687386}.card{margin-bottom:18px;padding:22px;background:#fff;border:1px solid #e2e7ef;border-radius:10px}.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rules div{padding:14px;background:#f7f9fc;border-left:3px solid #5c88e8;border-radius:6px}.rules b,.rules span{display:block}.rules span{margin-top:4px;color:#687386}.flow{display:flex;align-items:center;gap:8px;overflow:auto}.flow div{min-width:142px;padding:16px;text-align:center;background:#edf4ff;border-radius:8px}.flow b,.flow span{display:block}.flow b{color:#2d6cdf}.flow i{color:#99a3b2;font-style:normal}table{width:100%;border-collapse:collapse}th,td{padding:12px;text-align:left;border-bottom:1px solid #e7ebf1;vertical-align:top}th{background:#f7f9fc;white-space:nowrap}td small{display:block;color:#687386}.tag{display:inline-block;padding:1px 8px;color:#1a6e35;background:#e6f4ea;border-radius:10px}.warning{padding:14px;color:#7a4d00;background:#fff8e8;border:1px solid #ffe1a6;border-radius:7px}.states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.states div{padding:14px;background:#f7f9fc;border-radius:7px}.states b,.states span{display:block}.states span{color:#687386}@media(max-width:760px){.rules,.states{grid-template-columns:1fr}.flow{align-items:stretch;flex-direction:column}.flow i{transform:rotate(90deg)}.card{overflow:auto}}
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html">← 返回演示页面</a>
+    <h1>活动中心积分奖励原型功能说明</h1>
+    <p class="lead">评审版本：2026-08-14 · 覆盖积分配置、预算配置、卡券同源业务场景、活动引用、发放记录、异常补偿与对账。</p>
+
+    <section class="card">
+      <h2>一、已确认业务规则</h2>
+      <div class="rules">
+        <div><b>积分适用范围</b><span>积分作为通用奖品形式，不限定具体活动类型。</span></div>
+        <div><b>准入硬门槛</b><span>只有准入表达为“认证级”的活动允许选择积分奖励。</span></div>
+        <div><b>发放对象</b><span>按 VIN 发放；多 VIN 用户使用默认卡对应 VIN。</span></div>
+        <div><b>配置边界</b><span>积分数量、预算号、预算额度、预警阈值及业务主/子场景均在积分配置中维护。</span></div>
+        <div><b>成本边界</b><span>成本中心继续隐藏；不单独配置积分场景码。</span></div>
+        <div><b>场景口径</b><span>主/子场景严格复用卡券中心枚举和父子级联关系，不新增积分专属场景。</span></div>
+        <div><b>活动操作</b><span>活动只选择已启用积分配置，不在活动内二次配置积分参数。</span></div>
+        <div><b>奖品组合</b><span>中奖可发卡券或积分；抽奖的不同奖项可分别选择。</span></div>
+        <div><b>版本规则</b><span>活动发布时锁定配置编码和版本，核心字段调整需创建新版本。</span></div>
+        <div><b>失败原则</b><span>中奖结果不变，结果查询、重试和补偿均沿用首次锁定 VIN。</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>二、主流程</h2>
+      <div class="flow"><div><b>01</b><span>创建积分配置</span></div><i>→</i><div><b>02</b><span>审核并启用</span></div><i>→</i><div><b>03</b><span>认证级活动选择</span></div><i>→</i><div><b>04</b><span>发布锁定版本</span></div><i>→</i><div><b>05</b><span>默认卡 VIN 发放</span></div><i>→</i><div><b>06</b><span>查询、补偿、对账</span></div></div>
+    </section>
+
+    <section class="card">
+      <h2>三、页面与关键交互</h2>
+      <table>
+        <thead><tr><th>页面</th><th>用途</th><th>评审动作</th><th>关键结果</th></tr></thead>
+        <tbody>
+          <tr><td>积分配置列表</td><td>统一查询和管理配置</td><td>按状态筛选、查看预算进度</td><td>展示预算号、额度、使用率、预警状态和卡券同源场景</td></tr>
+          <tr><td>新增/编辑配置</td><td>维护积分、预算和业务场景</td><td>校验预算字段；切换主场景检查子场景级联</td><td>活动不重复维护这些字段；成本中心不展示</td></tr>
+          <tr><td>配置详情与版本</td><td>查看不可变快照</td><td>查看预算配置、引用活动、创建新版本</td><td>预算号、额度、已用/剩余及预警阈值可追溯</td></tr>
+          <tr><td>活动新增/编辑</td><td>选择奖品</td><td>准入切换为绑车级，再切回认证级</td><td>非认证级积分禁用并清空；认证级可选配置</td></tr>
+          <tr><td>活动详情</td><td>确认发布快照</td><td>查看混合奖项和配置版本</td><td>积分配置编码、版本和业务场景已锁定</td></tr>
+          <tr><td>奖励发放记录</td><td>履约追踪</td><td>筛选失败、打开详情、查询结果</td><td>锁定 VIN、预算号、请求号、交易号和配置快照可追溯</td></tr>
+          <tr><td>积分对账与异常</td><td>发现并处理账实差异</td><td>打开有差异任务</td><td>按预算号、业务主/子场景、VIN、请求号定位</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>四、关键状态</h2>
+      <div class="states"><div><b>配置</b><span>草稿 → 待审核 → 已启用 → 已停用/已过期</span></div><div><b>场景</b><span>业务主场景 → 对应业务子场景</span></div><div><b>发放</b><span>发放中 / 成功 / 失败 / 待人工处理 / 已冲正</span></div><div><b>对账</b><span>无差异 / 有差异 / 已处理</span></div></div>
+    </section>
+
+    <section class="warning"><b>本期边界：</b>自动冲正暂不启用，仅保留状态和原交易号；成本中心继续隐藏；预算余额接口、正式字段、场景编码、错误码、查询轮询和对账文件协议需在联调前确认。</section>
+  </main>
+</body>
+</html>

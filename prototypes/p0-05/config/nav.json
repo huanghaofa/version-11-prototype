@@ -1,0 +1,27 @@
+{
+  "menu": [
+    {"key": "overview", "label": "方案总览", "icon": "▦"},
+    {
+      "label": "积分配置管理", "icon": "◆",
+      "children": [
+        {"key": "config-list", "label": "积分配置列表"},
+        {"key": "config-form", "label": "新增/编辑配置"},
+        {"key": "config-detail", "label": "配置详情与版本"}
+      ]
+    },
+    {
+      "label": "活动管理", "icon": "◫",
+      "children": [
+        {"key": "activity-edit", "label": "活动新增/编辑"},
+        {"key": "activity-detail", "label": "活动详情"}
+      ]
+    },
+    {
+      "label": "奖励履约", "icon": "⇄",
+      "children": [
+        {"key": "reward-records", "label": "奖励发放记录"},
+        {"key": "reconciliation", "label": "积分对账与异常"}
+      ]
+    }
+  ]
+}

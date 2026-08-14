@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <link rel="icon" href="data:,">
+  <title>SA动态二维码</title>
+  <style data-inline-source="assets/css/global.css?v=20260814-3">
+:root {
+  --brand: #c90732;
+  --brand-dark: #a90028;
+  --brand-soft: #fff1f4;
+  --blue-soft: #eef5ff;
+  --blue-text: #3a73ba;
+  --text: #1e2227;
+  --text-2: #666d75;
+  --text-3: #9298a0;
+  --line: #e9e9eb;
+  --page: #f5f5f6;
+  --card: #ffffff;
+  --success: #168a5a;
+  --warning: #a86a00;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { color: var(--text); background: #eceef1; font-family: var(--font); font-size: 14px; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; }
+button { border: 0; }
+.prototype-canvas { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.mobile-prototype { position: relative; width: 390px; height: 844px; overflow: hidden; background: var(--page); box-shadow: 0 18px 45px rgba(28,34,41,.18); }
+.initial-loading { height: 100%; display: grid; place-items: center; color: var(--text-3); background: #fff; }
+.toast { position: fixed; left: 50%; bottom: 90px; z-index: 3000; max-width: 320px; padding: 10px 16px; color: #fff; background: rgba(28,30,34,.92); border-radius: 18px; opacity: 0; transform: translate(-50%,10px); pointer-events: none; transition: .2s ease; text-align: center; font-size: 13px; }
+.toast.show { opacity: 1; transform: translate(-50%,0); }
+
+@media (max-width: 430px) {
+  body { overflow: hidden; background: var(--page); }
+  .prototype-canvas { min-height: 0; padding: 0; display: block; }
+  .mobile-prototype { width: 100vw; height: 100dvh; max-width: 390px; max-height: 844px; margin: 0 auto; box-shadow: none; }
+}
+
+</style>
+  <style data-inline-source="assets/css/app.css?v=20260814-3">
+.mobile-page { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; background: var(--page); }
+body.sa-blue-context { --brand: #2f80c5; --brand-dark: #24679d; --brand-soft: #edf6fd; }
+.mobile-page.sa-blue-theme .sa-identity-card,
+.mobile-page.sa-blue-theme .report-owner,
+.mobile-page.sa-blue-theme .detail-hero { background: linear-gradient(135deg,#24679d 0%,#3b8fd0 100%); }
+.mobile-page.sa-blue-theme .sa-activity-card.selected { border-color: #a8cce8; box-shadow: 0 0 0 1px rgba(47,128,197,.07); }
+.mobile-status { flex: 0 0 25px; padding: 0 18px; display: flex; align-items: center; background: #fff; }
+.mobile-status img { display: block; width: 341px; height: 25px; object-fit: contain; }
+.mobile-header { flex: 0 0 50px; padding: 0 16px; display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; background: #fff; border-bottom: 1px solid #f0f0f1; }
+.mobile-header h1 { margin: 0; text-align: center; font-size: 17px; font-weight: 500; }
+.header-icon { width: 36px; height: 36px; display: grid; place-items: center; background: transparent; }
+.header-icon img { width: 8px; height: 15px; object-fit: contain; }
+.header-placeholder { width: 40px; }
+.page-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 12px 106px; scrollbar-width: none; }
+.page-scroll::-webkit-scrollbar { display: none; }
+
+.source-card { min-height: 82px; padding: 14px 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #fff; background: var(--brand); border-radius: 6px; }
+.source-card div { min-width: 0; }
+.source-card span, .source-card small { display: block; opacity: .78; font-size: 11px; }
+.source-card strong { display: block; margin: 4px 0 3px; font-size: 16px; font-weight: 600; }
+.source-mark { flex: 0 0 38px; height: 38px; display: grid !important; place-items: center; color: var(--brand); background: #fff; border-radius: 50%; opacity: 1 !important; font-weight: 700; }
+
+.vehicle-switch { width: 100%; margin-top: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 5px; text-align: left; }
+.vehicle-switch span:first-child { min-width: 0; }
+.vehicle-switch small, .vehicle-switch em { display: block; color: var(--text-3); font-style: normal; font-size: 11px; }
+.vehicle-switch strong { display: block; margin: 2px 0; font-size: 15px; font-weight: 600; }
+.switch-copy { flex: 0 0 auto; padding: 5px 10px; color: var(--brand); border: 1px solid #ebbac6; border-radius: 14px; font-size: 12px; }
+.list-summary { margin: 13px 2px 7px; display: flex; align-items: center; justify-content: space-between; color: var(--text-3); font-size: 11px; }
+.list-summary strong { color: var(--brand); font-weight: 500; }
+
+.activity-section { margin-bottom: 13px; }
+.section-head { padding: 0 2px 7px; display: flex; align-items: center; justify-content: space-between; }
+.section-head h2 { margin: 0; padding-left: 8px; position: relative; font-size: 15px; font-weight: 600; }
+.section-head h2::before { content: ""; position: absolute; left: 0; top: 3px; width: 3px; height: 15px; background: var(--brand); }
+.section-head p { margin: 1px 0 0 8px; color: var(--text-3); font-size: 10px; }
+.section-head > span { color: var(--text-3); font-size: 11px; }
+.activity-list { display: grid; gap: 8px; }
+.activity-card { position: relative; padding: 13px 12px 12px 44px; display: flex; background: #fff; border: 1px solid #e4e4e6; border-radius: 5px; box-shadow: 0 1px 2px rgba(0,0,0,.02); }
+.activity-card.disabled { background: #f1f1f2; border-color: #e5e5e6; }
+.activity-select { position: absolute; left: 13px; top: 16px; width: 20px; height: 20px; }
+.activity-select input { width: 18px; height: 18px; margin: 0; accent-color: var(--brand); }
+.activity-content { min-width: 0; width: 100%; }
+.activity-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.activity-top > div { min-width: 0; }
+.activity-top h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.activity-top p { margin: 3px 0 0; color: var(--text-2); font-size: 11px; }
+.activity-card.disabled h3, .activity-card.disabled p, .activity-card.disabled strong { color: #9a9da1; }
+.activity-state { flex: 0 0 auto; padding: 2px 7px; border-radius: 10px; font-size: 10px; }
+.activity-state.available { color: var(--success); background: #eaf7f1; }
+.activity-state.done { color: #7b7f85; background: #e7e7e8; }
+.activity-state.locked { color: var(--warning); background: #fff4dc; }
+.reward-row { margin-top: 10px; display: flex; align-items: center; gap: 7px; }
+.reward-row strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 500; }
+.type-tag { flex: 0 0 auto; padding: 2px 6px; color: var(--brand); background: var(--brand-soft); border-radius: 2px; font-size: 9px; }
+.type-tag.lottery { color: var(--blue-text); background: var(--blue-soft); }
+.mutex-tag { flex: 0 0 auto; margin-left: 6px; padding: 2px 6px; color: #a85f00; background: #fff1d6; border-radius: 2px; vertical-align: 2px; font-size: 9px; font-weight: 500; }
+.mutex-notice { margin-top: 9px; padding: 7px 8px; color: #8b5a10; background: #fff8e9; border: 1px solid #f0dfb7; border-radius: 4px; font-size: 9px; line-height: 1.5; }
+.mutex-notice.selected { color: #87435a; background: #fff1f5; border-color: #efc7d1; }
+.mutex-notice.locked { color: #8a6b2d; background: #f4f1e9; border-color: #e5dcc9; }
+.activity-meta { margin-top: 9px; display: flex; align-items: center; gap: 8px; color: var(--text-3); font-size: 9px; }
+.activity-meta span:nth-child(2) { margin-left: auto; }
+.upgrade-link { flex: 0 0 auto; margin-left: auto; padding: 3px 8px; color: var(--brand); background: #fff; border: 1px solid #e8b1bf; border-radius: 12px; font-size: 10px; }
+.end-note { padding: 3px 0 12px; color: #a1a5aa; text-align: center; font-size: 10px; }
+
+.bottom-action { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; height: 94px; padding: 8px 14px calc(10px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.98); border-top: 1px solid #e7e7e8; }
+.bottom-action p { margin: 0 0 6px; color: var(--text-3); text-align: center; font-size: 10px; }
+.primary-action { width: 100%; height: 46px; color: #fff; background: var(--brand); border-radius: 23px; font-size: 16px; font-weight: 600; }
+.primary-action:active { background: var(--brand-dark); }
+.primary-action:disabled { color: #fff; background: #c7c8ca; }
+
+#sheetRoot { position: fixed; inset: 0; z-index: 2000; pointer-events: none; }
+#sheetRoot.open { pointer-events: auto; }
+.sheet-mask { position: absolute; inset: 0; background: rgba(0,0,0,.42); opacity: 0; transition: opacity .18s ease; }
+.bottom-sheet { position: absolute; left: 50%; bottom: 0; width: min(390px,100vw); padding: 16px 16px calc(18px + env(safe-area-inset-bottom)); background: #fff; border-radius: 12px 12px 0 0; transform: translate(-50%,100%); transition: transform .18s ease; }
+#sheetRoot.open .sheet-mask { opacity: 1; }
+#sheetRoot.open .bottom-sheet { transform: translate(-50%,0); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.sheet-head h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.sheet-head button { padding: 6px; color: var(--text-3); background: transparent; }
+.sheet-note { margin-top: 5px; color: var(--text-3); font-size: 11px; }
+.vehicle-options { margin-top: 13px; display: grid; gap: 8px; }
+.vehicle-option { width: 100%; padding: 12px; display: flex; align-items: center; justify-content: space-between; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 5px; text-align: left; }
+.vehicle-option.active { border-color: var(--brand); background: var(--brand-soft); }
+.vehicle-option strong, .vehicle-option small { display: block; }
+.vehicle-option strong { font-size: 14px; }
+.vehicle-option small { margin-top: 3px; color: var(--text-3); font-size: 11px; }
+.vehicle-option input { width: 17px; height: 17px; accent-color: var(--brand); pointer-events: none; }
+.bind-other { width: 100%; margin-top: 12px; padding: 11px; color: var(--brand); background: #fff; border: 1px solid #e8b1bf; border-radius: 22px; }
+
+.result-sheet { max-height: 78vh; overflow-y: auto; }
+.result-hero { padding: 4px 0 15px; border-bottom: 1px solid var(--line); }
+.result-hero > span { color: var(--success); font-size: 12px; }
+.result-hero h2 { margin: 4px 0 3px; font-size: 21px; }
+.result-hero p { margin: 0; color: var(--text-3); font-size: 11px; }
+.result-list { padding: 8px 0; }
+.result-row { min-height: 58px; display: grid; grid-template-columns: 10px minmax(0,1fr) auto; gap: 9px; align-items: center; border-bottom: 1px solid #f0f0f1; }
+.result-row:last-child { border-bottom: 0; }
+.result-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+.result-row strong, .result-row small { display: block; }
+.result-row strong { font-size: 13px; }
+.result-row small { margin-top: 3px; color: var(--text-3); font-size: 10px; }
+.result-row em { color: var(--success); font-style: normal; font-size: 11px; }
+.sheet-primary, .sheet-secondary { width: 100%; height: 44px; border-radius: 22px; font-weight: 600; }
+.sheet-primary { margin-top: 7px; color: #fff; background: var(--brand); }
+.sheet-secondary { margin-top: 8px; color: var(--text-2); background: #fff; border: 1px solid var(--line); }
+.upgrade-sheet { padding-top: 3px; }
+.upgrade-label { color: var(--brand); font-size: 12px; }
+.upgrade-sheet h2 { margin: 5px 0 7px; font-size: 21px; }
+.upgrade-sheet > p { margin: 0; color: var(--text-2); font-size: 12px; }
+.leave-note { margin: 16px 0 18px; padding: 12px; color: #7c6228; background: #fff7e6; border: 1px solid #f0ddb0; border-radius: 5px; }
+.leave-note strong, .leave-note span { display: block; }
+.leave-note strong { margin-bottom: 4px; font-size: 12px; }
+.leave-note span { font-size: 11px; line-height: 1.65; }
+
+/* 服务助手选活动 */
+.sa-select-scroll { padding-bottom: 112px; }
+.sa-identity-card { min-height: 88px; padding: 14px; display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 11px; align-items: center; color: #fff; background: linear-gradient(135deg,#b8002d 0%,#d31642 100%); border-radius: 6px; }
+.sa-avatar { width: 44px; height: 44px; display: grid; place-items: center; color: var(--brand); background: #fff; border-radius: 50%; font-size: 13px; font-weight: 700; }
+.sa-identity-card small, .sa-identity-card strong, .sa-identity-card span { display: block; }
+.sa-identity-card small { color: rgba(255,255,255,.72); font-size: 10px; }
+.sa-identity-card strong { margin: 3px 0 2px; font-size: 14px; font-weight: 600; }
+.sa-identity-card span { color: rgba(255,255,255,.84); font-size: 10px; }
+.sa-identity-card em { padding: 3px 7px; color: #fff; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.32); border-radius: 10px; font-style: normal; font-size: 9px; }
+.sa-rule-note { margin-top: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 9px; color: #705818; background: #fff8e8; border: 1px solid #f2e2b9; border-radius: 5px; }
+.sa-rule-note strong { flex: 0 0 auto; font-size: 11px; }
+.sa-rule-note span { font-size: 10px; line-height: 1.5; }
+.select-all-row { min-height: 58px; margin: 10px 0 13px; padding: 10px 12px; display: grid; grid-template-columns: minmax(0,1fr) auto 20px; gap: 9px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+.select-all-row strong, .select-all-row small { display: block; }
+.select-all-row strong { font-size: 14px; }
+.select-all-row small { margin-top: 2px; color: var(--text-3); font-size: 10px; }
+.select-count { color: var(--brand); font-size: 11px; }
+.select-all-row input, .sa-card-check input { width: 18px; height: 18px; margin: 0; accent-color: var(--brand); }
+.sa-section { margin-bottom: 14px; }
+.sa-activity-card { position: relative; min-height: 108px; padding: 13px 12px 12px 44px; background: #fff; border: 1px solid #e4e4e6; border-radius: 5px; }
+.sa-activity-card.selected { border-color: #e2a4b4; box-shadow: 0 0 0 1px rgba(201,7,50,.04); }
+.sa-card-check { position: absolute; left: 13px; top: 16px; width: 20px; height: 20px; }
+.sa-card-main { min-width: 0; width: 100%; padding: 0; color: var(--text); background: transparent; text-align: left; }
+.sa-card-title { display: flex; align-items: center; gap: 7px; }
+.sa-card-title h3 { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 600; }
+.level-tag { flex: 0 0 auto; padding: 2px 6px; color: #68562b; background: #f8f2e4; border-radius: 2px; font-size: 9px; }
+.sa-card-main > p { margin: 4px 0 0; color: var(--text-2); font-size: 11px; }
+.sa-card-reward { margin-top: 10px; display: flex; align-items: center; gap: 7px; }
+.sa-card-reward strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 500; }
+.sa-card-meta { margin-top: 9px; display: flex; align-items: center; justify-content: space-between; color: var(--text-3); font-size: 9px; }
+.sa-card-detail-link { margin-top: 10px; padding-top: 9px; display: flex; align-items: center; justify-content: flex-end; color: var(--brand); border-top: 1px solid #f0f0f1; font-size: 10px; }
+.sa-card-detail-link span { margin-left: 4px; font-size: 15px; line-height: 10px; }
+.sa-generate-action { height: 96px; }
+
+/* 二维码结果 */
+.qr-page-scroll { padding-bottom: 100px; }
+.qr-result-card { padding: 17px 16px 15px; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.qr-success { color: var(--success); font-size: 12px; font-weight: 500; }
+.qr-result-card h2 { margin: 4px 0 12px; font-size: 17px; font-weight: 600; }
+.qr-image-wrap { width: 222px; height: 222px; margin: 0 auto; padding: 9px; background: #fff; border: 1px solid #ededee; }
+.qr-image-wrap img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.qr-expiry { margin-top: 10px; }
+.qr-expiry strong, .qr-expiry span { display: block; }
+.qr-expiry strong { color: var(--brand); font-size: 13px; }
+.qr-expiry span { margin-top: 2px; color: var(--text-3); font-size: 10px; }
+.poster-entry { width: 100%; min-height: 54px; margin-top: 13px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text); background: var(--brand-soft); border: 1px solid #c9e0f1; border-radius: 6px; text-align: left; }
+.poster-entry span { min-width: 0; }
+.poster-entry strong, .poster-entry small { display: block; }
+.poster-entry strong { color: var(--brand-dark); font-size: 13px; }
+.poster-entry small { margin-top: 3px; color: #62829c; font-size: 9px; }
+.poster-entry em { color: var(--brand); font-style: normal; font-size: 24px; line-height: 1; }
+.qr-info-card { margin-top: 10px; padding: 13px 14px 5px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.qr-info-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.qr-info-head strong { font-size: 14px; }
+.qr-info-head span { color: var(--brand); font-size: 11px; }
+.qr-data-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; row-gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.qr-data-grid small, .qr-data-grid strong { display: block; }
+.qr-data-grid small { color: var(--text-3); font-size: 9px; }
+.qr-data-grid strong { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 500; }
+.snapshot-list { padding: 2px 0; }
+.snapshot-row { min-height: 49px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid #f1f1f2; }
+.snapshot-row:last-child { border-bottom: 0; }
+.snapshot-row strong, .snapshot-row small { display: block; }
+.snapshot-row strong { font-size: 12px; font-weight: 500; }
+.snapshot-row small { margin-top: 3px; color: var(--text-3); font-size: 9px; }
+.snapshot-row em { flex: 0 0 auto; color: var(--text-3); font-style: normal; font-size: 8px; }
+.qr-bottom-action { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; min-height: 78px; padding: 11px 14px calc(12px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: 108px minmax(0,1fr); gap: 10px; background: rgba(255,255,255,.98); border-top: 1px solid #e7e7e8; }
+.qr-bottom-action .primary-action, .secondary-action { height: 46px; border-radius: 23px; }
+.secondary-action { color: var(--text-2); background: #fff; border: 1px solid #d9dadd; font-weight: 500; }
+
+/* SA活动分享海报 */
+.poster-editor-scroll, .poster-result-scroll { padding-bottom: 100px; }
+.poster-editor-note { min-height: 58px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.poster-editor-note span { min-width: 0; }
+.poster-editor-note strong, .poster-editor-note small { display: block; }
+.poster-editor-note strong { font-size: 13px; }
+.poster-editor-note small { margin-top: 3px; color: var(--text-3); font-size: 9px; }
+.poster-editor-note button { flex: 0 0 auto; height: 30px; padding: 0 10px; color: var(--brand); background: var(--brand-soft); border-radius: 15px; font-size: 10px; }
+.poster-source-card { margin-top: 10px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.poster-source-card > div:first-child strong, .poster-source-card > div:first-child small { display: block; }
+.poster-source-card > div:first-child strong { font-size: 12px; }
+.poster-source-card > div:first-child small { margin-top: 3px; color: var(--text-3); font-size: 9px; line-height: 1.5; }
+.poster-source-options { margin-top: 10px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.poster-source-options button, .poster-source-options label { min-height: 62px; padding: 9px 10px; display: flex; flex-direction: column; justify-content: center; color: var(--text); background: #f7f8f9; border: 1px solid #e4e6e8; border-radius: 6px; cursor: pointer; }
+.poster-source-options button.active, .poster-source-options label.active { color: var(--brand-dark); background: var(--brand-soft); border-color: var(--brand); box-shadow: 0 0 0 1px rgba(47,128,197,.05); }
+.poster-source-options strong, .poster-source-options small { display: block; }
+.poster-source-options strong { font-size: 11px; }
+.poster-source-options small { margin-top: 4px; color: var(--text-3); font-size: 8px; line-height: 1.4; }
+.poster-source-options input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.poster-preview-stage { margin-top: 10px; padding: 14px 10px; display: flex; justify-content: center; background: #e9edf1; border-radius: 8px; }
+.poster-preview-stage.final { margin-top: 10px; padding: 12px 8px; background: #dfe4e9; }
+.share-poster-card { position: relative; width: min(100%,320px); aspect-ratio: 3 / 4; overflow: hidden; color: #fff; background: linear-gradient(155deg,#0d416b 0%,#17689f 52%,#2f80c5 100%); border-radius: 12px; box-shadow: 0 10px 24px rgba(24,73,109,.22); }
+.poster-upload-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.share-poster-card.uploaded::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg,rgba(5,28,45,.32) 0%,rgba(7,35,54,.18) 40%,rgba(5,30,48,.72) 100%); }
+.share-poster-card.uploaded .poster-glow { display: none; }
+.poster-glow { position: absolute; border-radius: 50%; background: rgba(255,255,255,.1); }
+.glow-one { width: 210px; height: 210px; right: -92px; top: -74px; }
+.glow-two { width: 140px; height: 140px; left: -66px; bottom: 72px; }
+.poster-content { position: relative; z-index: 1; height: 100%; padding: 18px; display: flex; flex-direction: column; }
+.poster-brand-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: rgba(255,255,255,.82); font-size: 9px; }
+.poster-brand-row em { padding: 3px 7px; color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 9px; font-style: normal; }
+.share-poster-card h2 { max-width: 255px; margin: 17px 0 6px; font-size: 24px; line-height: 1.28; letter-spacing: .5px; }
+.share-poster-card > .poster-content > p { min-height: 34px; margin: 0; color: rgba(255,255,255,.78); font-size: 11px; line-height: 1.55; }
+.poster-activity-count { margin-top: 10px; display: flex; align-items: baseline; gap: 6px; }
+.poster-activity-count strong { color: #ffe5a7; font-size: 21px; }
+.poster-activity-count span { color: rgba(255,255,255,.72); font-size: 9px; }
+.poster-qr-panel { margin-top: 12px; padding: 10px; display: grid; grid-template-columns: 106px minmax(0,1fr); gap: 11px; align-items: center; color: #1d3e59; background: #fff; border-radius: 9px; box-shadow: 0 5px 12px rgba(10,42,67,.14); }
+.poster-qr-panel img { width: 106px; height: 106px; object-fit: contain; }
+.poster-qr-panel strong, .poster-qr-panel small { display: block; }
+.poster-qr-panel strong { font-size: 12px; line-height: 1.45; }
+.poster-qr-panel small { margin-top: 6px; color: #8293a0; font-size: 8px; line-height: 1.45; }
+.poster-sa-row { margin-top: auto; padding-top: 12px; display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 9px; align-items: center; border-top: 1px solid rgba(255,255,255,.16); }
+.poster-sa-avatar { width: 34px; height: 34px; display: grid; place-items: center; color: #226a9f; background: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; }
+.poster-sa-row strong, .poster-sa-row small { display: block; }
+.poster-sa-row strong { font-size: 10px; }
+.poster-sa-row small { margin-top: 3px; color: rgba(255,255,255,.68); font-size: 8px; }
+.poster-validity { margin-top: 9px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: rgba(255,255,255,.66); font-size: 7px; }
+.poster-validity strong { color: rgba(255,255,255,.88); text-align: right; font-size: 7px; font-weight: 500; }
+.poster-form-card { margin-top: 10px; padding: 2px 13px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.poster-edit-field { min-height: 68px; padding: 10px 0; display: block; border-bottom: 1px solid #f0f0f1; }
+.poster-edit-field:last-child { border-bottom: 0; }
+.poster-edit-field > span { display: flex; align-items: center; justify-content: space-between; }
+.poster-edit-field strong { font-size: 11px; }
+.poster-edit-field small { color: var(--text-3); font-size: 8px; }
+.poster-edit-field input { width: 100%; height: 32px; margin-top: 4px; padding: 0 9px; color: var(--text); background: #f7f8f9; border: 1px solid #e5e7e9; border-radius: 4px; font-size: 11px; }
+.poster-edit-field input:focus { background: #fff; border-color: var(--brand); outline: none; }
+.poster-bottom-action { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; min-height: 72px; padding: 11px 14px calc(12px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.98); border-top: 1px solid #e7e7e8; }
+.poster-result-head { padding: 13px 14px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.poster-result-head span, .poster-result-head strong, .poster-result-head small { display: block; }
+.poster-result-head span { color: var(--success); font-size: 10px; }
+.poster-result-head strong { margin-top: 3px; font-size: 15px; }
+.poster-result-head small { margin-top: 3px; color: var(--text-3); font-size: 9px; }
+.poster-edit-again { margin-top: 10px; border: 1px solid var(--line); border-radius: 6px; }
+.poster-share-actions { grid-template-columns: 118px minmax(0,1fr); }
+
+/* SA移动报表与二维码状态 */
+.mobile-header.with-action { grid-template-columns: 40px minmax(0,1fr) 64px; }
+.header-text-action { min-width: 58px; min-height: 40px; padding: 0 2px; color: var(--brand); background: transparent; text-align: right; font-size: 12px; }
+.text-row-action { width: 100%; min-height: 44px; color: var(--brand); background: #fff; border-top: 1px solid var(--line); font-size: 12px; }
+
+.empty-page-scroll, .invalid-page-scroll { padding-bottom: 28px; }
+.empty-business-card, .invalid-card { margin-top: 10px; padding: 44px 23px 24px; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.empty-business-card::before { content: ""; display: block; width: 50px; height: 50px; margin: 0 auto 16px; background: linear-gradient(135deg,#f2f3f5,#e4e6e9); border-radius: 50%; box-shadow: inset 0 0 0 12px #f8f8f9; }
+.empty-business-card strong, .invalid-card h2 { display: block; margin: 0; font-size: 18px; font-weight: 600; }
+.empty-business-card p, .invalid-card p { margin: 9px 0 7px; color: var(--text-2); font-size: 12px; line-height: 1.7; }
+.empty-business-card span { display: block; color: var(--text-3); font-size: 10px; }
+.empty-business-card button, .invalid-card button { min-width: 150px; height: 42px; margin-top: 22px; color: #fff; background: var(--brand); border-radius: 21px; }
+.invalid-card { margin-top: 60px; padding-top: 34px; }
+.invalid-card img { width: 42px; height: 42px; margin-bottom: 15px; object-fit: contain; opacity: .54; }
+.invalid-card > div { margin-top: 18px; padding: 11px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #f7f7f8; border-radius: 4px; text-align: left; }
+.invalid-card > div span { color: var(--text-3); font-size: 10px; }
+.invalid-card > div strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 500; }
+.invalid-note { margin: 11px 20px 0; color: var(--text-3); text-align: center; font-size: 10px; line-height: 1.6; }
+
+.report-tabs { flex: 0 0 45px; display: grid; grid-template-columns: repeat(3,1fr); background: #fff; border-bottom: 1px solid var(--line); }
+.report-tabs button { position: relative; min-height: 44px; color: var(--text-2); background: #fff; font-size: 13px; }
+.report-tabs button.active { color: var(--brand); font-weight: 600; }
+.report-tabs button.active::after { content: ""; position: absolute; left: 35%; right: 35%; bottom: 0; height: 2px; background: var(--brand); border-radius: 2px 2px 0 0; }
+.report-page-scroll { position: relative; padding-top: 10px; padding-bottom: 30px; }
+.sa-watermark { position: fixed; z-index: 0; left: 50%; top: 50%; color: rgba(75,80,86,.045); transform: translate(-50%,-50%) rotate(-24deg); white-space: nowrap; font-size: 30px; font-weight: 700; pointer-events: none; }
+.report-owner { position: relative; z-index: 1; min-height: 68px; padding: 11px 13px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; color: #fff; background: linear-gradient(135deg,#b8002d,#d31642); border-radius: 6px; }
+.report-owner span, .report-owner strong, .report-owner small { display: block; }
+.report-owner span { grid-column: 1; color: rgba(255,255,255,.72); font-size: 9px; }
+.report-owner strong { grid-column: 1; margin-top: -3px; font-size: 14px; }
+.report-owner small { grid-column: 2; grid-row: 1 / span 2; max-width: 142px; color: rgba(255,255,255,.8); text-align: right; font-size: 9px; }
+.report-toolbar { position: relative; z-index: 1; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.report-toolbar strong, .report-toolbar span { display: block; }
+.report-toolbar strong { font-size: 14px; }
+.report-toolbar span { margin-top: 1px; color: var(--text-3); font-size: 9px; }
+.range-switch { flex: 0 0 auto; padding: 2px; display: flex; background: #e9eaec; border-radius: 14px; }
+.range-switch button { min-width: 46px; height: 24px; color: var(--text-3); background: transparent; border-radius: 12px; font-size: 9px; }
+.range-switch button.active { color: var(--brand); background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.report-kpi-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.report-kpi { min-height: 87px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+.report-kpi span, .report-kpi strong, .report-kpi small { display: block; }
+.report-kpi span { color: var(--text-2); font-size: 10px; }
+.report-kpi strong { margin: 4px 0 2px; color: var(--brand); font-size: 22px; font-weight: 600; line-height: 1.15; }
+.report-kpi small { color: var(--text-3); font-size: 8px; }
+.report-panel { position: relative; z-index: 1; margin-top: 9px; padding: 0 13px; background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+.report-panel-head { min-height: 43px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.report-panel-head strong { font-size: 13px; }
+.report-panel-head > span { color: var(--text-3); font-size: 9px; }
+.report-panel-head i { display: inline-block; width: 7px; height: 7px; margin: 0 3px 0 7px; background: #cfd2d6; border-radius: 1px; }
+.report-panel-head i.primary { background: var(--brand); }
+.ratio-row { min-height: 49px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #f0f0f1; }
+.ratio-row:last-child { border-bottom: 0; }
+.ratio-row strong, .ratio-row small { display: block; }
+.ratio-row strong { font-size: 11px; font-weight: 500; }
+.ratio-row small { margin-top: 2px; color: var(--text-3); font-size: 8px; }
+.ratio-row em { color: var(--brand); font-style: normal; font-size: 14px; font-weight: 600; }
+.mobile-trend { height: 120px; padding: 13px 2px 8px; display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; align-items: end; }
+.mobile-trend-col { height: 100%; display: grid; grid-template-rows: minmax(0,1fr) 15px; align-items: end; text-align: center; }
+.mobile-trend-bars { height: 77px; display: flex; align-items: end; justify-content: center; gap: 2px; }
+.mobile-trend-bars i { width: 5px; min-height: 2px; background: #cfd2d6; border-radius: 2px 2px 0 0; }
+.mobile-trend-bars i.primary { background: var(--brand); }
+.mobile-trend-col > span { color: var(--text-3); font-size: 8px; }
+.report-shortcuts { position: relative; z-index: 1; margin-top: 9px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.report-shortcuts button { min-height: 65px; padding: 11px; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 5px; text-align: left; }
+.report-shortcuts strong, .report-shortcuts span { display: block; }
+.report-shortcuts strong { font-size: 11px; }
+.report-shortcuts span { margin-top: 4px; color: var(--text-3); font-size: 8px; }
+.privacy-note { position: relative; z-index: 1; margin: 12px 0 3px; color: var(--text-3); text-align: center; font-size: 9px; }
+
+.report-list-summary { position: relative; z-index: 1; min-height: 43px; display: flex; align-items: center; justify-content: space-between; }
+.report-list-summary span { font-size: 14px; font-weight: 600; }
+.report-list-summary strong { color: var(--brand); font-size: 10px; font-weight: 500; }
+.report-list { position: relative; z-index: 1; display: grid; gap: 8px; }
+.report-list-card { width: 100%; min-height: 150px; padding: 13px; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 5px; text-align: left; }
+.report-list-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.report-list-title span { min-width: 0; }
+.report-list-title strong, .report-list-title small { display: block; }
+.report-list-title strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.report-list-title small { margin-top: 3px; color: var(--text-3); font-size: 8px; }
+.report-list-title em { flex: 0 0 auto; padding: 2px 7px; color: var(--success); background: #eaf7f1; border-radius: 9px; font-style: normal; font-size: 9px; }
+.report-list-tags { margin-top: 8px; display: flex; gap: 5px; }
+.report-list-tags span { padding: 2px 6px; color: var(--brand); background: var(--brand-soft); border-radius: 2px; font-size: 8px; }
+.report-list-metrics { margin-top: 11px; padding: 9px 0; display: grid; grid-template-columns: repeat(3,1fr); background: #f7f7f8; border-radius: 4px; }
+.report-list-metrics span { text-align: center; border-right: 1px solid #e8e9eb; }
+.report-list-metrics span:last-child { border-right: 0; }
+.report-list-metrics small, .report-list-metrics strong { display: block; }
+.report-list-metrics small { color: var(--text-3); font-size: 8px; }
+.report-list-metrics strong { margin-top: 2px; font-size: 13px; }
+.report-list-card > p { margin: 8px 0 0; color: var(--text-3); font-size: 9px; }
+.coupon-report-card { min-height: 142px; }
+
+.detail-page-scroll { padding-bottom: 30px; }
+.detail-hero { padding: 15px 14px; color: #fff; background: linear-gradient(135deg,#b8002d,#d31642); border-radius: 6px; }
+.detail-hero span, .detail-hero p { color: rgba(255,255,255,.76); font-size: 9px; }
+.detail-hero h2 { margin: 5px 0 4px; font-size: 17px; }
+.detail-hero p { margin: 0; }
+.coupon-detail-hero { background: linear-gradient(135deg,#7f263d,#c90732); }
+.detail-metric-grid { margin-top: 9px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+.detail-metric-grid > div { min-width: 0; padding: 11px 4px; text-align: center; border-right: 1px solid var(--line); }
+.detail-metric-grid > div:last-child { border-right: 0; }
+.detail-metric-grid small, .detail-metric-grid strong { display: block; }
+.detail-metric-grid small { color: var(--text-3); font-size: 8px; }
+.detail-metric-grid strong { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.record-list { margin: 0 -13px; }
+.record-row { width: 100%; min-height: 58px; padding: 9px 13px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text); background: #fff; border-bottom: 1px solid #f0f0f1; text-align: left; }
+.record-row > span:last-child { flex: 0 0 auto; text-align: right; }
+.record-row strong, .record-row small, .record-row em { display: block; }
+.record-row strong { font-size: 12px; }
+.record-row small { margin-top: 2px; color: var(--text-3); font-size: 8px; }
+.record-row em { color: var(--success); font-style: normal; font-size: 10px; }
+.detail-status-card { padding: 18px 15px; color: #fff; background: linear-gradient(135deg,#137a50,#18a56b); border-radius: 6px; }
+.detail-status-card span, .detail-status-card strong, .detail-status-card small { display: block; }
+.detail-status-card span { color: rgba(255,255,255,.72); font-size: 9px; }
+.detail-status-card strong { margin: 5px 0 3px; font-size: 20px; }
+.detail-status-card small { color: rgba(255,255,255,.76); font-size: 9px; }
+.mobile-detail-section { margin-top: 9px; padding: 0 13px; background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+.mobile-detail-section h2 { min-height: 43px; margin: 0; display: flex; align-items: center; border-bottom: 1px solid var(--line); font-size: 13px; }
+.activity-rule-list { margin: 0; padding: 10px 0 10px 22px; color: var(--text-2); font-size: 11px; line-height: 1.7; }
+.activity-rule-list li + li { margin-top: 4px; }
+.relation-list { padding: 5px 0; }
+.relation-card { min-height: 54px; padding: 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #f0f0f1; }
+.relation-card:last-child { border-bottom: 0; }
+.relation-card span { min-width: 0; }
+.relation-card strong, .relation-card small { display: block; }
+.relation-card strong { font-size: 11px; font-weight: 500; }
+.relation-card small { margin-top: 3px; color: var(--text-3); font-size: 9px; }
+.relation-card em { flex: 0 0 auto; color: var(--brand); font-style: normal; font-size: 10px; }
+.relation-empty { padding: 17px 0; color: var(--text-3); text-align: center; font-size: 10px; }
+.mutex-detail-card { margin: 11px 0 13px; padding: 11px; color: #735118; background: #fff8e8; border: 1px solid #f0deb6; border-radius: 4px; }
+.mutex-detail-card span, .mutex-detail-card strong, .mutex-detail-card small { display: block; }
+.mutex-detail-card span { color: #a36c0b; font-size: 9px; }
+.mutex-detail-card strong { margin-top: 5px; font-size: 11px; line-height: 1.6; }
+.mutex-detail-card small { margin-top: 5px; color: #8d7445; font-size: 9px; line-height: 1.5; }
+.mobile-detail-row { min-height: 47px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #f0f0f1; }
+.mobile-detail-row:last-child { border-bottom: 0; }
+.mobile-detail-row span { flex: 0 0 84px; color: var(--text-3); font-size: 10px; }
+.mobile-detail-row strong { min-width: 0; max-width: 235px; overflow-wrap: anywhere; text-align: right; font-size: 11px; font-weight: 500; }
+.coupon-timeline { margin: 0; padding: 8px 0 9px 12px; list-style: none; }
+.coupon-timeline li { position: relative; min-height: 39px; padding-left: 15px; display: flex; align-items: center; border-left: 1px solid #e1e2e5; }
+.coupon-timeline li:last-child { border-left-color: transparent; }
+.coupon-timeline li span { position: absolute; left: -4px; top: 16px; width: 7px; height: 7px; background: var(--brand); border-radius: 50%; }
+.coupon-timeline li strong { font-size: 10px; font-weight: 500; }
+.regenerate-summary { margin: 12px 0 2px; padding: 12px; background: #f7f7f8; border-radius: 5px; }
+.regenerate-summary span, .regenerate-summary strong, .regenerate-summary small { display: block; }
+.regenerate-summary span, .regenerate-summary small { color: var(--text-3); font-size: 9px; }
+.regenerate-summary strong { margin: 3px 0; font-size: 12px; }
+.result-row.invalid .result-dot, .result-dot.invalid { background: #c4871c; }
+.result-row.invalid em { color: #a86a00; }
+
+/* 组合活动与二维码有效期 */
+.combo-tag { display: inline-flex; margin-left: 6px; padding: 2px 6px; color: #22689f; background: #eaf5fd; border-radius: 2px; vertical-align: 2px; font-size: 9px; font-weight: 500; }
+.combo-activity-card { border-color: #c9ddec; background: linear-gradient(180deg,#fff 0%,#f9fcff 100%); }
+.combo-activity-card.disabled { background: #f2f4f6; border-color: #dfe4e8; }
+.combo-reward-visible { margin-top: 10px; padding: 10px; color: #24577f; background: #edf7fe; border: 1px solid #c8e2f4; border-radius: 5px; }
+.combo-reward-visible > span, .combo-reward-visible > strong, .combo-reward-visible > small, .combo-reward-visible > em { display: block; }
+.combo-reward-visible span { font-size: 9px; }
+.combo-reward-visible > strong { margin-top: 3px; color: #174e79; font-size: 13px; }
+.combo-reward-visible > small { margin-top: 7px; color: #66869e; font-size: 9px; }
+.combo-reward-visible > em { margin-top: 6px; color: #2d739f; font-size: 9px; font-style: normal; }
+.combo-reward-list { margin-top: 7px; display: grid; gap: 5px; }
+.combo-reward-item { padding: 7px 8px; background: #fff; border: 1px solid #d4e7f5; border-radius: 4px; }
+.combo-reward-item strong { display: block; margin: 0; color: #174e79; font-size: 11px; }
+.combo-reward-item small { display: block; margin-top: 2px; color: #66869e; font-size: 8px; }
+.combo-relation { padding: 11px 0; }
+.prototype-scenario-switch { margin-top: 10px; padding: 6px 8px; display: grid; grid-template-columns: minmax(0,1fr) 62px 62px; gap: 6px; align-items: center; color: var(--text-3); background: #fff; border: 1px dashed #d4d7db; border-radius: 5px; font-size: 9px; }
+.prototype-scenario-switch button { height: 28px; color: var(--text-2); background: #f2f3f5; border-radius: 14px; font-size: 10px; }
+.prototype-scenario-switch button.active { color: #fff; background: var(--brand); }
+.vehicle-unbound-card { width: 100%; margin-top: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff8e9; border: 1px solid #eedcb9; border-radius: 5px; }
+.vehicle-unbound-card span { min-width: 0; }
+.vehicle-unbound-card small, .vehicle-unbound-card strong, .vehicle-unbound-card em { display: block; }
+.vehicle-unbound-card small { color: #9a7a3e; font-size: 9px; }
+.vehicle-unbound-card strong { margin: 3px 0; color: #6f561f; font-size: 14px; }
+.vehicle-unbound-card em { color: #9a7a3e; font-style: normal; font-size: 9px; }
+.vehicle-unbound-card button { flex: 0 0 auto; height: 32px; padding: 0 12px; color: #fff; background: var(--brand); border-radius: 16px; }
+.duration-sheet { max-height: 88vh; overflow-y: auto; }
+.duration-drawer > p { margin: 5px 0 14px; color: var(--text-3); font-size: 11px; }
+.duration-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.duration-choice { min-height: 58px; padding: 9px 11px; display: flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 6px; }
+.duration-choice.active { border-color: var(--brand); background: var(--brand-soft); box-shadow: 0 0 0 1px rgba(47,128,197,.06); }
+.duration-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.duration-choice span { min-width: 0; flex: 1; }
+.duration-choice strong, .duration-choice small { display: block; }
+.duration-choice strong { font-size: 13px; }
+.duration-choice small { margin-top: 3px; color: var(--text-3); font-size: 9px; }
+.duration-choice i { width: 16px; height: 16px; border: 1px solid #c7ccd1; border-radius: 50%; }
+.duration-choice.active i { border: 5px solid var(--brand); }
+.duration-preview { margin-top: 12px; padding: 11px 12px; display: grid; grid-template-columns: 1fr auto; align-items: center; background: #f7f8f9; border-radius: 5px; }
+.duration-preview span { color: var(--text-3); font-size: 9px; }
+.duration-preview strong { color: var(--brand); font-size: 13px; }
+.duration-preview small { grid-column: 1 / -1; margin-top: 4px; color: var(--text-2); font-size: 10px; }
+.leave-note.compact { margin: 11px 0 5px; padding: 10px 11px; }
+
+@media (max-height: 700px) {
+  .report-page-scroll { padding-bottom: 20px; }
+  .invalid-card { margin-top: 24px; }
+}
+
+</style>
+  <style data-inline-source="annotations/annotation.css?v=20260814-3">
+/* Prototype annotation runtime. All selectors are scoped with anno-. */
+#anno-toggle-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 99990;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--brand, #ff4d4f);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--brand, #ff4d4f);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#anno-toggle-btn:hover {
+  background: var(--brand-soft, #fff1f0);
+}
+
+#anno-toggle-btn.anno-hidden {
+  border-color: #d9d9d9;
+  color: #8c8c8c;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 430px) {
+  #anno-toggle-btn {
+    top: 80px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-width: 1px;
+    font-size: 9px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+}
+
+#anno-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99980;
+  pointer-events: none;
+}
+
+.anno-marker {
+  position: fixed;
+  z-index: 99981;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #ff4d4f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.anno-marker:hover {
+  transform: scale(1.12);
+}
+
+.anno-popup {
+  position: fixed;
+  z-index: 99992;
+  width: 560px;
+  min-width: min(420px, calc(100vw - 32px));
+  min-height: 300px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  resize: both;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  color: #262626;
+}
+
+.anno-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.anno-popup-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.anno-popup-close {
+  border: 0;
+  background: transparent;
+  color: #8c8c8c;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.anno-popup-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.anno-popup-desc {
+  white-space: normal;
+}
+
+.anno-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.anno-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #262626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.anno-btn:hover {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.anno-btn-primary {
+  border-color: #ff4d4f;
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.anno-btn-primary:hover {
+  border-color: #ff7875;
+  background: #ff7875;
+  color: #fff;
+}
+
+.anno-edit-field {
+  margin-bottom: 12px;
+}
+
+.anno-edit-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #595959;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anno-edit-input,
+.anno-edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #262626;
+  font: inherit;
+}
+
+.anno-edit-textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.anno-edit-input:focus,
+.anno-edit-textarea:focus {
+  outline: none;
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.12);
+}
+
+.anno-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 100000;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 13px;
+}
+
+</style>
+</head>
+<body>
+  <div class="prototype-canvas">
+    <main id="app" class="mobile-prototype" aria-live="polite">
+      <div class="initial-loading">页面加载中…</div>
+    </main>
+  </div>
+  <div id="sheetRoot"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script data-inline-source="mock/data.js?v=20260814-3">
+(function () {
+  'use strict';
+
+  window.SAFrontData = {
+    source: {
+      saName: '陈晓明',
+      saId: 'SA10086',
+      storeId: 'S001',
+      store: '广州花都专营店',
+      sceneId: 'SCN-20260717-10086-0088',
+      activityCount: 6
+    },
+    stores: [
+      {id:'S001',code:'GZ-HD-001',name:'广州花都专营店',available:true},
+      {id:'S002',code:'FS-NH-002',name:'佛山南海专营店',available:true},
+      {id:'S003',code:'DG-LB-003',name:'东莞寮步专营店',available:true},
+      {id:'S004',code:'SZ-LG-004',name:'深圳龙岗专营店',available:true}
+    ],
+    qr: {
+      nextSceneId: 'SCN-20260717-10086-0089',
+      snapshotVersion: 'V3',
+      generatedAt: '2026-07-17 14:32:00',
+      expiresAt: '2026-07-17 15:02:00',
+      configVersion: 'QR-TTL-V6',
+      durationOptions: [
+        {minutes:5,label:'5分钟'},
+        {minutes:30,label:'30分钟'},
+        {minutes:60,label:'1小时'},
+        {minutes:360,label:'6小时'},
+        {minutes:720,label:'12小时'},
+        {minutes:1440,label:'1天'},
+        {minutes:-1,label:'长期有效',note:'至活动有效期'}
+      ],
+      defaultMinutes: 30,
+      minMinutes: 5,
+      maxMinutes: 1440,
+      allowActivityEnd: true
+    },
+    poster: {
+      defaultTitle: '您的专属车主福利已送达',
+      defaultSubtitle: '多项养护礼遇，扫码查看当前可参与活动',
+      defaultGuide: '微信扫一扫，立即查看专属活动',
+      titleMaxLength: 20,
+      subtitleMaxLength: 36,
+      guideMaxLength: 24
+    },
+    user: {
+      oneId: 'OID****8862',
+      mobile: '138****5678',
+      defaultVehicleId: 'vehicle-1'
+    },
+    vehicles: [
+      {id:'vehicle-1', model:'轩逸', plate:'粤A·8D23', vin:'LVH******1234', certified:false, isDefault:true},
+      {id:'vehicle-2', model:'天籁', plate:'粤B·3K58', vin:'LGB******9066', certified:true, isDefault:false}
+    ],
+    levels: [
+      {key:'number', title:'号码级活动', note:'按当前账号判断参与资格'},
+      {key:'vehicle', title:'绑车级活动', note:'按当前所选VIN判断参与资格'},
+      {key:'certified', title:'认证级活动', note:'按当前账号与VIN认证关系判断'}
+    ],
+    activities: [
+      {
+        id:'ACT-SA-20260705', level:'number', name:'夏日车主礼', description:'领取夏季出行卡券包', type:'coupon', reward:'30元保养抵扣券 + 到店检测券', status:{all:'eligible'}, expiry:'活动至 07月31日', shareNote:'本店适用',
+        period:'2026-07-01 至 2026-07-31', brand:'东风日产、启辰', organizer:'东风日产售后运营',
+        rules:['同一账号活动期内限参与1次','符合活动准入条件后即时发券','卡券到账后可在“我的卡券”查看'],
+        coupons:[{name:'30元保养抵扣券',quantity:'1张',valid:'领取后30天'},{name:'到店检测券',quantity:'1张',valid:'领取后30天'}],
+        benefits:[{name:'车辆健康检测',note:'到店可享1次'}],
+        mutex:{group:'MX-SA-NUMBER-001',scope:'number',scopeLabel:'号码级（同一账号）',description:'与“到店保养抽奖季”互斥，同一账号只能参加其中一个活动。'}
+      },
+      {
+        id:'ACT-SA-20260703', level:'number', name:'到店保养抽奖季', description:'抽奖自动执行，无需再次操作', type:'lottery', reward:'最高200元保养券', status:{all:'eligible'}, expiry:'活动至 07月25日', shareNote:'本店适用',
+        period:'2026-07-05 至 2026-07-25', brand:'东风日产、启辰', organizer:'东风日产售后运营',
+        rules:['同一账号活动期内限参与1次','点击一键参与后系统自动完成抽奖','中奖卡券即时发放，未中奖也视为活动已参与'],
+        coupons:[{name:'200元保养券',quantity:'中奖后1张',valid:'领取后15天'}],
+        benefits:[],
+        mutex:{group:'MX-SA-NUMBER-001',scope:'number',scopeLabel:'号码级（同一账号）',description:'与“夏日车主礼”互斥，同一账号只能参加其中一个活动。'}
+      },
+      {
+        id:'ACT-SA-20260701', level:'vehicle', name:'夏季养护礼遇', description:'当前车辆可领取2张养护券', type:'coupon', reward:'基础保养抵扣券 + 精品券', status:{'vehicle-1':'eligible','vehicle-2':'participated'}, expiry:'活动至 08月15日', shareNote:'华南区域适用',
+        period:'2026-07-01 至 2026-08-15', brand:'东风日产', organizer:'华南区域售后运营',
+        rules:['同一VIN活动期内限参与1次','需当前账号已绑定执行VIN','切换车辆后按新VIN重新校验资格'],
+        coupons:[{name:'基础保养抵扣券',quantity:'1张',valid:'领取后45天'},{name:'精品券',quantity:'1张',valid:'领取后45天'}],
+        benefits:[{name:'空调系统检测',note:'到店可享1次'}]
+      },
+      {
+        id:'ACT-SA-20260704', level:'vehicle', name:'老友焕新券包', description:'每辆绑定车辆限参与一次', type:'coupon', reward:'保养工时折扣券包', status:{'vehicle-1':'participated','vehicle-2':'eligible'}, expiry:'活动至 08月31日', shareNote:'本店适用',
+        period:'2026-07-10 至 2026-08-31', brand:'东风日产、启辰', organizer:'广州花都专营店',
+        rules:['同一VIN活动期内限参与1次','仅限当前门店关联客户参与','券包领取成功后不可重复参加'],
+        coupons:[{name:'保养工时折扣券',quantity:'2张',valid:'领取后30天'}],
+        benefits:[{name:'续保咨询服务',note:'专属顾问1次'}]
+      },
+      {
+        id:'COMB-SA-20260701', level:'vehicle', name:'2026夏季车主组合活动', displayName:'夏季专属成长礼', description:'一个大活动，绑定车辆后汇总当前VIN命中的全部权益', type:'coupon', isCombo:true, childCount:3, reward:'绑车后查看当前车辆专属卡券', status:{'vehicle-1':'eligible','vehicle-2':'eligible'}, expiry:'活动至 09月15日', shareNote:'指定2家门店', saPlacementEnabled:true, activityState:'ACTIVE', storeScope:{mode:'SPECIFIED',storeIds:['S001','S002']},
+        period:'2026-07-05 至 2026-09-15', brand:'东风日产',
+        rules:['SA链路优先展示组合活动展示名称，未配置时回退原组合活动名称','组合活动以一张活动卡片展示','需绑定车辆并选择当前执行VIN后匹配专属活动','同一VIN可同时命中多个子活动，对应卡券与权益全部发放','组合活动按VIN仅可参与1次，不设子活动优先级和顺序'],
+        coupons:[],
+        benefits:[],
+        matchedRewards:{
+          'vehicle-1':[
+            {childId:'ACT-COMB-RET-001',reward:'专属保养抵扣券 100元',coupons:[{name:'专属保养抵扣券 100元',quantity:'1张',valid:'领取后30天'}],benefits:[{name:'免费车辆检测',note:'到店可享1次'}]},
+            {childId:'ACT-COMB-LOSS-002',reward:'专属回店抵扣券 150元',coupons:[{name:'专属回店抵扣券 150元',quantity:'1张',valid:'领取后30天'}],benefits:[{name:'空调系统检测',note:'到店可享1次'}]}
+          ],
+          'vehicle-2':[
+            {childId:'ACT-COMB-REP-003',reward:'专属精品代金券 80元',coupons:[{name:'专属精品代金券 80元',quantity:'1张',valid:'领取后45天'}],benefits:[{name:'保养工时权益',note:'当前车辆可享1次'}]}
+          ]
+        }
+      },
+      {
+        id:'COMB-SA-20260702', level:'vehicle', name:'启辰秋季车主组合活动', displayName:'', description:'用于验证展示名称回退与门店过滤，不向当前SA展示', type:'coupon', isCombo:true, childCount:1, reward:'秋季车辆检测券', status:{'vehicle-1':'eligible','vehicle-2':'eligible'}, expiry:'活动至 10月31日', shareNote:'指定1家门店', saPlacementEnabled:true, activityState:'ACTIVE', storeScope:{mode:'SPECIFIED',storeIds:['S003']},
+        period:'2026-09-01 至 2026-10-31', brand:'启辰',
+        rules:['未配置展示名称，SA链路回退原组合活动名称','当前SA所属门店未命中适用门店时，不进入可查看、可分享列表'],
+        coupons:[], benefits:[], matchedRewards:{'vehicle-1':[],'vehicle-2':[]}
+      },
+      {
+        id:'ACT-SA-20260702', level:'certified', name:'认证车主专享礼', description:'完成车主认证后可领取', type:'coupon', reward:'认证车主精品代金券', status:{'vehicle-1':'need-certified','vehicle-2':'eligible'}, expiry:'活动至 09月15日', shareNote:'全国适用',
+        period:'2026-07-01 至 2026-09-15', brand:'东风日产、启辰', organizer:'东风日产售后运营',
+        rules:['当前账号与执行VIN需完成1:1车主认证','同一认证关系活动期内限参与1次','完成认证后需重新扫码进入活动页'],
+        coupons:[{name:'认证车主精品代金券',quantity:'1张',valid:'领取后60天'}],
+        benefits:[{name:'认证车主专属服务标识',note:'认证关系有效期内'}]
+      }
+    ],
+    saReport: {
+      range: '近30日',
+      summary: [
+        {key:'scan', label:'扫码人数', value:'328', note:'本人二维码扫码UV'},
+        {key:'participation', label:'活动参与数', value:'186', note:'最终来源为本人'},
+        {key:'coupon', label:'发放卡券数', value:'241', note:'本人活动产生券实例'},
+        {key:'redeem', label:'已核销数', value:'96', note:'成功核销券实例'}
+      ],
+      summary7d: [
+        {key:'scan', label:'扫码人数', value:'96', note:'本人二维码扫码UV'},
+        {key:'participation', label:'活动参与数', value:'58', note:'最终来源为本人'},
+        {key:'coupon', label:'发放卡券数', value:'75', note:'本人活动产生券实例'},
+        {key:'redeem', label:'已核销数', value:'21', note:'成功核销券实例'}
+      ],
+      ratios: [
+        {label:'活动参与转化率', value:'56.7%', note:'参与主体 ÷ 识别用户'},
+        {label:'卡券核销率', value:'39.8%', note:'已核销 ÷ 已发放'},
+        {label:'抽奖 / 中奖', value:'62 / 21', note:'中奖率33.9%'},
+        {label:'跨店核销', value:'7', note:'来源门店与核销门店不同'}
+      ],
+      ratios7d: [
+        {label:'活动参与转化率', value:'60.4%', note:'参与主体 ÷ 识别用户'},
+        {label:'卡券核销率', value:'28.0%', note:'已核销 ÷ 已发放'},
+        {label:'抽奖 / 中奖', value:'18 / 6', note:'中奖率33.3%'},
+        {label:'跨店核销', value:'2', note:'来源门店与核销门店不同'}
+      ],
+      trend: [
+        {day:'07/11', scan:9, participation:5},
+        {day:'07/12', scan:11, participation:6},
+        {day:'07/13', scan:12, participation:7},
+        {day:'07/14', scan:14, participation:8},
+        {day:'07/15', scan:15, participation:9},
+        {day:'07/16', scan:16, participation:10},
+        {day:'07/17', scan:19, participation:13}
+      ],
+      activities: [
+        {
+          id:'ACT-SA-20260705', name:'夏日车主礼', level:'number', type:'coupon', status:'进行中',
+          participation:86, coupons:142, draws:'—', wins:'—', last:'07-17 14:26', conversion:'61.9%',
+          records:[
+            {id:'PAR-SA-0717-0086', time:'2026-07-17 14:26:18', mobile:'138****5678', vin:'—', level:'号码级', type:'领券', result:'领取成功', couponCount:2, store:'广州花都专营店', validation:'手机号识别 → 活动准入 → 互斥组校验 → 未参与校验', coupons:'30元保养抵扣券、到店检测券'},
+            {id:'PAR-SA-0717-0081', time:'2026-07-17 13:48:05', mobile:'186****2309', vin:'—', level:'号码级', type:'领券', result:'领取成功', couponCount:2, store:'广州花都专营店', validation:'手机号识别 → 活动准入 → 互斥组校验 → 未参与校验', coupons:'30元保养抵扣券、到店检测券'}
+          ]
+        },
+        {
+          id:'ACT-SA-20260703', name:'到店保养抽奖季', level:'number', type:'lottery', status:'进行中',
+          participation:62, coupons:21, draws:62, wins:21, last:'07-17 14:18', conversion:'49.6%',
+          records:[
+            {id:'PAR-SA-0717-0079', time:'2026-07-17 14:18:33', mobile:'139****1186', vin:'—', level:'号码级', type:'抽奖', result:'中奖', couponCount:1, store:'广州花都专营店', validation:'手机号识别 → 互斥组校验 → 抽奖次数 → 未参与校验', coupons:'200元保养券'},
+            {id:'PAR-SA-0717-0067', time:'2026-07-17 11:32:09', mobile:'137****8092', vin:'—', level:'号码级', type:'抽奖', result:'未中奖', couponCount:0, store:'广州花都专营店', validation:'手机号识别 → 互斥组校验 → 抽奖次数 → 未参与校验', coupons:'—'}
+          ]
+        },
+        {
+          id:'ACT-SA-20260701', name:'夏季养护礼遇', level:'vehicle', type:'coupon', status:'进行中',
+          participation:38, coupons:78, draws:'—', wins:'—', last:'07-17 13:57', conversion:'52.1%',
+          records:[
+            {id:'PAR-SA-0717-0072', time:'2026-07-17 13:57:42', mobile:'136****7721', vin:'LVH******4528', level:'绑车级', type:'领券', result:'领取成功', couponCount:2, store:'广州花都专营店', validation:'默认VIN → 绑定关系 → VIN未参与校验', coupons:'基础保养抵扣券、精品券'}
+          ]
+        }
+      ],
+      coupons: [
+        {id:'TPL-SA-3001', name:'30元保养抵扣券', activity:'夏日车主礼', issued:96, redeemed:42, expired:6, redemptionRate:'43.8%', cross:3, status:'已生效', owner:'号码级', valid:'领取后30天', last:'07-17 14:26', timeline:['07-17 14:26 最近发放','07-17 13:12 本店核销','07-16 18:42 跨店核销']},
+        {id:'TPL-SA-2009', name:'200元保养券', activity:'到店保养抽奖季', issued:21, redeemed:8, expired:1, redemptionRate:'38.1%', cross:1, status:'已生效', owner:'号码级', valid:'领取后15天', last:'07-17 14:18', timeline:['07-17 14:18 抽奖发放','07-17 10:36 本店核销','07-15 16:08 到期失效']},
+        {id:'TPL-SA-4108', name:'基础保养抵扣券', activity:'夏季养护礼遇', issued:78, redeemed:31, expired:4, redemptionRate:'39.7%', cross:3, status:'已生效', owner:'绑车级', valid:'领取后45天', last:'07-17 13:57', timeline:['07-17 13:57 最近发放','07-17 09:44 本店核销','07-16 15:20 跨店核销']}
+      ]
+    }
+  };
+})();
+
+</script>
+  <script data-inline-source="js/common.js?v=20260814-3">
+(function () {
+  'use strict';
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char];
+    });
+  }
+
+  function showToast(message) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(function () { toast.classList.remove('show'); }, 1800);
+  }
+
+  function openSheet(content, options) {
+    var root = document.getElementById('sheetRoot');
+    if (!root) return;
+    var extraClass = options && options.className ? ' ' + options.className : '';
+    root.innerHTML = '<div class="sheet-mask" data-close-sheet></div><section class="bottom-sheet' + extraClass + '" role="dialog" aria-modal="true">' + content + '</section>';
+    requestAnimationFrame(function () { root.classList.add('open'); });
+  }
+
+  function closeSheet() {
+    var root = document.getElementById('sheetRoot');
+    if (!root) return;
+    root.classList.remove('open');
+    setTimeout(function () { root.innerHTML = ''; }, 180);
+  }
+
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('[data-close-sheet]')) closeSheet();
+  });
+
+  window.SAFrontCommon = {escapeHtml:escapeHtml, showToast:showToast, openSheet:openSheet, closeSheet:closeSheet};
+})();
+
+</script>
+  <script data-inline-source="js/app.js?v=20260814-3">
+(function () {
+  'use strict';
+
+  var data = window.SAFrontData;
+  var common = window.SAFrontCommon;
+  var esc = common.escapeHtml;
+  var validRoutes = [
+    'sa-select', 'sa-select-activity-detail', 'sa-empty', 'sa-qr', 'sa-poster-editor', 'sa-poster-preview', 'qr-invalid',
+    'sa-data-overview', 'sa-activity-list', 'sa-activity-detail', 'sa-participation-detail',
+    'sa-coupon-list', 'sa-coupon-detail',
+    'activity-aggregation', 'activity-aggregation-unbound', 'activity-aggregation-offline'
+  ];
+
+  function activityDisplayName(activity) {
+    if (!activity) return '';
+    if (!activity.isCombo) return activity.name;
+    return String(activity.displayName || '').trim() || activity.name;
+  }
+
+  function activityScopeText(activity) {
+    if (!activity || !activity.storeScope || activity.storeScope.mode !== 'SPECIFIED') return activity.shareNote || '全部门店';
+    return '指定' + (activity.storeScope.storeIds || []).length + '家门店';
+  }
+
+  function isActivityVisibleToSource(activity) {
+    if (activity.saPlacementEnabled === false || activity.activityState === 'INACTIVE') return false;
+    if (!activity.storeScope || activity.storeScope.mode !== 'SPECIFIED') return true;
+    return (activity.storeScope.storeIds || []).indexOf(data.source.storeId) >= 0;
+  }
+
+  function saAvailableActivities() {
+    return data.activities.filter(isActivityVisibleToSource);
+  }
+
+  var state = {
+    vehicleId: data.user.defaultVehicleId,
+    saSelected: {},
+    generatedActivityIds: saAvailableActivities().map(function (activity) { return activity.id; }),
+    selected: {},
+    completed: {},
+    reportRange: '30d',
+    reportActivityId: data.saReport.activities[0].id,
+    reportParticipationId: data.saReport.activities[0].records[0].id,
+    reportCouponId: data.saReport.coupons[0].id,
+    saDetailActivityId: data.activities[0].id,
+    currentSceneId: data.qr.nextSceneId,
+    previousSceneId: data.source.sceneId,
+    qrVersion: Number(String(data.qr.snapshotVersion).replace(/\D/g, '')) || 3,
+    qrGeneration: 0,
+    invalidReason: 'replaced',
+    selectedDurationMinutes: data.qr.defaultMinutes,
+    pendingDurationMinutes: data.qr.defaultMinutes,
+    durationAction: 'generate',
+    posterTitle: data.poster.defaultTitle,
+    posterSubtitle: data.poster.defaultSubtitle,
+    posterGuide: data.poster.defaultGuide,
+    posterMode: 'template',
+    posterUploadName: '',
+    posterUploadUrl: ''
+  };
+
+  data.activities.forEach(function (activity) { state.saSelected[activity.id] = isActivityVisibleToSource(activity); });
+
+  function route() {
+    var value = window.location.hash.replace(/^#/, '').split('?')[0];
+    return validRoutes.indexOf(value) >= 0 ? value : 'sa-select';
+  }
+
+  function hashParam(name) {
+    var query = window.location.hash.split('?')[1] || '';
+    var params = new URLSearchParams(query);
+    return params.get(name);
+  }
+
+  function go(page) {
+    common.closeSheet();
+    if (route() === page) render();
+    else window.location.hash = page;
+  }
+
+  function currentVehicle() {
+    return data.vehicles.find(function (vehicle) { return vehicle.id === state.vehicleId; }) || data.vehicles[0];
+  }
+
+  function hasVehicleContext() {
+    return route() !== 'activity-aggregation-unbound';
+  }
+
+  function sharedActivities() {
+    return data.activities.filter(function (activity) {
+      return state.generatedActivityIds.indexOf(activity.id) >= 0 && isActivityVisibleToSource(activity);
+    });
+  }
+
+  function saSelectedActivities() {
+    return saAvailableActivities().filter(function (activity) { return !!state.saSelected[activity.id]; });
+  }
+
+  function completionKey(activity) {
+    if (activity.level === 'number') return 'number:' + activity.id;
+    if (activity.isCombo) return 'combo:' + activity.id + ':' + (hasVehicleContext() ? state.vehicleId : 'unbound');
+    return state.vehicleId + ':' + activity.id;
+  }
+
+  function activityById(id) {
+    return data.activities.find(function (activity) { return activity.id === id; }) || data.activities[0];
+  }
+
+  function baseActivityStatus(activity) {
+    if (state.completed[completionKey(activity)]) return 'participated';
+    if (!hasVehicleContext() && activity.level !== 'number') return 'need-bind';
+    if (activity.level === 'certified' && !currentVehicle().certified) return 'need-certified';
+    return activity.status.all || activity.status[state.vehicleId] || 'ineligible';
+  }
+
+  function matchedComboRewards(activity) {
+    if (!activity.isCombo || !hasVehicleContext()) return [];
+    var rewards = activity.matchedRewards[state.vehicleId] || [];
+    return Array.isArray(rewards) ? rewards : [rewards];
+  }
+
+  function comboCoupons(activity) {
+    return matchedComboRewards(activity).reduce(function (items, reward) {
+      return items.concat(reward.coupons || []);
+    }, []);
+  }
+
+  function comboBenefits(activity) {
+    return matchedComboRewards(activity).reduce(function (items, reward) {
+      return items.concat(reward.benefits || []);
+    }, []);
+  }
+
+  function activityReward(activity) {
+    var matched = matchedComboRewards(activity);
+    return matched.length ? matched.map(function (item) { return item.reward; }).join(' + ') : activity.reward;
+  }
+
+  function mutexPeers(activity) {
+    if (!activity.mutex) return [];
+    return sharedActivities().filter(function (candidate) {
+      return candidate.id !== activity.id && candidate.mutex && candidate.mutex.group === activity.mutex.group;
+    });
+  }
+
+  function activityStatus(activity) {
+    var ownStatus = baseActivityStatus(activity);
+    if (ownStatus === 'participated') return ownStatus;
+    if (activity.mutex && mutexPeers(activity).some(function (peer) { return baseActivityStatus(peer) === 'participated'; })) return 'mutex-participated';
+    return ownStatus;
+  }
+
+  function resetDefaultSelection() {
+    state.selected = {};
+    var selectedMutexGroups = {};
+    sharedActivities().forEach(function (activity) {
+      if (activityStatus(activity) !== 'eligible') return;
+      if (activity.mutex && selectedMutexGroups[activity.mutex.group]) return;
+      state.selected[activity.id] = true;
+      if (activity.mutex) selectedMutexGroups[activity.mutex.group] = activity.id;
+    });
+  }
+
+  function selectedActivities() {
+    return sharedActivities().filter(function (activity) {
+      return state.selected[activity.id] && activityStatus(activity) === 'eligible';
+    });
+  }
+
+  function typeLabel(type) {
+    return type === 'lottery' ? '抽奖' : '领券';
+  }
+
+  function levelLabel(level) {
+    var item = data.levels.find(function (candidate) { return candidate.key === level; });
+    return item ? item.title.replace('活动', '') : '';
+  }
+
+  function statusMarkup(status) {
+    if (status === 'participated') return '<span class="activity-state done">已参与</span>';
+    if (status === 'mutex-participated') return '<span class="activity-state locked">互斥已参与</span>';
+    if (status === 'need-certified') return '<span class="activity-state locked">需认证</span>';
+    if (status === 'need-bind') return '<span class="activity-state locked">需绑车</span>';
+    return '<span class="activity-state available">可参与</span>';
+  }
+
+  function usesSaBlueTheme() {
+    var current = route();
+    return current.indexOf('sa-') === 0 || current === 'qr-invalid';
+  }
+
+  function mobileShell(title, body, footer, headerAction) {
+    var withAction = headerAction ? ' with-action' : '';
+    var blueTheme = usesSaBlueTheme();
+    document.body.classList.toggle('sa-blue-context', blueTheme);
+    return '<div class="mobile-page' + (blueTheme ? ' sa-blue-theme' : '') + '">' +
+      '<div class="mobile-status"><img src="assets/images/mobile-statusbar.png" alt="手机状态栏"></div>' +
+      '<header class="mobile-header' + withAction + '"><button class="header-icon" data-back type="button" aria-label="返回"><img src="assets/images/back.png" alt=""></button><h1>' + esc(title) + '</h1>' + (headerAction || '<span class="header-placeholder"></span>') + '</header>' +
+      body + (footer || '') + '</div>';
+  }
+
+  function saActivityCard(activity) {
+    var checked = !!state.saSelected[activity.id];
+    return '<article class="sa-activity-card ' + (checked ? 'selected' : '') + '">' +
+      '<label class="sa-card-check"><input type="checkbox" data-sa-check="' + activity.id + '" ' + (checked ? 'checked' : '') + '><span></span></label>' +
+      '<button class="sa-card-main sa-card-detail" data-open-sa-activity="' + activity.id + '" type="button"><div class="sa-card-title"><h3>' + esc(activityDisplayName(activity)) + '</h3><span class="level-tag">' + esc(levelLabel(activity.level)) + '</span>' + (activity.isCombo ? '<span class="combo-tag">组合活动</span>' : '') + (activity.mutex ? '<span class="mutex-tag">互斥</span>' : '') + '</div>' +
+      '<p>' + esc(activity.description) + '</p><div class="sa-card-reward"><span class="type-tag ' + (activity.type === 'lottery' ? 'lottery' : '') + '">' + typeLabel(activity.type) + '</span><strong>' + esc(activity.reward) + '</strong></div>' +
+      '<div class="sa-card-meta"><span>' + esc(activity.expiry) + '</span><span>' + esc(activityScopeText(activity)) + '</span></div><div class="sa-card-detail-link">查看活动详情 <span>›</span></div></button></article>';
+  }
+
+  function saActivitySection(level) {
+    var activities = saAvailableActivities().filter(function (activity) { return activity.level === level.key; });
+    return '<section class="activity-section sa-section"><div class="section-head"><div><h2>' + esc(level.title) + '</h2><p>' + esc(level.note) + '</p></div><span>' + activities.length + '项</span></div><div class="activity-list">' + activities.map(saActivityCard).join('') + '</div></section>';
+  }
+
+  function renderSaSelect() {
+    var selectedCount = saSelectedActivities().length;
+    var allSelected = selectedCount === saAvailableActivities().length;
+    document.title = '选择活动';
+    return mobileShell('选择活动', '<div class="page-scroll sa-select-scroll"><section class="sa-identity-card"><div class="sa-avatar">SA</div><div><small>当前服务助手</small><strong>' + esc(data.source.saName) + ' · ' + esc(data.source.saId) + '</strong><span>' + esc(data.source.store) + '</span></div><em>身份已绑定</em></section>' +
+      '<section class="sa-rule-note"><strong>可分享活动</strong><span>已自动校验独立SA投放、组合活动状态与当前门店范围</span></section>' +
+      '<label class="select-all-row"><span><strong>全部可投活动</strong><small>可选择全部或指定活动生成二维码</small></span><span class="select-count">已选' + selectedCount + '项</span><input type="checkbox" data-sa-select-all ' + (allSelected ? 'checked' : '') + '></label>' +
+      data.levels.map(saActivitySection).join('') + '<div class="end-note">活动范围将在二维码生成时冻结</div></div>',
+      '<footer class="bottom-action sa-generate-action"><p>每次生成唯一场景码，SA与门店不可修改</p><button class="primary-action" data-generate-qr type="button" ' + (selectedCount ? '' : 'disabled') + '>生成动态二维码' + (selectedCount ? '（' + selectedCount + '项）' : '') + '</button></footer>',
+      '<button class="header-text-action" data-open-sa-data type="button">我的数据</button>');
+  }
+
+  function renderSaSelectActivityDetail() {
+    var activity = activityById(state.saDetailActivityId);
+    var rules = activity.rules.map(function (rule) { return '<li>' + esc(rule) + '</li>'; }).join('');
+    var coupons = activity.isCombo ? '<div class="relation-card combo-relation"><span><strong>按用户当前VIN动态匹配</strong><small>用户可同时命中多个子活动，在同一张卡片内汇总展示全部卡券</small></span><em>' + activity.childCount + '套</em></div>' : activity.coupons.length ? activity.coupons.map(function (coupon) {
+      return '<div class="relation-card"><span><strong>' + esc(coupon.name) + '</strong><small>有效期：' + esc(coupon.valid) + '</small></span><em>' + esc(coupon.quantity) + '</em></div>';
+    }).join('') : '<div class="relation-empty">未关联卡券</div>';
+    var benefits = activity.isCombo ? '<div class="relation-card combo-relation"><span><strong>权益随VIN全量匹配结果展示</strong><small>命中多个子活动时全部执行，不设优先级和顺序</small></span><em>动态</em></div>' : activity.benefits.length ? activity.benefits.map(function (benefit) {
+      return '<div class="relation-card"><span><strong>' + esc(benefit.name) + '</strong><small>' + esc(benefit.note) + '</small></span><em>权益</em></div>';
+    }).join('') : '<div class="relation-empty">未关联权益</div>';
+    var mutex = activity.mutex ? '<section class="mobile-detail-section"><h2>互斥关系</h2><div class="mutex-detail-card"><span>' + esc(activity.mutex.scopeLabel) + '</span><strong>' + esc(activity.mutex.description) + '</strong><small>用户端同组仅可勾选1项，提交时再次校验。</small></div></section>' : '<section class="mobile-detail-section"><h2>互斥关系</h2><div class="relation-empty">无互斥活动</div></section>';
+    document.title = '活动详情';
+    return mobileShell('活动详情', '<div class="page-scroll detail-page-scroll select-activity-detail-scroll"><section class="detail-hero"><span>' + esc(levelLabel(activity.level)) + ' · ' + typeLabel(activity.type) + (activity.isCombo ? ' · 组合活动' : '') + (activity.mutex ? ' · 互斥活动' : '') + '</span><h2>' + esc(activityDisplayName(activity)) + '</h2><p>' + esc(activity.id) + ' · ' + esc(activity.expiry) + '</p></section><section class="mobile-detail-section"><h2>基本信息</h2>' + detailRow('活动时间', activity.period) + detailRow('适用品牌', activity.brand) + detailRow('适用范围', activityScopeText(activity)) + detailRow('领券方式', typeLabel(activity.type)) + '</section><section class="mobile-detail-section"><h2>活动规则</h2><ol class="activity-rule-list">' + rules + '</ol></section><section class="mobile-detail-section"><h2>关联卡券</h2><div class="relation-list">' + coupons + '</div></section><section class="mobile-detail-section"><h2>关联权益</h2><div class="relation-list">' + benefits + '</div></section>' + mutex + '<div class="privacy-note">查看详情不会改变当前活动勾选状态</div></div>');
+  }
+
+  function renderSaEmpty() {
+    document.title = '选择活动';
+    return mobileShell('选择活动', '<div class="page-scroll empty-page-scroll"><section class="sa-identity-card"><div class="sa-avatar">SA</div><div><small>当前服务助手</small><strong>' + esc(data.source.saName) + ' · ' + esc(data.source.saId) + '</strong><span>' + esc(data.source.store) + '</span></div><em>身份已绑定</em></section><section class="empty-business-card"><strong>当前暂无可投活动</strong><p>暂未找到同时满足已发布、允许SA分享及当前门店范围的活动。</p><span>后台统一推券活动不会出现在这里</span><button data-empty-refresh type="button">重新加载</button></section></div>', '', '<button class="header-text-action" data-open-sa-data type="button">我的数据</button>');
+  }
+
+  function snapshotRows() {
+    return sharedActivities().map(function (activity) {
+      return '<div class="snapshot-row"><span><strong>' + esc(activityDisplayName(activity)) + '</strong><small>' + esc(levelLabel(activity.level)) + ' · ' + (activity.isCombo ? '组合活动 · ' : '') + typeLabel(activity.type) + '</small></span><em>' + esc(activity.id) + '</em></div>';
+    }).join('');
+  }
+
+  function durationLabel(minutes) {
+    if (minutes === -1) return '长期有效';
+    if (minutes === 1440) return '1天';
+    if (minutes >= 60) return (minutes / 60) + '小时';
+    return minutes + '分钟';
+  }
+
+  function durationScopeActivities() {
+    var activities = route() === 'sa-select' ? saSelectedActivities() : sharedActivities();
+    return activities.length ? activities : saAvailableActivities();
+  }
+
+  function latestActivityEndText() {
+    var latest = durationScopeActivities().reduce(function (current, activity) {
+      var endText = String(activity.period || '').split('至').pop().trim();
+      var parts = endText.split('-').map(Number);
+      if (parts.length !== 3 || parts.some(function (part) { return !part; })) return current;
+      var end = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
+      return !current || end > current ? end : current;
+    }, null);
+    if (!latest) return '活动结束时';
+    var pad = function (value) { return String(value).padStart(2,'0'); };
+    return pad(latest.getMonth() + 1) + '-' + pad(latest.getDate()) + ' ' + pad(latest.getHours()) + ':' + pad(latest.getMinutes()) + ':' + pad(latest.getSeconds());
+  }
+
+  function qrExpiryText(minutes) {
+    if (minutes === -1) return latestActivityEndText();
+    var parts = data.qr.generatedAt.split(/[- :]/).map(Number);
+    var date = new Date(parts[0],parts[1] - 1,parts[2],parts[3],parts[4],parts[5]);
+    date.setMinutes(date.getMinutes() + minutes);
+    var pad = function (value) { return String(value).padStart(2,'0'); };
+    return pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+  }
+
+  function durationDescription(minutes) {
+    return minutes === -1 ? '长期有效 · 至所选活动最晚结束时间' : '有效时长 ' + durationLabel(minutes) + ' · 失效后请重新生成';
+  }
+
+  function posterMarkup() {
+    var count = state.generatedActivityIds.length;
+    var uploaded = state.posterMode === 'upload' && state.posterUploadUrl;
+    var uploadBackground = uploaded ? '<img class="poster-upload-bg" src="' + esc(state.posterUploadUrl) + '" alt="SA上传的自定义海报底图">' : '';
+    return '<section class="share-poster-card' + (uploaded ? ' uploaded' : '') + '" data-poster-card>' + uploadBackground + '<div class="poster-glow glow-one"></div><div class="poster-glow glow-two"></div><div class="poster-content"><div class="poster-brand-row"><span>东风日产 · 专属礼遇</span><em>SA推荐</em></div><h2 data-poster-preview-title>' + esc(state.posterTitle) + '</h2><p data-poster-preview-subtitle>' + esc(state.posterSubtitle) + '</p><div class="poster-activity-count"><strong>' + count + '项</strong><span>活动已为您精选</span></div><div class="poster-qr-panel"><img src="assets/images/sa-demo-qr.png" alt="活动分享二维码"><div><strong data-poster-preview-guide>' + esc(state.posterGuide) + '</strong></div></div><div class="poster-sa-row"><span class="poster-sa-avatar">SA</span><span><strong>' + esc(data.source.saName) + ' · ' + esc(data.source.saId) + '</strong><small>' + esc(data.source.store) + '</small></span></div><div class="poster-validity"><span>二维码有效期</span><strong>' + durationLabel(state.selectedDurationMinutes) + ' · 至 ' + qrExpiryText(state.selectedDurationMinutes) + '</strong></div></div></section>';
+  }
+
+  function renderQr() {
+    var count = state.generatedActivityIds.length;
+    document.title = '动态二维码';
+    return mobileShell('动态二维码', '<div class="page-scroll qr-page-scroll"><section class="qr-result-card"><span class="qr-success">二维码已生成</span><h2>请用户使用微信扫码参与</h2><div class="qr-image-wrap"><img src="assets/images/sa-demo-qr.png" alt="SA动态活动二维码"></div><div class="qr-expiry"><strong>有效期至 ' + qrExpiryText(state.selectedDurationMinutes) + '</strong><span>' + durationDescription(state.selectedDurationMinutes) + '</span></div><button class="poster-entry" data-create-poster type="button"><span><strong>制作活动分享海报</strong><small>嵌入二维码与SA信息，可编辑分享文案</small></span><em>›</em></button></section>' +
+      '<section class="qr-info-card"><div class="qr-info-head"><strong>活动冻结快照</strong><span>' + count + '项 · V' + state.qrVersion + '</span></div><div class="qr-data-grid"><div><small>场景ID</small><strong>' + esc(state.currentSceneId) + '</strong></div><div><small>生成时间</small><strong>07-17 14:32</strong></div><div><small>有效时长 / 版本</small><strong>' + durationLabel(state.selectedDurationMinutes) + ' · ' + esc(data.qr.configVersion) + '</strong></div><div><small>来源SA</small><strong>' + esc(data.source.saName) + ' · ' + esc(data.source.saId) + '</strong></div><div><small>来源门店</small><strong>' + esc(data.source.store) + '</strong></div></div><div class="snapshot-list">' + snapshotRows() + '</div><button class="text-row-action" data-edit-selection type="button">修改活动范围</button></section><div class="end-note">新活动和后台后续参数变更不会影响本二维码</div></div>',
+      '<footer class="qr-bottom-action"><button class="secondary-action" data-regenerate type="button">重新生成</button><button class="primary-action" data-simulate-scan type="button">模拟用户扫码</button></footer>');
+  }
+
+  function posterField(label, key, value, maxLength, placeholder) {
+    return '<label class="poster-edit-field"><span><strong>' + esc(label) + '</strong><small data-poster-count="' + key + '">' + String(value).length + '/' + maxLength + '</small></span><input data-poster-input="' + key + '" maxlength="' + maxLength + '" value="' + esc(value) + '" placeholder="' + esc(placeholder) + '"></label>';
+  }
+
+  function renderPosterEditor() {
+    document.title = '编辑分享海报';
+    var uploadNote = state.posterUploadName ? '已上传：' + state.posterUploadName : 'JPG/PNG，10MB以内，建议3:4';
+    return mobileShell('编辑分享海报', '<div class="page-scroll poster-editor-scroll"><section class="poster-editor-note"><span><strong>编辑海报文案</strong><small>二维码、来源SA和门店信息不可修改</small></span><button data-reset-poster type="button">恢复默认</button></section><section class="poster-source-card"><div><strong>海报来源</strong><small>上传自定义底图后，系统仍统一叠加二维码与SA信息</small></div><div class="poster-source-options"><button class="' + (state.posterMode === 'template' ? 'active' : '') + '" data-poster-mode="template" type="button"><strong>系统模板</strong><small>使用品牌蓝色模板</small></button><label class="' + (state.posterMode === 'upload' ? 'active' : '') + '"><input data-poster-upload type="file" accept="image/jpeg,image/png"><strong>上传自定义海报</strong><small>' + esc(uploadNote) + '</small></label></div></section><div class="poster-preview-stage">' + posterMarkup() + '</div><section class="poster-form-card">' + posterField('海报标题','title',state.posterTitle,data.poster.titleMaxLength,'请输入海报标题') + posterField('副标题','subtitle',state.posterSubtitle,data.poster.subtitleMaxLength,'请输入活动说明') + posterField('扫码引导语','guide',state.posterGuide,data.poster.guideMaxLength,'请输入扫码引导语') + '</section><div class="end-note">生成后仍可返回继续编辑；重新生成二维码后旧海报内二维码同步失效</div></div>', '<footer class="poster-bottom-action"><button class="primary-action" data-generate-poster type="button">生成分享海报</button></footer>');
+  }
+
+  function renderPosterPreview() {
+    document.title = '分享海报';
+    return mobileShell('分享海报', '<div class="page-scroll poster-result-scroll"><section class="poster-result-head"><span>海报已生成</span><strong>可保存或直接分享给客户</strong><small>海报已嵌入当前二维码及来源SA信息</small></section><div class="poster-preview-stage final">' + posterMarkup() + '</div><button class="text-row-action poster-edit-again" data-edit-poster type="button">继续编辑文案</button><div class="end-note">二维码来源仍以用户最终成功执行触点为准</div></div>', '<footer class="qr-bottom-action poster-share-actions"><button class="secondary-action" data-save-poster type="button">保存到相册</button><button class="primary-action" data-share-poster type="button">分享给客户</button></footer>');
+  }
+
+  function renderQrInvalid() {
+    var reason = hashParam('reason') || state.invalidReason;
+    var expired = reason === 'expired';
+    var title = expired ? '二维码已过期' : '二维码已失效';
+    var copy = expired ? '该二维码已超过有效期，请联系服务顾问重新获取。' : '服务顾问已重新生成二维码，当前旧码不再接受新的扫码。';
+    document.title = title;
+    return mobileShell('二维码状态', '<div class="page-scroll invalid-page-scroll"><section class="invalid-card"><img src="assets/images/close.png" alt=""><h2>' + title + '</h2><p>' + copy + '</p><div><span>场景ID</span><strong>' + esc(state.previousSceneId) + '</strong></div><button data-invalid-done type="button">我知道了</button></section><p class="invalid-note">已建立的历史扫码会话将在提交时重新校验活动状态</p></div>');
+  }
+
+  function reportTabs(active) {
+    var tabs = [
+      {key:'overview', route:'sa-data-overview', label:'概览'},
+      {key:'activity', route:'sa-activity-list', label:'活动'},
+      {key:'coupon', route:'sa-coupon-list', label:'卡券'}
+    ];
+    return '<nav class="report-tabs">' + tabs.map(function (tab) {
+      return '<button class="' + (active === tab.key ? 'active' : '') + '" data-report-route="' + tab.route + '" type="button">' + tab.label + '</button>';
+    }).join('') + '</nav>';
+  }
+
+  function reportOwner() {
+    return '<section class="report-owner"><span>仅统计本人数据</span><strong>' + esc(data.source.saName) + ' · ' + esc(data.source.saId) + '</strong><small>' + esc(data.source.store) + '</small></section>';
+  }
+
+  function reportShell(active, content) {
+    return mobileShell('我的SA数据', reportTabs(active) + '<div class="page-scroll report-page-scroll"><div class="sa-watermark">' + esc(data.source.saName) + ' ' + esc(data.source.saId) + '</div>' + content + '</div>', '', '<button class="header-text-action" data-back-to-generate type="button">生成码</button>');
+  }
+
+  function renderReportOverview() {
+    var summarySource = state.reportRange === '7d' ? data.saReport.summary7d : data.saReport.summary;
+    var ratioSource = state.reportRange === '7d' ? data.saReport.ratios7d : data.saReport.ratios;
+    var summary = summarySource.map(function (item) {
+      return '<div class="report-kpi"><span>' + esc(item.label) + '</span><strong>' + esc(item.value) + '</strong><small>' + esc(item.note) + '</small></div>';
+    }).join('');
+    var ratios = ratioSource.map(function (item) {
+      return '<div class="ratio-row"><span><strong>' + esc(item.label) + '</strong><small>' + esc(item.note) + '</small></span><em>' + esc(item.value) + '</em></div>';
+    }).join('');
+    var maxScan = Math.max.apply(null, data.saReport.trend.map(function (item) { return item.scan; }));
+    var trend = data.saReport.trend.map(function (item) {
+      var scanHeight = Math.round(item.scan / maxScan * 72);
+      var partHeight = Math.round(item.participation / maxScan * 72);
+      return '<div class="mobile-trend-col"><div class="mobile-trend-bars"><i style="height:' + scanHeight + 'px"></i><i class="primary" style="height:' + partHeight + 'px"></i></div><span>' + esc(item.day.slice(3)) + '</span></div>';
+    }).join('');
+    document.title = '我的SA数据';
+    return reportShell('overview', reportOwner() + '<div class="report-toolbar"><div><strong>数据概览</strong><span>统计口径与后台SA报表一致</span></div><div class="range-switch"><button data-report-range="7d" class="' + (state.reportRange === '7d' ? 'active' : '') + '" type="button">近7日</button><button data-report-range="30d" class="' + (state.reportRange === '30d' ? 'active' : '') + '" type="button">近30日</button></div></div><section class="report-kpi-grid">' + summary + '</section><section class="report-panel"><div class="report-panel-head"><strong>转化与核销</strong><span>' + (state.reportRange === '7d' ? '近7日' : '近30日') + '</span></div>' + ratios + '</section><section class="report-panel"><div class="report-panel-head"><strong>近7日趋势</strong><span><i></i>扫码 <i class="primary"></i>参与</span></div><div class="mobile-trend">' + trend + '</div></section><section class="report-shortcuts"><button data-report-route="sa-activity-list" type="button"><strong>查看活动数据</strong><span>3个活动及参与记录</span></button><button data-report-route="sa-coupon-list" type="button"><strong>查看卡券数据</strong><span>3个券模板生命周期</span></button></section><div class="privacy-note">手机号和VIN已脱敏，用户统一标识不展示</div>');
+  }
+
+  function reportActivityById(id) {
+    return data.saReport.activities.find(function (item) { return item.id === id; }) || data.saReport.activities[0];
+  }
+
+  function reportCouponById(id) {
+    return data.saReport.coupons.find(function (item) { return item.id === id; }) || data.saReport.coupons[0];
+  }
+
+  function renderReportActivityList() {
+    var cards = data.saReport.activities.map(function (item) {
+      return '<button class="report-list-card" data-open-report-activity="' + item.id + '" type="button"><div class="report-list-title"><span><strong>' + esc(item.name) + '</strong><small>' + esc(item.id) + '</small></span><em>' + esc(item.status) + '</em></div><div class="report-list-tags"><span>' + esc(levelLabel(item.level)) + '</span><span>' + typeLabel(item.type) + '</span></div><div class="report-list-metrics"><span><small>参与</small><strong>' + item.participation + '</strong></span><span><small>发券</small><strong>' + item.coupons + '</strong></span><span><small>转化率</small><strong>' + esc(item.conversion) + '</strong></span></div><p>最近参与 ' + esc(item.last) + '</p></button>';
+    }).join('');
+    document.title = '我的SA数据-活动';
+    return reportShell('activity', reportOwner() + '<div class="report-list-summary"><span>活动数据</span><strong>' + data.saReport.activities.length + '个活动</strong></div><div class="report-list">' + cards + '</div><div class="privacy-note">仅展示最终来源SA为本人的参与数据</div>');
+  }
+
+  function renderReportActivityDetail() {
+    var item = reportActivityById(state.reportActivityId);
+    var records = item.records.map(function (record) {
+      return '<button class="record-row" data-open-participation="' + record.id + '" type="button"><span><strong>' + esc(record.mobile) + '</strong><small>' + esc(record.time) + ' · ' + esc(record.level) + '</small></span><span><em>' + esc(record.result) + '</em><small>' + record.couponCount + '张券</small></span></button>';
+    }).join('');
+    document.title = '活动详情';
+    return mobileShell('活动详情', '<div class="page-scroll detail-page-scroll"><section class="detail-hero"><span>' + esc(levelLabel(item.level)) + ' · ' + typeLabel(item.type) + '</span><h2>' + esc(item.name) + '</h2><p>' + esc(item.id) + ' · ' + esc(item.status) + '</p></section><section class="detail-metric-grid"><div><small>参与数</small><strong>' + item.participation + '</strong></div><div><small>发券数</small><strong>' + item.coupons + '</strong></div><div><small>转化率</small><strong>' + esc(item.conversion) + '</strong></div><div><small>最近参与</small><strong>' + esc(item.last.slice(6)) + '</strong></div></section><section class="report-panel"><div class="report-panel-head"><strong>参与记录</strong><span>共' + item.participation + '条</span></div><div class="record-list">' + records + '</div><button class="text-row-action" data-all-records type="button">查看全部记录</button></section><div class="privacy-note">手机号和VIN已脱敏，用户统一标识不展示</div></div>');
+  }
+
+  function currentParticipation() {
+    var activity = reportActivityById(state.reportActivityId);
+    var record = activity.records.find(function (item) { return item.id === state.reportParticipationId; });
+    if (record) return {activity:activity, record:record};
+    for (var i = 0; i < data.saReport.activities.length; i += 1) {
+      record = data.saReport.activities[i].records.find(function (item) { return item.id === state.reportParticipationId; });
+      if (record) return {activity:data.saReport.activities[i], record:record};
+    }
+    return {activity:activity, record:activity.records[0]};
+  }
+
+  function detailRow(label, value) {
+    return '<div class="mobile-detail-row"><span>' + esc(label) + '</span><strong>' + esc(value) + '</strong></div>';
+  }
+
+  function renderParticipationDetail() {
+    var current = currentParticipation();
+    var record = current.record;
+    document.title = '参与记录详情';
+    return mobileShell('参与记录详情', '<div class="page-scroll detail-page-scroll"><section class="detail-status-card"><span>执行结果</span><strong>' + esc(record.result) + '</strong><small>' + esc(record.id) + '</small></section><section class="mobile-detail-section"><h2>活动信息</h2>' + detailRow('活动名称', current.activity.name) + detailRow('参与级别', record.level) + detailRow('执行方式', record.type) + detailRow('参与时间', record.time) + '</section><section class="mobile-detail-section"><h2>用户与车辆（已脱敏）</h2>' + detailRow('手机号码', record.mobile) + detailRow('执行VIN', record.vin) + '</section><section class="mobile-detail-section"><h2>执行与来源</h2>' + detailRow('来源SA', data.source.saName + ' · ' + data.source.saId) + detailRow('来源门店', record.store) + detailRow('准入校验', record.validation) + detailRow('关联卡券', record.coupons) + '</section><div class="privacy-note">不展示用户统一标识，仅限本人查看</div></div>');
+  }
+
+  function renderReportCouponList() {
+    var cards = data.saReport.coupons.map(function (item) {
+      return '<button class="report-list-card coupon-report-card" data-open-report-coupon="' + item.id + '" type="button"><div class="report-list-title"><span><strong>' + esc(item.name) + '</strong><small>' + esc(item.id) + '</small></span><em>' + esc(item.status) + '</em></div><p>来源活动：' + esc(item.activity) + '</p><div class="report-list-metrics"><span><small>发放</small><strong>' + item.issued + '</strong></span><span><small>已核销</small><strong>' + item.redeemed + '</strong></span><span><small>核销率</small><strong>' + esc(item.redemptionRate) + '</strong></span></div><p>最近发放 ' + esc(item.last) + ' · 跨店核销' + item.cross + '张</p></button>';
+    }).join('');
+    document.title = '我的SA数据-卡券';
+    return reportShell('coupon', reportOwner() + '<div class="report-list-summary"><span>卡券数据</span><strong>' + data.saReport.coupons.length + '个券模板</strong></div><div class="report-list">' + cards + '</div><div class="privacy-note">仅统计本人活动产生的卡券实例</div>');
+  }
+
+  function renderReportCouponDetail() {
+    var item = reportCouponById(state.reportCouponId);
+    var timeline = item.timeline.map(function (row) { return '<li><span></span><strong>' + esc(row) + '</strong></li>'; }).join('');
+    document.title = '卡券详情';
+    return mobileShell('卡券详情', '<div class="page-scroll detail-page-scroll"><section class="detail-hero coupon-detail-hero"><span>' + esc(item.owner) + ' · ' + esc(item.status) + '</span><h2>' + esc(item.name) + '</h2><p>' + esc(item.id) + '</p></section><section class="detail-metric-grid"><div><small>发放数</small><strong>' + item.issued + '</strong></div><div><small>已核销</small><strong>' + item.redeemed + '</strong></div><div><small>已失效</small><strong>' + item.expired + '</strong></div><div><small>核销率</small><strong>' + esc(item.redemptionRate) + '</strong></div></section><section class="mobile-detail-section"><h2>卡券信息</h2>' + detailRow('来源活动', item.activity) + detailRow('有效期', item.valid) + detailRow('跨店核销', item.cross + '张') + detailRow('最近发放', item.last) + '</section><section class="mobile-detail-section"><h2>最近生命周期</h2><ol class="coupon-timeline">' + timeline + '</ol></section><div class="privacy-note">仅展示当前SA权限范围内的汇总数据</div></div>');
+  }
+
+  function mutexNotice(activity, status, checked) {
+    if (!activity.mutex) return '';
+    var peers = mutexPeers(activity);
+    var peerNames = peers.map(function (peer) { return '“' + peer.name + '”'; }).join('、');
+    if (status === 'mutex-participated') {
+      var participatedPeer = peers.find(function (peer) { return baseActivityStatus(peer) === 'participated'; });
+      return '<div class="mutex-notice locked">已参加“' + esc(participatedPeer ? participatedPeer.name : '同组活动') + '”，当前活动不可再参与</div>';
+    }
+    if (status !== 'eligible') return '';
+    if (checked) return '<div class="mutex-notice selected">已选中；选择另一项互斥活动时将自动切换</div>';
+    return '<div class="mutex-notice">与' + esc(peerNames) + '互斥，同组仅可选择1项</div>';
+  }
+
+  function activityCard(activity) {
+    var status = activityStatus(activity);
+    var selectable = status === 'eligible';
+    var checked = selectable && !!state.selected[activity.id];
+    var action = '';
+    if (status === 'need-certified') action = '<button class="upgrade-link" data-upgrade="certified" type="button">去认证</button>';
+    if (status === 'need-bind') action = '<button class="upgrade-link" data-upgrade="bind" type="button">去绑车</button>';
+    var rewardContent = '<div class="reward-row"><span class="type-tag ' + (activity.type === 'lottery' ? 'lottery' : '') + '">' + typeLabel(activity.type) + '</span><strong>' + esc(activityReward(activity)) + '</strong></div>';
+    if (activity.isCombo && !hasVehicleContext()) rewardContent = '';
+    if (activity.isCombo && hasVehicleContext()) {
+      var comboRewards = matchedComboRewards(activity);
+      var matchedCoupons = comboCoupons(activity);
+      var matchedBenefits = comboBenefits(activity);
+      var couponRows = matchedCoupons.map(function (coupon) {
+        return '<div class="combo-reward-item"><strong>' + esc(coupon.name) + '</strong><small>' + esc(coupon.quantity + ' · ' + coupon.valid) + '</small></div>';
+      }).join('');
+      rewardContent = comboRewards.length
+        ? '<div class="combo-reward-visible"><span>当前VIN可领取 · 命中' + comboRewards.length + '个子活动</span><div class="combo-reward-list">' + couponRows + '</div><small>关联权益：' + esc(matchedBenefits.map(function (benefit) { return benefit.name; }).join('、') || '无') + '</small><em>已汇总全部匹配结果，一键参与时同时发放</em></div>'
+        : '<div class="combo-reward-visible empty"><span>当前VIN匹配结果</span><strong>暂未匹配到专属权益</strong><small>系统按当前VIN实时匹配</small></div>';
+    }
+    return '<article class="activity-card ' + (selectable ? '' : 'disabled') + ' ' + (activity.isCombo ? 'combo-activity-card' : '') + '" data-activity-id="' + activity.id + '">' +
+      '<label class="activity-select"><input type="checkbox" data-activity-check="' + activity.id + '" ' + (checked ? 'checked' : '') + ' ' + (selectable ? '' : 'disabled') + '><span class="check-copy"></span></label>' +
+      '<div class="activity-content"><div class="activity-top"><div><h3>' + esc(activityDisplayName(activity)) + (activity.isCombo ? '<span class="combo-tag">组合活动</span>' : '') + (activity.mutex ? '<span class="mutex-tag">互斥</span>' : '') + '</h3><p>' + esc(activity.description) + '</p></div>' + statusMarkup(status) + '</div>' +
+      rewardContent + mutexNotice(activity, status, checked) +
+      '<div class="activity-meta"><span>' + esc(activity.expiry) + '</span><span>' + esc(activity.id) + '</span>' + action + '</div></div></article>';
+  }
+
+  function customerActivityList() {
+    var activities = sharedActivities();
+    if (!activities.length) return '';
+    return '<section class="activity-section customer-activity-section"><div class="activity-list customer-activity-list">' + activities.map(activityCard).join('') + '</div></section>';
+  }
+
+  function renderAggregation() {
+    var vehicle = currentVehicle();
+    var bound = hasVehicleContext();
+    var count = selectedActivities().length;
+    var activityCount = sharedActivities().length;
+    document.title = '专属活动';
+    return mobileShell('专属活动', '<div class="page-scroll"><section class="source-card"><div><span>服务顾问推荐</span><strong>' + esc(data.source.saName) + '顾问为你精选了' + activityCount + '项活动</strong><small>' + esc(data.source.store) + '</small></div><span class="source-mark">SA</span></section>' +
+      '<div class="prototype-scenario-switch"><span>组合活动演示</span><button class="' + (bound ? 'active' : '') + '" data-demo-bound type="button">已绑车</button><button class="' + (!bound ? 'active' : '') + '" data-demo-unbound type="button">未绑车</button></div>' +
+      (bound ? '<button class="vehicle-switch" data-open-vehicle type="button"><span><small>当前执行车辆</small><strong>' + esc(vehicle.model) + ' · ' + esc(vehicle.plate) + '</strong><em>' + esc(vehicle.vin) + (vehicle.certified ? ' · 已认证' : ' · 未认证') + '</em></span><span class="switch-copy">切换</span></button>' : '<section class="vehicle-unbound-card"><span><small>当前车辆状态</small><strong>尚未绑定车辆</strong><em>绑车后才可按VIN匹配组合活动卡券</em></span><button data-upgrade="bind" type="button">去绑车</button></section>') +
+      '<div class="list-summary"><span>以下为本次二维码包含的全部活动</span><strong>已选' + count + '项</strong></div>' +
+      customerActivityList() + '<div class="end-note">活动资格与互斥关系以当前账号、所选车辆及提交时校验结果为准</div></div>',
+      '<footer class="bottom-action"><p>将同时领券并完成所选抽奖活动</p><button class="primary-action" data-participate type="button" ' + (count ? '' : 'disabled') + '>一键参与' + (count ? '（' + count + '项）' : '') + '</button></footer>');
+  }
+
+  function render() {
+    var app = document.getElementById('app');
+    var current = route();
+    if (!app) return;
+    if (current === 'sa-qr') app.innerHTML = renderQr();
+    else if (current === 'sa-poster-editor') app.innerHTML = renderPosterEditor();
+    else if (current === 'sa-poster-preview') app.innerHTML = renderPosterPreview();
+    else if (current === 'sa-select-activity-detail') app.innerHTML = renderSaSelectActivityDetail();
+    else if (current === 'qr-invalid') app.innerHTML = renderQrInvalid();
+    else if (current === 'sa-empty') app.innerHTML = renderSaEmpty();
+    else if (current === 'sa-data-overview') app.innerHTML = renderReportOverview();
+    else if (current === 'sa-activity-list') app.innerHTML = renderReportActivityList();
+    else if (current === 'sa-activity-detail') app.innerHTML = renderReportActivityDetail();
+    else if (current === 'sa-participation-detail') app.innerHTML = renderParticipationDetail();
+    else if (current === 'sa-coupon-list') app.innerHTML = renderReportCouponList();
+    else if (current === 'sa-coupon-detail') app.innerHTML = renderReportCouponDetail();
+    else if (current === 'activity-aggregation' || current === 'activity-aggregation-unbound' || current === 'activity-aggregation-offline') app.innerHTML = renderAggregation();
+    else app.innerHTML = renderSaSelect();
+  }
+
+  function renderPreservingScroll() {
+    var scrollNode = document.querySelector('.page-scroll');
+    var scrollTop = scrollNode ? scrollNode.scrollTop : 0;
+    render();
+    requestAnimationFrame(function () {
+      var nextScroll = document.querySelector('.page-scroll');
+      if (nextScroll) nextScroll.scrollTop = scrollTop;
+    });
+  }
+
+  function openVehicleSheet() {
+    var vehicle = currentVehicle();
+    var rows = data.vehicles.map(function (item) {
+      return '<button class="vehicle-option ' + (item.id === vehicle.id ? 'active' : '') + '" data-select-vehicle="' + item.id + '" type="button"><span><strong>' + esc(item.model) + ' · ' + esc(item.plate) + '</strong><small>' + esc(item.vin) + (item.isDefault ? ' · 默认车辆' : '') + '</small></span><input type="radio" ' + (item.id === vehicle.id ? 'checked' : '') + ' tabindex="-1"></button>';
+    }).join('');
+    common.openSheet('<div class="sheet-head"><h2>选择本次执行车辆</h2><button data-close-sheet type="button">关闭</button></div><div class="sheet-note">每次仅针对一辆VIN计算和执行活动</div><div class="vehicle-options">' + rows + '</div><button class="bind-other" data-upgrade="bind" type="button">绑定其他车辆</button>');
+  }
+
+  function selectedMutexConflict(activities) {
+    var groups = {};
+    for (var i = 0; i < activities.length; i += 1) {
+      var activity = activities[i];
+      if (!activity.mutex) continue;
+      if (groups[activity.mutex.group]) return {first:groups[activity.mutex.group], second:activity};
+      groups[activity.mutex.group] = activity;
+    }
+    return null;
+  }
+
+  function participate() {
+    var activities = selectedActivities();
+    var mutexConflict = selectedMutexConflict(activities);
+    var offlineScenario = route() === 'activity-aggregation-offline';
+    var offlineId = 'ACT-SA-20260701';
+    var successCount = 0;
+    var invalidCount = 0;
+    if (!activities.length) {
+      common.showToast('请先选择可参与活动');
+      return;
+    }
+    if (mutexConflict) {
+      common.showToast('“' + mutexConflict.first.name + '”与“' + mutexConflict.second.name + '”不可同时参与');
+      resetDefaultSelection();
+      renderPreservingScroll();
+      return;
+    }
+    var resultRows = activities.map(function (activity) {
+      if (offlineScenario && activity.id === offlineId) {
+        invalidCount += 1;
+        return '<div class="result-row invalid"><span class="result-dot invalid"></span><div><strong>' + esc(activityDisplayName(activity)) + '</strong><small>活动已下线，本次未执行</small></div><em>未处理</em></div>';
+      }
+      state.completed[completionKey(activity)] = true;
+      successCount += 1;
+      var result = activity.type === 'lottery' ? '抽奖成功' : '领取成功';
+      var detail = activity.type === 'lottery' ? '恭喜中奖：200元保养券' : activityReward(activity) + '已发至卡包';
+      if (activity.isCombo) {
+        var comboMatches = matchedComboRewards(activity);
+        var issuedCoupons = comboCoupons(activity);
+        detail = '命中' + comboMatches.length + '个子活动，已全部发放：' + issuedCoupons.map(function (coupon) { return coupon.name; }).join('、');
+      }
+      return '<div class="result-row"><span class="result-dot"></span><div><strong>' + esc(activityDisplayName(activity)) + '</strong><small>' + esc(detail) + '</small></div><em>' + result + '</em></div>';
+    }).join('');
+    state.selected = {};
+    render();
+    var title = invalidCount ? successCount + '项成功，' + invalidCount + '项未处理' : activities.length + '项活动已处理';
+    var desc = invalidCount ? '下线活动已拦截，其他有效活动继续执行' : '卡券已发放，抽奖活动已自动完成';
+    common.openSheet('<div class="result-hero"><span>参与完成</span><h2>' + title + '</h2><p>' + desc + '</p></div><div class="result-list">' + resultRows + '</div><button class="sheet-primary" data-view-wallet type="button">查看我的卡券</button><button class="sheet-secondary" data-close-sheet type="button">完成</button>', {className:'result-sheet'});
+  }
+
+  function openUpgradeSheet(type) {
+    var isBind = type === 'bind';
+    var title = isBind ? '将前往绑定车辆' : '将前往车主认证';
+    var description = isBind ? '绑定新车辆后，系统将重新判断可参与活动。' : '完成当前账号与车辆认证后，系统将重新判断可参与活动。';
+    var action = isBind ? '继续去绑车' : '继续去认证';
+    common.openSheet('<div class="upgrade-sheet"><span class="upgrade-label">参与资格提升</span><h2>' + title + '</h2><p>' + description + '</p><div class="leave-note"><strong>请注意</strong><span>完成后不会自动返回本活动页，请重新扫描SA二维码进入。</span></div><button class="sheet-primary" data-confirm-upgrade="' + type + '" type="button">' + action + '</button><button class="sheet-secondary" data-close-sheet type="button">暂不处理</button></div>');
+  }
+
+  function openDurationSheet(action) {
+    state.durationAction = action || 'generate';
+    state.pendingDurationMinutes = data.qr.defaultMinutes;
+    var options = data.qr.durationOptions.map(function (item) {
+      var checked = item.minutes === state.pendingDurationMinutes;
+      var note = item.minutes === -1 ? item.note : item.minutes + '分钟';
+      return '<label class="duration-choice ' + (checked ? 'active' : '') + '"><input type="radio" name="qrDuration" data-duration-choice value="' + item.minutes + '"' + (checked ? ' checked' : '') + '><span><strong>' + esc(item.label) + '</strong><small>' + esc(note) + '</small></span><i></i></label>';
+    }).join('');
+    var warning = state.durationAction === 'regenerate' ? '<div class="leave-note compact"><strong>重新生成规则</strong><span>新码生效后旧码不再接受新扫码；已建立会话提交时仍会重新校验。</span></div>' : '';
+    common.openSheet('<div class="duration-drawer"><div class="sheet-head"><h2>选择二维码有效期</h2><button data-close-sheet type="button">关闭</button></div><p>可选5分钟至1天，或长期有效至所选活动结束</p><div class="duration-choice-grid">' + options + '</div><div class="duration-preview"><span>默认已选</span><strong data-duration-preview>' + durationLabel(state.pendingDurationMinutes) + '</strong><small data-duration-expiry>预计失效：' + qrExpiryText(state.pendingDurationMinutes) + '</small></div>' + warning + '<button class="sheet-primary" data-confirm-duration="' + state.durationAction + '" type="button">' + (state.durationAction === 'regenerate' ? '按此有效期重新生成' : '确认并生成二维码') + '</button><button class="sheet-secondary" data-close-sheet type="button">取消</button></div>', {className:'duration-sheet'});
+  }
+
+  function regenerateQr() {
+    state.previousSceneId = state.currentSceneId;
+    state.qrGeneration += 1;
+    state.qrVersion += 1;
+    var nextNumber = 89 + state.qrGeneration;
+    state.currentSceneId = 'SCN-20260717-10086-' + String(nextNumber).padStart(4, '0');
+    state.invalidReason = 'replaced';
+    common.closeSheet();
+    render();
+    setTimeout(function () {
+      common.openSheet('<div class="result-hero"><span>新二维码已生效</span><h2>原二维码已失效</h2><p>新sceneId：' + esc(state.currentSceneId) + '</p></div><div class="regenerate-summary"><span>旧sceneId</span><strong>' + esc(state.previousSceneId) + '</strong><small>不再接受新的扫码</small></div><button class="sheet-primary" data-close-sheet type="button">查看新二维码</button><button class="sheet-secondary" data-old-code type="button">模拟扫描旧码</button>');
+    }, 220);
+  }
+
+  function handleBack() {
+    var current = route();
+    if (current === 'sa-qr' || current === 'sa-empty' || current === 'sa-data-overview' || current === 'sa-activity-list' || current === 'sa-coupon-list') go('sa-select');
+    else if (current === 'sa-poster-editor') go('sa-qr');
+    else if (current === 'sa-poster-preview') go('sa-poster-editor');
+    else if (current === 'sa-select-activity-detail') go('sa-select');
+    else if (current === 'sa-activity-detail') go('sa-activity-list');
+    else if (current === 'sa-participation-detail') go('sa-activity-detail');
+    else if (current === 'sa-coupon-detail') go('sa-coupon-list');
+    else if (current === 'qr-invalid') go('sa-qr');
+    else if (current === 'activity-aggregation' || current === 'activity-aggregation-unbound' || current === 'activity-aggregation-offline') common.showToast('原型演示：返回扫码前页面');
+    else common.showToast('原型演示：返回服务助手首页');
+  }
+
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('[data-back]')) handleBack();
+    if (event.target.closest('[data-open-sa-data]')) go('sa-data-overview');
+    var saActivityDetail = event.target.closest('[data-open-sa-activity]');
+    if (saActivityDetail) {
+      state.saDetailActivityId = saActivityDetail.getAttribute('data-open-sa-activity');
+      go('sa-select-activity-detail');
+    }
+    if (event.target.closest('[data-back-to-generate]')) go('sa-select');
+    var reportRoute = event.target.closest('[data-report-route]');
+    if (reportRoute) go(reportRoute.getAttribute('data-report-route'));
+    var range = event.target.closest('[data-report-range]');
+    if (range) {
+      state.reportRange = range.getAttribute('data-report-range');
+      renderPreservingScroll();
+      common.showToast(state.reportRange === '7d' ? '已切换为近7日' : '已切换为近30日');
+    }
+    var activityLink = event.target.closest('[data-open-report-activity]');
+    if (activityLink) {
+      state.reportActivityId = activityLink.getAttribute('data-open-report-activity');
+      go('sa-activity-detail');
+    }
+    var participationLink = event.target.closest('[data-open-participation]');
+    if (participationLink) {
+      state.reportParticipationId = participationLink.getAttribute('data-open-participation');
+      go('sa-participation-detail');
+    }
+    var couponLink = event.target.closest('[data-open-report-coupon]');
+    if (couponLink) {
+      state.reportCouponId = couponLink.getAttribute('data-open-report-coupon');
+      go('sa-coupon-detail');
+    }
+    if (event.target.closest('[data-all-records]')) common.showToast('已展示当前原型全部脱敏记录');
+    if (event.target.closest('[data-generate-qr]')) {
+      openDurationSheet('generate');
+    }
+    if (event.target.closest('[data-edit-selection]')) go('sa-select');
+    if (event.target.closest('[data-create-poster]')) go('sa-poster-editor');
+    if (event.target.closest('[data-generate-poster]')) go('sa-poster-preview');
+    if (event.target.closest('[data-edit-poster]')) go('sa-poster-editor');
+    if (event.target.closest('[data-reset-poster]')) {
+      state.posterTitle = data.poster.defaultTitle;
+      state.posterSubtitle = data.poster.defaultSubtitle;
+      state.posterGuide = data.poster.defaultGuide;
+      renderPreservingScroll();
+      common.showToast('已恢复默认文案');
+    }
+    var posterMode = event.target.closest('[data-poster-mode]');
+    if (posterMode) {
+      state.posterMode = posterMode.getAttribute('data-poster-mode');
+      renderPreservingScroll();
+      common.showToast('已切换为系统模板');
+    }
+    if (event.target.closest('[data-save-poster]')) common.showToast('海报已保存到相册（原型演示）');
+    if (event.target.closest('[data-share-poster]')) common.showToast('已调起系统分享面板（原型演示）');
+    if (event.target.closest('[data-regenerate]')) openDurationSheet('regenerate');
+    var durationConfirm = event.target.closest('[data-confirm-duration]');
+    if (durationConfirm) {
+      state.selectedDurationMinutes = state.pendingDurationMinutes;
+      if (durationConfirm.getAttribute('data-confirm-duration') === 'regenerate') regenerateQr();
+      else {
+        state.generatedActivityIds = saSelectedActivities().map(function (activity) { return activity.id; });
+        state.currentSceneId = data.qr.nextSceneId;
+        state.qrVersion = Number(String(data.qr.snapshotVersion).replace(/\D/g, '')) || 3;
+        go('sa-qr');
+      }
+    }
+    if (event.target.closest('[data-old-code]')) go('qr-invalid');
+    if (event.target.closest('[data-invalid-done]')) common.showToast('请联系服务顾问获取最新二维码');
+    if (event.target.closest('[data-empty-refresh]')) {
+      common.showToast('已重新加载可投活动');
+      go('sa-select');
+    }
+    if (event.target.closest('[data-simulate-scan]')) {
+      state.vehicleId = data.user.defaultVehicleId;
+      resetDefaultSelection();
+      go('activity-aggregation');
+    }
+    if (event.target.closest('[data-demo-unbound]')) {
+      go('activity-aggregation-unbound');
+      setTimeout(function () { resetDefaultSelection(); render(); },0);
+    }
+    if (event.target.closest('[data-demo-bound]')) {
+      state.vehicleId = data.user.defaultVehicleId;
+      go('activity-aggregation');
+      setTimeout(function () { resetDefaultSelection(); render(); },0);
+    }
+    if (event.target.closest('[data-open-vehicle]')) openVehicleSheet();
+    var vehicleButton = event.target.closest('[data-select-vehicle]');
+    if (vehicleButton) {
+      state.vehicleId = vehicleButton.getAttribute('data-select-vehicle');
+      resetDefaultSelection();
+      common.closeSheet();
+      render();
+      common.showToast('已切换车辆，活动资格已重新计算');
+    }
+    if (event.target.closest('[data-participate]')) participate();
+    if (event.target.closest('[data-view-wallet]')) {
+      common.closeSheet();
+      common.showToast('原型演示：进入“我的卡券”');
+    }
+    var upgrade = event.target.closest('[data-upgrade]');
+    if (upgrade) openUpgradeSheet(upgrade.getAttribute('data-upgrade'));
+    var confirmUpgrade = event.target.closest('[data-confirm-upgrade]');
+    if (confirmUpgrade) {
+      var upgradeType = confirmUpgrade.getAttribute('data-confirm-upgrade');
+      common.closeSheet();
+      common.showToast(upgradeType === 'bind' ? '原型演示：已离开活动页，进入绑车流程' : '原型演示：已离开活动页，进入认证流程');
+    }
+  });
+
+  document.addEventListener('input', function (event) {
+    var input = event.target.closest('[data-poster-input]');
+    if (!input) return;
+    var key = input.getAttribute('data-poster-input');
+    if (key === 'title') state.posterTitle = input.value;
+    if (key === 'subtitle') state.posterSubtitle = input.value;
+    if (key === 'guide') state.posterGuide = input.value;
+    var preview = document.querySelector('[data-poster-preview-' + key + ']');
+    var count = document.querySelector('[data-poster-count="' + key + '"]');
+    if (preview) preview.textContent = input.value || (key === 'title' ? '请输入海报标题' : key === 'subtitle' ? '请输入活动说明' : '请输入扫码引导语');
+    if (count) count.textContent = input.value.length + '/' + input.maxLength;
+  });
+
+  document.addEventListener('change', function (event) {
+    var posterUpload = event.target.closest('[data-poster-upload]');
+    if (posterUpload) {
+      var file = posterUpload.files && posterUpload.files[0];
+      if (!file) return;
+      if (['image/jpeg','image/png'].indexOf(file.type) === -1) {
+        common.showToast('仅支持JPG或PNG图片');
+        posterUpload.value = '';
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        common.showToast('图片大小不能超过10MB');
+        posterUpload.value = '';
+        return;
+      }
+      if (state.posterUploadUrl) URL.revokeObjectURL(state.posterUploadUrl);
+      state.posterUploadUrl = URL.createObjectURL(file);
+      state.posterUploadName = file.name;
+      state.posterMode = 'upload';
+      renderPreservingScroll();
+      common.showToast('自定义海报已上传，并叠加二维码与SA信息');
+      return;
+    }
+    var durationChoice = event.target.closest('[data-duration-choice]');
+    if (durationChoice) {
+      state.pendingDurationMinutes = Number(durationChoice.value);
+      document.querySelectorAll('.duration-choice').forEach(function (node) { node.classList.toggle('active',node.contains(durationChoice)); });
+      var preview = document.querySelector('[data-duration-preview]');
+      var expiry = document.querySelector('[data-duration-expiry]');
+      if (preview) preview.textContent = durationLabel(state.pendingDurationMinutes);
+      if (expiry) expiry.textContent = '预计失效：' + qrExpiryText(state.pendingDurationMinutes);
+      return;
+    }
+    var saCheck = event.target.closest('[data-sa-check]');
+    if (saCheck) {
+      state.saSelected[saCheck.getAttribute('data-sa-check')] = saCheck.checked;
+      renderPreservingScroll();
+      return;
+    }
+    var selectAll = event.target.closest('[data-sa-select-all]');
+    if (selectAll) {
+      data.activities.forEach(function (activity) { state.saSelected[activity.id] = isActivityVisibleToSource(activity) ? selectAll.checked : false; });
+      renderPreservingScroll();
+      return;
+    }
+    var check = event.target.closest('[data-activity-check]');
+    if (check && !check.disabled) {
+      var checkedActivity = activityById(check.getAttribute('data-activity-check'));
+      var cancelledPeers = [];
+      if (check.checked && checkedActivity.mutex) {
+        mutexPeers(checkedActivity).forEach(function (peer) {
+          if (state.selected[peer.id]) cancelledPeers.push(peer.name);
+          state.selected[peer.id] = false;
+        });
+      }
+      state.selected[checkedActivity.id] = check.checked;
+      renderPreservingScroll();
+      if (cancelledPeers.length) common.showToast('已取消“' + cancelledPeers.join('、') + '”，互斥活动不可同时参与');
+    }
+  });
+
+  window.addEventListener('hashchange', render);
+  resetDefaultSelection();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+  else render();
+
+  window.getCurrentPage = route;
+  window.SAFrontApp = {
+    render:render,
+    state:state,
+    activityStatus:activityStatus,
+    selectedActivities:selectedActivities,
+    sharedActivities:sharedActivities,
+    saAvailableActivities:saAvailableActivities,
+    activityDisplayName:activityDisplayName,
+    isActivityVisibleToSource:isActivityVisibleToSource,
+    route:route
+  };
+})();
+
+</script>
+  <script>
+    window.AnnotationConfig = {
+      projectId: "sa-76cdc2b0",
+      dataVersion: "20260814-3",
+      page: function () { return window.getCurrentPage ? window.getCurrentPage() : "sa-select"; }
+    };
+  </script>
+  <script data-inline-source="annotations/annotations.js?v=20260814-3">
+window.AnnotationData = {
+  'sa-select': [{
+    id: 1,
+    target: '[data-generate-qr]',
+    title: '生成前选择有效期',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '二维码有效期抽屉',
+      functionDesc: '生成前从后台候选项选择固定时长或长期有效，默认值预选。',
+      permissionScope: '当前登录SA。',
+      dataSource: '后台SA二维码参数配置。',
+      valueLogic: '固定时长仅允许5分钟至1天；长期有效截止到冻结活动中最晚结束时间。',
+      fieldDesc: '有效期模式、时长、预计失效时间。',
+      interactionDesc: '确认后生成；取消不生成。',
+      judgeRule: '不可自由输入。',
+      exceptionRule: '重新生成时再次选择。',
+      otherDesc: '参数变更只影响新码；各活动仍按自身状态实时过滤。'
+    }
+  }, {
+    id: 2,
+    target: '.sa-rule-note',
+    title: '组合活动门店过滤',
+    position: {placement:'bottom-right',offsetX:-8,offsetY:8},
+    sections: {
+      functionName: 'SA活动池权限过滤',
+      functionDesc: '在生成二维码前过滤当前SA不可查看、不可分享的组合活动。',
+      permissionScope: '当前登录SA。',
+      dataSource: '独立SA投放、组合活动状态、组合活动适用门店、SA所属门店。',
+      valueLogic: '三项取交集；门店未配置时按全部门店。',
+      fieldDesc: 'saPlacementEnabled、activityState、storeScope、source.storeId。',
+      interactionDesc: '被过滤对象不展示，不进入全选和二维码冻结范围。',
+      judgeRule: '指定门店必须包含当前SA门店ID。',
+      exceptionRule: '门店未命中时无禁用卡片，直接不展示。',
+      otherDesc: '门店范围不修改子活动或卡券核销门店。'
+    }
+  }],
+  'sa-qr': [{
+    id: 1,
+    target: '.poster-entry',
+    title: '制作SA活动分享海报',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '分享海报入口',
+      functionDesc: '基于当前已生成二维码制作可分享海报。',
+      permissionScope: '当前登录SA。',
+      dataSource: '当前sceneId、二维码图片、来源SA和门店快照。',
+      valueLogic: '海报与当前sceneId绑定。',
+      fieldDesc: '二维码、SA姓名/工号、门店、有效期。',
+      interactionDesc: '进入编辑页修改文案并生成海报。',
+      judgeRule: '必须先生成二维码。',
+      exceptionRule: '重新生成二维码后旧海报内二维码同步失效。',
+      otherDesc: '不改变二维码活动范围和来源规则。'
+    }
+  }],
+  'sa-poster-editor': [{
+    id: 1,
+    target: '.poster-form-card',
+    title: '仅编辑海报营销文案',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '海报文案编辑',
+      functionDesc: '编辑标题、副标题和扫码引导语并实时预览。',
+      permissionScope: '当前登录SA。',
+      dataSource: '海报默认文案与SA本次输入。',
+      valueLogic: '标题20字、副标题36字、引导语24字。',
+      fieldDesc: 'title、subtitle、guide。',
+      interactionDesc: '输入即预览，可恢复默认并生成最终海报。',
+      judgeRule: '二维码、sceneId、SA和门店不可编辑。',
+      exceptionRule: '空文案在预览中显示输入提示。',
+      otherDesc: '编辑文案不重新生成二维码。'
+    }
+  }, {
+    id: 2,
+    target: '.poster-source-card',
+    title: '系统模板或SA自定义上传',
+    position: {placement:'bottom-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '海报来源选择',
+      functionDesc: '使用系统模板或上传SA自定义海报底图。',
+      permissionScope: '当前登录SA。',
+      dataSource: '系统模板或本地选择的图片文件。',
+      valueLogic: '仅支持JPG/PNG，单张不超过10MB，建议3:4。',
+      fieldDesc: 'posterMode、posterUploadName、posterUploadUrl。',
+      interactionDesc: '上传后即时切换底图并刷新预览。',
+      judgeRule: '两种模式都由系统叠加二维码、SA/门店和有效期。',
+      exceptionRule: '格式或大小不合法时不替换当前海报。',
+      otherDesc: '上传底图不改变二维码范围或来源快照。'
+    }
+  }],
+  'sa-poster-preview': [{
+    id: 1,
+    target: '[data-poster-card]',
+    title: '最终活动分享海报',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '海报生成与分享',
+      functionDesc: '展示已合成二维码、来源SA信息和自定义文案的最终海报。',
+      permissionScope: '当前登录SA。',
+      dataSource: '当前二维码快照与海报文案。',
+      valueLogic: '二维码来源仍在最终成功执行时锁定。',
+      fieldDesc: '海报图片内容、有效期、来源信息。',
+      interactionDesc: '可继续编辑、保存到相册或调起系统分享。',
+      judgeRule: '保存/分享不修改业务数据。',
+      exceptionRule: '旧sceneId失效时旧海报二维码不可继续新扫码。',
+      otherDesc: '原型仅模拟保存和分享反馈。'
+    }
+  }],
+  'activity-aggregation-unbound': [{
+    id: 1,
+    target: '.combo-activity-card',
+    title: '组合活动未绑车状态',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '组合活动单卡片',
+      functionDesc: '绑车前只展示大活动基本信息，卡券区域整体不渲染。',
+      permissionScope: '扫码用户。',
+      dataSource: 'SA冻结范围与组合活动基本信息，名称取展示名称优先。',
+      valueLogic: '展示名称为空时回退原名称；没有当前VIN时无法匹配子活动。',
+      fieldDesc: '活动名、期限和去绑车入口；无卡券占位区。',
+      interactionDesc: '不可勾选，可去绑车。',
+      judgeRule: '不展示人群包、具体券或“卡券内容待解锁”占位文案。',
+      exceptionRule: '绑车完成后不回跳，需重新扫码。',
+      otherDesc: '仍只展示一张卡片。'
+    }
+  }, {
+    id: 2,
+    target: '.customer-activity-list',
+    title: '客户侧隐藏活动等级',
+    position: {placement:'top-left',offsetX:8,offsetY:8},
+    sections: {
+      functionName: '活动连续列表',
+      functionDesc: '扫码用户只查看活动和参与状态，不展示三级活动分区或等级标签。',
+      permissionScope: '扫码用户。',
+      dataSource: '二维码冻结活动与活动准入表达。',
+      valueLogic: '显示层隐藏等级，资格仍按号码级、绑车级、认证级分别计算。',
+      fieldDesc: '活动名称、状态、奖励、有效期与升级入口。',
+      interactionDesc: '可参与项默认勾选；等级不足项置灰。',
+      judgeRule: '隐藏展示不改变oneID、VIN或认证关系校验。',
+      exceptionRule: 'SA选择页仍保留三级分区，便于SA识别活动配置。',
+      otherDesc: '仅调整客户可见信息层级。'
+    }
+  }],
+  'activity-aggregation': [{
+    id: 1,
+    target: '.combo-activity-card',
+    title: '组合活动VIN匹配结果',
+    position: {placement:'top-right',offsetX:-10,offsetY:8},
+    sections: {
+      functionName: '组合活动动态卡券',
+      functionDesc: '绑车后在原卡片内汇总展示当前VIN命中的全部卡券。',
+      permissionScope: '扫码用户。',
+      dataSource: '组合活动、当前VIN和人群包匹配结果；对外名称优先读取展示名称。',
+      valueLogic: '展示名称为空回退原名；唯一键为组合活动ID + VIN。',
+      fieldDesc: '命中子活动数、全部专属卡券和权益。',
+      interactionDesc: '切换VIN后刷新原卡片。',
+      judgeRule: '同一VIN满足多个子活动时全部执行，不设优先级或顺序。',
+      exceptionRule: '多重命中属于正常匹配结果，不阻断且不记为异常。',
+      otherDesc: '只记录一条组合活动参与主记录，不向用户展示人群标签。'
+    }
+  }, {
+    id: 2,
+    target: '.customer-activity-list',
+    title: '客户侧隐藏活动等级',
+    position: {placement:'top-left',offsetX:8,offsetY:8},
+    sections: {
+      functionName: '活动连续列表',
+      functionDesc: '扫码用户只查看活动和参与状态，不展示三级活动分区或等级标签。',
+      permissionScope: '扫码用户。',
+      dataSource: '二维码冻结活动与活动准入表达。',
+      valueLogic: '显示层隐藏等级，资格仍按号码级、绑车级、认证级分别计算。',
+      fieldDesc: '活动名称、状态、奖励、有效期与升级入口。',
+      interactionDesc: '切换VIN后重新计算内部资格并刷新卡片。',
+      judgeRule: '隐藏展示不改变oneID、VIN或认证关系校验。',
+      exceptionRule: 'SA选择页仍保留三级分区，便于SA识别活动配置。',
+      otherDesc: '仅调整客户可见信息层级。'
+    }
+  }]
+};
+
+</script>
+  <script data-inline-source="annotations/annotation-runtime.js?v=20260814-3">
+(function () {
+  'use strict';
+
+  var visible = true;
+  var activePopup = null;
+  var currentAnno = null;
+  var dragState = null;
+  var observer = null;
+
+  var sectionFields = [
+    ['functionName', '功能名称'],
+    ['functionDesc', '功能说明'],
+    ['permissionScope', '权限范围'],
+    ['dataSource', '数据来源'],
+    ['valueLogic', '取值逻辑'],
+    ['fieldDesc', '字段说明'],
+    ['interactionDesc', '交互说明'],
+    ['judgeRule', '判断规则'],
+    ['exceptionRule', '异常规则'],
+    ['otherDesc', '其他说明']
+  ];
+
+  function getConfig() {
+    return window.AnnotationConfig || {};
+  }
+
+  function getPageKey() {
+    var cfg = getConfig();
+    if (typeof cfg.page === 'function') return cfg.page();
+    if (cfg.page) return cfg.page;
+    var active = document.querySelector('.nav-sub-item.active');
+    return active && active.id ? active.id : 'index';
+  }
+
+  function getRawAnnotations() {
+    var cfg = getConfig();
+    var page = getPageKey();
+    if (cfg.dataKey && Array.isArray(window[cfg.dataKey])) {
+      return window[cfg.dataKey].filter(function (item) { return item.page === page; });
+    }
+    if (window.AnnotationData && Array.isArray(window.AnnotationData[page])) {
+      return window.AnnotationData[page];
+    }
+    return [];
+  }
+
+  function storageKey() {
+    var cfg = getConfig();
+    var projectId = cfg.projectId || window.location.pathname || 'default-project';
+    var dataVersion = cfg.dataVersion || '1';
+    return ['prototype_annotations', projectId, dataVersion, getPageKey()].join('_');
+  }
+
+  function loadCached() {
+    try {
+      var raw = window.localStorage.getItem(storageKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveCached(items) {
+    try {
+      window.localStorage.setItem(storageKey(), JSON.stringify(items));
+    } catch (err) {
+      showToast('保存到浏览器缓存失败');
+    }
+  }
+
+  function getAnnotations() {
+    var source = getRawAnnotations();
+    if (!source.length) return [];
+    var cached = loadCached();
+    var cachedMap = {};
+    cached.forEach(function (item) {
+      if (item && item.id != null) cachedMap[item.id] = item;
+    });
+    return source.map(function (item) {
+      return clone(cachedMap[item.id] || item);
+    }).sort(function (a, b) {
+      return Number(a.id) - Number(b.id);
+    });
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function ensureToggle() {
+    var buttons = document.querySelectorAll('#anno-toggle-btn');
+    buttons.forEach(function (btn, index) {
+      if (index > 0) btn.remove();
+    });
+    var btn = document.getElementById('anno-toggle-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'anno-toggle-btn';
+      btn.type = 'button';
+      btn.title = '显示/隐藏标注';
+      btn.textContent = '●';
+      btn.addEventListener('click', function () {
+        visible = !visible;
+        btn.classList.toggle('anno-hidden', !visible);
+        closePopup();
+        render();
+      });
+      document.body.appendChild(btn);
+    }
+    placeToggle(btn);
+  }
+
+  function placeToggle(btn) {
+    var mobileFrame = document.querySelector('.mobile-prototype');
+    if (mobileFrame) {
+      var frameRect = mobileFrame.getBoundingClientRect();
+      btn.style.top = Math.max(2, frameRect.top + 50) + 'px';
+      btn.style.left = Math.max(2, frameRect.left + 2) + 'px';
+      return;
+    }
+    var topBar = document.querySelector('.top-bar');
+    var sideMenu = document.querySelector('.side-menu, .sidebar, .nav-panel');
+    var top = topBar ? topBar.getBoundingClientRect().bottom + 12 : 16;
+    var left = sideMenu ? sideMenu.getBoundingClientRect().right + 16 : 16;
+    btn.style.top = Math.max(16, top) + 'px';
+    btn.style.left = Math.max(16, left) + 'px';
+  }
+
+  function ensureOverlay() {
+    var overlay = document.getElementById('anno-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'anno-overlay';
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  }
+
+  function render() {
+    ensureToggle();
+    var overlay = ensureOverlay();
+    overlay.innerHTML = '';
+    if (!visible) return;
+    getAnnotations().forEach(function (anno, index) {
+      var target = resolveTarget(anno.target);
+      if (!target) return;
+      var marker = document.createElement('button');
+      marker.type = 'button';
+      marker.className = 'anno-marker';
+      marker.textContent = anno.id || String(index + 1);
+      marker.title = anno.title || '';
+      marker.addEventListener('click', function (event) {
+        event.stopPropagation();
+        openPopup(anno, marker);
+      });
+      overlay.appendChild(marker);
+      positionMarker(marker, target, anno.position);
+    });
+  }
+
+  function resolveTarget(selector) {
+    if (!selector) return null;
+    try {
+      var nodes = document.querySelectorAll(selector);
+      return nodes.length === 1 ? nodes[0] : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function positionMarker(marker, target, position) {
+    var rect = target.getBoundingClientRect();
+    var pos = position || {};
+    var placement = pos.placement || 'top-right';
+    var x = rect.right;
+    var y = rect.top;
+    if (placement.indexOf('left') >= 0) x = rect.left;
+    if (placement.indexOf('bottom') >= 0) y = rect.bottom;
+    if (placement.indexOf('center') >= 0) y = rect.top + rect.height / 2;
+    marker.style.left = Math.round(x + Number(pos.offsetX || 0) - 10) + 'px';
+    marker.style.top = Math.round(y + Number(pos.offsetY || 0) - 10) + 'px';
+  }
+
+  function openPopup(anno, marker) {
+    closePopup();
+    currentAnno = clone(anno);
+    currentAnno.desc = currentAnno.desc || generateDesc(currentAnno.sections);
+    activePopup = document.createElement('div');
+    activePopup.className = 'anno-popup';
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    document.body.appendChild(activePopup);
+    positionPopup(activePopup, marker);
+    bindViewEvents();
+    bindDrag();
+  }
+
+  function positionPopup(popup, marker) {
+    var rect = marker.getBoundingClientRect();
+    var popupWidth = popup.offsetWidth;
+    var popupHeight = popup.offsetHeight;
+    var left = rect.right + 12;
+    var top = rect.top;
+    if (left + popupWidth > window.innerWidth - 16) {
+      left = rect.left - popupWidth - 12;
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - popupWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - popupHeight - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function fitPopupToViewport(popup) {
+    if (!popup) return;
+    var rect = popup.getBoundingClientRect();
+    var left = Math.max(16, Math.min(rect.left, window.innerWidth - rect.width - 16));
+    var top = Math.max(16, Math.min(rect.top, window.innerHeight - rect.height - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function buildViewHTML(anno) {
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">' + escapeHTML(anno.title || '未命名标注') + '</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body"><div class="anno-popup-desc">' + (anno.desc || generateDesc(anno.sections)) + '</div></div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-edit" type="button">编辑</button>'
+      + '</div>';
+  }
+
+  function buildEditHTML(anno) {
+    var sections = anno.sections || {};
+    var fields = sectionFields.map(function (field) {
+      return ''
+        + '<div class="anno-edit-field">'
+        + '  <label class="anno-edit-label">' + field[1] + '</label>'
+        + '  <textarea class="anno-edit-textarea" data-section="' + field[0] + '">' + escapeHTML(sections[field[0]] || '') + '</textarea>'
+        + '</div>';
+    }).join('');
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">编辑标注</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body">'
+      + '  <div class="anno-edit-field">'
+      + '    <label class="anno-edit-label">标注标题</label>'
+      + '    <input class="anno-edit-input" id="anno-edit-title" value="' + escapeHTML(anno.title || '') + '">'
+      + '  </div>'
+      + fields
+      + '</div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-cancel" type="button">取消</button>'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-save" type="button">保存</button>'
+      + '</div>';
+  }
+
+  function bindViewEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-edit').addEventListener('click', function () {
+      activePopup.innerHTML = buildEditHTML(currentAnno);
+      bindEditEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+  }
+
+  function bindEditEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-cancel').addEventListener('click', function () {
+      activePopup.innerHTML = buildViewHTML(currentAnno);
+      bindViewEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-save').addEventListener('click', saveEdit);
+  }
+
+  function saveEdit() {
+    currentAnno.title = activePopup.querySelector('#anno-edit-title').value.trim();
+    currentAnno.sections = {};
+    activePopup.querySelectorAll('[data-section]').forEach(function (field) {
+      currentAnno.sections[field.getAttribute('data-section')] = field.value.trim();
+    });
+    sectionFields.forEach(function (field) {
+      if (!(field[0] in currentAnno.sections)) currentAnno.sections[field[0]] = '';
+    });
+    currentAnno.desc = generateDesc(currentAnno.sections);
+    var items = getAnnotations();
+    var found = false;
+    items = items.map(function (item) {
+      if (item.id === currentAnno.id) {
+        found = true;
+        return clone(currentAnno);
+      }
+      return item;
+    });
+    if (!found) items.push(clone(currentAnno));
+    saveCached(items);
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    bindViewEvents();
+    bindDrag();
+    fitPopupToViewport(activePopup);
+    showToast('已保存到浏览器缓存');
+  }
+
+  function copyCurrent() {
+    if (!currentAnno) return;
+    copyText(JSON.stringify(currentAnno, null, 2));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showToast('数据已复制'); });
+      return;
+    }
+    var input = document.createElement('textarea');
+    input.value = text;
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    input.remove();
+    showToast('数据已复制');
+  }
+
+  function bindDrag() {
+    var header = activePopup.querySelector('.anno-popup-header');
+    header.addEventListener('mousedown', function (event) {
+      if (event.target.closest('button')) return;
+      var rect = activePopup.getBoundingClientRect();
+      dragState = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      event.preventDefault();
+    });
+  }
+
+  function closePopup() {
+    if (activePopup) activePopup.remove();
+    activePopup = null;
+    currentAnno = null;
+    dragState = null;
+  }
+
+  function generateDesc(sections) {
+    var data = sections || {};
+    return sectionFields.map(function (field, index) {
+      return (index + 1) + '. ' + field[1] + '：' + escapeHTML(data[field[0]] || '待确认');
+    }).join('<br>');
+  }
+
+  function escapeHTML(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showToast(text) {
+    var old = document.querySelector('.anno-toast');
+    if (old) old.remove();
+    var toast = document.createElement('div');
+    toast.className = 'anno-toast';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 1800);
+  }
+
+  document.addEventListener('mousemove', function (event) {
+    if (!dragState || !activePopup) return;
+    var x = Math.max(8, Math.min(event.clientX - dragState.x, window.innerWidth - activePopup.offsetWidth - 8));
+    var y = Math.max(8, Math.min(event.clientY - dragState.y, window.innerHeight - activePopup.offsetHeight - 8));
+    activePopup.style.left = x + 'px';
+    activePopup.style.top = y + 'px';
+  });
+
+  document.addEventListener('mouseup', function () {
+    dragState = null;
+    fitPopupToViewport(activePopup);
+  });
+
+  window.addEventListener('resize', function () {
+    render();
+    fitPopupToViewport(activePopup);
+  });
+  window.addEventListener('scroll', render, true);
+
+  function observeChanges() {
+    var root = document.getElementById('page-content') || document.body;
+    var _lastRender = 0;
+    var _rafPending = false;
+
+    function scheduleRender() {
+      var now = Date.now();
+      // Burst protection: skip if we rendered within the last 200 ms.
+      if (now - _lastRender < 200) return;
+      if (_rafPending) return;
+      _rafPending = true;
+      window.requestAnimationFrame(function () {
+        _rafPending = false;
+        _lastRender = Date.now();
+        render();
+      });
+    }
+
+    observer = new MutationObserver(function (mutations) {
+      // Skip entirely when annotations are hidden.
+      if (!visible) return;
+
+      var shouldRender = false;
+      for (var i = 0; i < mutations.length; i++) {
+        var target = mutations[i].target;
+        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, .anno-popup, .anno-toast')) {
+          continue;
+        }
+        shouldRender = true;
+        break;
+      }
+      if (!shouldRender) return;
+
+      window.clearTimeout(observer._debounceTimer);
+      observer._debounceTimer = window.setTimeout(scheduleRender, 300);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+  }
+
+  function init() {
+    try {
+      ensureToggle();
+      ensureOverlay();
+      render();
+      observeChanges();
+    } catch (err) {
+      console.warn('[AnnotationRuntime] init failed:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  window.AnnotationRuntime = {
+    refresh: render,
+    getPageKey: getPageKey,
+    getAnnotations: getAnnotations,
+    close: closePopup
+  };
+})();
+
+</script>
+</body>
+</html>

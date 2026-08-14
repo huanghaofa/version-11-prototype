@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动中心卡券互斥叠加并行配置原型 - 功能说明</title>
+  <style>
+    body{margin:0;background:#f4f6f8;color:#243148;font:14px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    main{max-width:1000px;margin:32px auto;padding:30px;background:#fff;border:1px solid #e3e7ed;border-radius:10px}
+    h1{margin:0 0 10px;font-size:25px}h2{margin:30px 0 12px;font-size:17px}p{color:#606b7d}
+    .note{padding:13px 15px;background:#f1f6ff;border-left:3px solid #3675e8}
+    .table{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border:1px solid #e2e6ed;text-align:left;vertical-align:top}th{background:#f7f8fa}
+    code{background:#f1f3f6;padding:2px 5px;border-radius:4px}a{color:#2f6fe6;text-decoration:none}.status{font-size:12px;color:#9a651a}
+    @media(max-width:720px){main{margin:0;padding:20px;border:0;border-radius:0}table{min-width:760px}}
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← 返回演示页面</a>
+    <h1>活动中心卡券互斥叠加并行配置</h1>
+    <p class="status">兼容型目标态原型 · 更新于 2026-08-10</p>
+    <div class="note"><strong>兼容原则：</strong>旧 Axure 中“无 / 全部叠加 / 指定叠加 / 全部互斥 / 指定互斥”的数据含义保持不变；新增“部分叠加互斥”，两类关系统一落入一张卡券关系表。</div>
+
+    <h2>改造前后</h2>
+    <div class="table"><table>
+      <thead><tr><th>项目</th><th>旧方案</th><th>目标方案</th></tr></thead>
+      <tbody>
+        <tr><td>字段结构</td><td>无 + 四种业务规则方式</td><td>保留历史方式，新增第 5 种“部分叠加互斥”</td></tr>
+        <tr><td>同一活动</td><td>只能表达一种卡券关系</td><td>选方式 5 后，可同时表达“与 A 叠加、与 B 互斥”</td></tr>
+        <tr><td>部分券</td><td>原“指定叠加 / 指定互斥”按单一策略维护</td><td>历史方式仍维护一种关系；新增方式在同一张表中维护两类行</td></tr>
+        <tr><td>历史数据</td><td>按旧枚举值保存</td><td>无需迁移或重写，继续按原值回显</td></tr>
+        <tr><td>结果展示</td><td>活动中心已有卡券互斥列表</td><td>沿用原列表，关系字段同时展示叠加和互斥</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>页面与交互</h2>
+    <div class="table"><table>
+      <thead><tr><th>页面 / 操作</th><th>结果</th><th>校验</th></tr></thead>
+      <tbody>
+        <tr><td>选择规则方式</td><td>显示 1–5 种业务方式，以及“不配置（无）”</td><td>方式 1–4 沿用历史含义</td></tr>
+        <tr><td>选择部分券</td><td>支持名称/ID搜索、卡券属性筛选、已选页签</td><td>未发布或已失效不可选；方式 5 中另一清单已选券不可选</td></tr>
+        <tr><td>批量导入</td><td>下载模板、上传文件、查看预校验和逐行原因</td><td>仅通过行写入；已存在跳过，冲突/失效/不存在/重复行不写入</td></tr>
+        <tr><td>切换为方式 5</td><td>同一张关系表同时显示叠加、互斥两类行</td><td>两类都至少 1 张，且同一券不可重复</td></tr>
+        <tr><td>保存并查看列表</td><td>保存草稿后跳转“保客活动互斥关系”</td><td>按当前规则方式校验有效关系</td></tr>
+        <tr><td>卡券关系表</td><td>沿用活动中心现有 7 列表格，按每张主券展开目标券</td><td>关系字段区分“与指定券叠加/互斥”，展示来源活动 ID</td></tr>
+        <tr><td>活动配置中的关系表</td><td>增加主卡券 ID、主卡券名称，每条目标关系按全部主券展开</td><td>新增/导入目标券后自动补齐主券映射；移除按目标关系整体生效</td></tr>
+        <tr><td>状态列</td><td>活动配置中的统一关系表隐藏状态列</td><td>查看关系、批量导入和移除能力不受影响</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>最终判断顺序</h2>
+    <p><code>活动互斥</code> → <code>卡券互斥</code> → <code>卡券叠加</code> → <code>均未命中，默认不可组合</code>。</p>
+
+    <h2>系统边界与待确认</h2>
+    <div class="table"><table>
+      <thead><tr><th>项目</th><th>说明</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>活动中心售后</td><td>本次兼容型规则方式的业务归属</td><td>范围已锁定</td></tr>
+        <tr><td>活动互斥</td><td>保持独立配置且优先于卡券关系</td><td>沿用既有口径</td></tr>
+        <tr><td>卡券中心售前叠加</td><td>业务域隔离，不参与本页计算</td><td>边界已锁定</td></tr>
+        <tr><td>接口模型</td><td>需确认新增方式的枚举值及两组券 ID 字段</td><td>待研发确认</td></tr>
+        <tr><td>方式切换</td><td>从新增方式切回历史方式时，隐藏名单保留草稿还是清空</td><td>待产品/研发确认</td></tr>
+      </tbody>
+    </table></div>
+  </main>
+</body>
+</html>

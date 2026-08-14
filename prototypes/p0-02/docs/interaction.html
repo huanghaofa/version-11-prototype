@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>组合折扣券商品组合配置原型 - 功能说明</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #26384a; background: #f4f7fa; font: 14px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 60px; }
+    a { color: #0c76c8; text-decoration: none; }
+    h1 { margin: 16px 0 4px; font-size: 26px; }
+    h2 { margin: 28px 0 10px; font-size: 18px; }
+    .lead { color: #66788a; }
+    .card { margin-top: 14px; padding: 20px; background: #fff; border: 1px solid #dfe6ee; }
+    .callout { padding: 12px 14px; color: #36536e; background: #eef7ff; border: 1px solid #cce5f8; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { padding: 10px 12px; text-align: left; border: 1px solid #e1e7ed; vertical-align: top; }
+    th { color: #45596c; background: #f5f8fb; }
+    code { padding: 2px 5px; color: #995514; background: #fff4df; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">← 返回演示原型</a>
+    <h1>组合折扣券商品组合配置原型功能说明</h1>
+    <p class="lead">用于评审卡券中心针对 BIMC（新）、维修保养（新）场景新增组合折扣券，保留自由组合、新增分组组合和 Excel 商品导入，以及 E3S 一次核销多个备件的联动改造。</p>
+
+    <div class="callout">
+      核心口径：只有组合折扣券允许配置多备件；组合方式分为自由组合、分组组合。分组组合只配置一组时等同固定组合；两种方式均支持手工选品和 Excel 上传，并共用券级折扣。
+    </div>
+
+    <section class="card">
+      <h2>页面与交互</h2>
+      <table>
+        <thead><tr><th>页面</th><th>主要交互</th><th>评审重点</th></tr></thead>
+        <tbody>
+          <tr><td>改造总览</td><td>进入建券配置</td><td>自由组合、分组组合、Excel 导入与 E3S 联动边界</td></tr>
+          <tr><td>新建/编辑卡券</td><td>选择组合方式，通过手工或 Excel 配置商品及数量后提交</td><td>自由组合任选商品；分组组合组间任选一、组内全部满足</td></tr>
+          <tr><td>E3S 多备件核销</td><td>自由组合提交实际选中商品；分组组合提交命中的单个组合</td><td>卡券中心按组合方式校验，同一请求整体成功或失败</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>字段联动</h2>
+      <table>
+        <thead><tr><th>条件</th><th>页面行为</th></tr></thead>
+        <tbody>
+          <tr><td>组合折扣券 + 目标场景 + 备件</td><td>显示自由组合、分组组合和 Excel 商品导入</td></tr>
+          <tr><td>其他券类型或其他场景</td><td>继续沿用原单对象规则，不允许配置多备件</td></tr>
+          <tr><td>自由组合</td><td>配置商品池和每个商品的最大核销数量；核销时任选一项或多项</td></tr>
+          <tr><td>分组组合仅一组</td><td>显示“等同原固定组合”提示，不再单列固定组合选项</td></tr>
+          <tr><td>同一商品跨组合</td><td>允许选择，并提示已在哪些组合使用</td></tr>
+          <tr><td>商品集合完全相同</td><td>禁止保存重复核销组合</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Excel 商品导入</h2>
+      <table>
+        <thead><tr><th>组合方式</th><th>模板字段</th><th>导入行为</th></tr></thead>
+        <tbody>
+          <tr><td>自由组合</td><td>商品编码、最大核销数量</td><td>可追加或清空后覆盖自由组合商品池</td></tr>
+          <tr><td>分组组合</td><td>组合名称、商品编码、最低核销数量</td><td>同名行归入同一组，一个文件可导入多组</td></tr>
+        </tbody>
+      </table>
+      <p>上传后先展示文件名、数据行、可导入行、错误行和错误原因；错误行不导入。静态原型使用 Mock 数据演示解析结果，正式文件大小、最大行数和异步阈值待研发确认。</p>
+    </section>
+
+    <section class="card">
+      <h2>跨系统改造与待确认</h2>
+      <ul>
+        <li>自由组合由 E3S 一次提交实际选中的商品编码和数量；卡券中心校验商品属于商品池且不超过最大核销数量。</li>
+        <li>分组组合建议提交核销组合标识、商品编码及实际数量；卡券中心校验商品集合一致且达到最低核销数量。</li>
+        <li>分组组合优惠数量以最低核销数量为上限，超量部分原价；自由组合优惠数量不超过各商品最大核销数量。</li>
+        <li>原核销列表保持不变；正式字段名称和同商品多价格工单行的优惠匹配顺序仍待评审。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

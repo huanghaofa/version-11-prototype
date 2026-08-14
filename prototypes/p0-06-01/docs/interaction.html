@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SA动态二维码与来源报表后台原型 - 功能说明</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;color:#344454;background:#f4f7fa;font:14px/1.7 Arial,"Microsoft YaHei",sans-serif}.top{height:48px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;color:#fff;background:#1d3048}.top a{color:#fff;text-decoration:none}.wrap{max-width:1180px;margin:24px auto;padding:0 20px 50px}.hero,.card{background:#fff;border:1px solid #e2e8ee}.hero{padding:26px 30px;border-top:3px solid #2f80c5}.hero h1{margin:0 0 7px;color:#203245;font-size:24px}.hero p{margin:0;color:#74808c}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.card{padding:20px 22px}.card.full{grid-column:1/-1}.card h2{margin:0 0 14px;padding-left:10px;color:#294763;border-left:3px solid #2f80c5;font-size:17px}.card h3{margin:18px 0 6px;font-size:14px}.card ul,.card ol{margin:8px 0 0;padding-left:22px}.tag{display:inline-block;margin:0 6px 6px 0;padding:2px 8px;color:#2f70aa;background:#edf6fd;border:1px solid #cee4f6}.note{padding:10px 12px;color:#715d2f;background:#fff9e9;border:1px solid #f1e2b2}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border:1px solid #e3e8ed;text-align:left;vertical-align:top}th{background:#f6f8fa;font-weight:600}.muted{color:#7d8994}@media(max-width:800px){.grid{grid-template-columns:1fr}.card.full{grid-column:auto}.wrap{margin-top:14px}.top{padding:0 16px}}
+  </style>
+</head>
+<body>
+  <header class="top"><strong>SA动态二维码与来源报表后台原型</strong><a href="../index.html">返回原型</a></header>
+  <main class="wrap">
+    <section class="hero">
+      <h1>功能说明</h1>
+      <p>本原型在现有活动中心、卡券中心UI体系内保留SA独立报表，并新增独立SA活动配置与二维码时长参数。</p>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>范围与页面</h2>
+        <span class="tag">保客活动创建</span><span class="tag">活动互斥关系</span><span class="tag">SA活动配置</span><span class="tag">二维码参数</span><span class="tag">SA活动报表</span><span class="tag">SA卡券报表</span>
+        <h3>原活动中心改造</h3>
+        <ul><li>保客活动列表、创建/编辑和详情移除SA分享字段。</li><li>Step2保留原有领券方式和门店来源；Step3继续维护原准入配置与选择互斥活动。</li><li>复制活动不复制SA投放关系。</li><li>互斥关系沿用原菜单查询参与主体口径和生效状态。</li></ul>
+        <h3>SA活动配置</h3>
+        <ul><li>投放配置：普通活动、组合活动统一进入SA可选池。</li><li>组合活动优先展示“组合活动展示名称”，未配置时回退原组合活动名称；后台同时保留原名追溯。</li><li>门店/SA范围由活动或组合活动维护；本页只读继承，不提供二次配置。</li><li>指定门店展示数量与名称，未配置或清空时按全部门店。</li><li>SA可见与分享要求：独立投放有效、组合活动启用、当前SA门店命中三项同时满足。</li><li>组合活动详情展示子活动、人群包、卡券和权益只读快照。</li><li>同一VIN命中多个子活动时全部发放，不阻断、不记异常、不设优先级和顺序。</li><li>二维码参数：配置5分钟至1天固定时长、长期有效及默认值；长期有效截止到冻结活动中最晚结束时间。</li></ul>
+        <h3>SA活动报表</h3>
+        <ul><li>数据总览：指标、近7日趋势、来源SA排行、活动汇总。</li><li>二维码明细：场景ID、活动冻结快照、有效期和扫码转化。</li><li>活动参与明细：参与主体、准入校验节点、最终来源和关联卡券。</li></ul>
+        <h3>SA卡券报表</h3>
+        <ul><li>数据总览：发放、激活、核销、核销率、跨店核销和转化漏斗。</li><li>卡券领取明细：券实例、归属主体、来源活动和来源SA。</li><li>卡券核销明细：来源门店、实际核销门店、金额和跨店状态。</li></ul>
+      </section>
+
+      <section class="card">
+        <h2>归属与数据口径</h2>
+        <ul>
+          <li>来源在活动成功执行时确认，遵循最后触点规则。</li>
+          <li>号码级按 oneID 识别；绑车级按 VIN 识别；认证级按 oneID 与 VIN 的认证关系识别。</li>
+          <li>同一个 VIN 最多可绑定三个 oneID；认证关系为 oneID 与 VIN 一对一。</li>
+          <li>同一聚合页可选择多个活动，但每次仅针对当前选中的一个 VIN 执行。</li>
+          <li>后台统一推券类活动不允许SA选择生成二维码，也不进入SA二维码来源报表。</li>
+        </ul>
+        <p class="note">服务助手移动端简化报表已在配套移动端原型中独立实现，本后台仍保持桌面端数据权限与明细能力。</p>
+      </section>
+
+      <section class="card full">
+        <h2>关键交互</h2>
+        <table>
+          <thead><tr><th>入口</th><th>交互</th><th>结果</th></tr></thead>
+          <tbody>
+            <tr><td>左侧独立菜单</td><td>切换SA活动报表、SA卡券报表</td><td>同步更新中心页签、面包屑和内部报表页签。</td></tr>
+            <tr><td>保客活动创建</td><td>新增或编辑活动</td><td>只维护活动主数据，不出现SA分享字段。</td></tr>
+            <tr><td>复制活动</td><td>点击活动列表“复制”并确认</td><td>复制基础配置、卡券、准入和互斥关系，但不复制SA活动配置。</td></tr>
+            <tr><td>活动对象</td><td>打开“准入配置”并选择互斥活动</td><td>配置启用状态、号码级/绑车级/认证级和四类校验节点；不同准入级别的互斥候选活动置灰。</td></tr>
+            <tr><td>SA活动配置</td><td>在“可选/已选”大弹窗中查询并选择普通活动或组合活动</td><td>确认后只回填投放对象；展示名称、原名称、门店范围、准入、卡券和互斥均读取投放对象配置。</td></tr>
+            <tr><td>二维码参数</td><td>勾选固定时长/长期有效并设置默认值</td><td>固定时长限制5分钟至1天；长期有效至冻结活动最晚结束时间；保存只影响新码。</td></tr>
+            <tr><td>启用/关闭</td><td>确认活动状态变化</td><td>启用不自动进入SA可选池；关闭后当前活动下线，二维码内其他有效活动继续执行。</td></tr>
+            <tr><td>数据总览指标卡</td><td>点击二维码、参与、发放、核销等指标</td><td>进入对应明细页继续筛选与下钻。</td></tr>
+            <tr><td>二维码明细</td><td>点击场景ID或“查看”</td><td>打开详情抽屉，展示生成时冻结的活动范围和前后场景关系。</td></tr>
+            <tr><td>活动参与明细</td><td>点击参与流水</td><td>查看参与主体、来源SA、场景ID、扫描ID、准入节点和关联券实例。</td></tr>
+            <tr><td>卡券领取明细</td><td>点击券实例ID</td><td>查看券归属、VIN可绑定oneID数、来源链路并回溯活动参与流水。</td></tr>
+            <tr><td>卡券核销明细</td><td>点击核销流水</td><td>查看来源门店、实际核销门店、跨店状态和金额信息。</td></tr>
+            <tr><td>查询 / 重置 / 展开 / 导出 / 分页</td><td>点击对应控件</td><td>以Toast或页面状态反馈演示结果，不连接真实业务接口。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>数据权限与脱敏</h2>
+        <ul>
+          <li>总部仅查看授权品牌与区域；区域查看授权门店；门店查看本店；SA移动端仅查看本人。</li>
+          <li>手机号码、oneID、VIN均以脱敏形式展示，导出沿用相同脱敏规则。</li>
+          <li>详情保留具体参与记录，但不在页面展示完整客户身份信息。</li>
+          <li>当前原型以“总部 / 东风日产 / 全部授权区域”作为权限状态示例。</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>演示说明</h2>
+        <ul>
+          <li>全部数据为新建演示数据，不复制现网客户记录。</li>
+          <li>仅模拟成功执行结果，不演示发券失败场景。</li>
+          <li>领取类活动直接发券；抽奖类活动自动抽奖并反馈中奖或未中奖结果。</li>
+          <li>原活动页面中的保存、启用、关闭均为本地原型演示，不连接真实活动中心。</li>
+          <li>原型使用Hash路由，可直接双击index.html通过file协议访问，也兼容本地HTTP调试。</li>
+        </ul>
+        <p class="muted">版本：2026-08-10 / 后台原型</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "menu": [
+    {
+      "key": "workbench",
+      "label": "工作台",
+      "icon": "▦"
+    },
+    {
+      "key": "activity-group",
+      "label": "活动中心",
+      "icon": "◇",
+      "children": [
+        {
+          "key": "activity-list",
+          "label": "保客活动"
+        },
+        {
+          "key": "activity-create",
+          "label": "活动创建"
+        },
+        {
+          "key": "activity-relation",
+          "label": "活动互斥关系"
+        }
+      ]
+    },
+    {
+      "key": "coupon-center",
+      "label": "卡券中心",
+      "icon": "▤"
+    }
+  ]
+}

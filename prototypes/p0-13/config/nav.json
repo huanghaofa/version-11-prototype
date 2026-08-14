@@ -1,0 +1,30 @@
+{
+  "menu": [
+    {"key":"overview","label":"现状总览","icon":"⌂"},
+    {"key":"activity-group","label":"活动中心","icon":"活","children":[
+      {"key":"activity-list","label":"保客活动创建"},
+      {"key":"activity-editor","label":"保客活动编辑查看"},
+      {"key":"activity-combo","label":"组合活动列表"},
+      {"key":"activity-benefit","label":"专属福利活动列表"},
+      {"key":"activity-exclusive","label":"保客活动互斥关系"},
+      {"key":"activity-qr","label":"保客活动一店一码"},
+      {"key":"activity-report","label":"保客活动汇总表"},
+      {"key":"activity-trigger-report","label":"行为触发汇总表"}
+    ]},
+    {"key":"coupon-group","label":"卡券中心","icon":"券","children":[
+      {"key":"coupon-legacy-issue","label":"优惠券发放"},
+      {"key":"coupon-receive-record","label":"领券记录"},
+      {"key":"coupon-list","label":"卡券列表"},
+      {"key":"coupon-limit","label":"卡券限额"},
+      {"key":"coupon-after-report","label":"售后业务报表"},
+      {"key":"coupon-business-report","label":"业务报表"},
+      {"key":"coupon-writeoff","label":"核销列表"},
+      {"key":"coupon-issue","label":"卡券发放"},
+      {"key":"coupon-issue-record","label":"发放记录"},
+      {"key":"coupon-rules","label":"卡券规则设置"},
+      {"key":"coupon-dealer-task","label":"经销商券任务记录"},
+      {"key":"coupon-batch","label":"批量操作优惠券"},
+      {"key":"coupon-redemption","label":"领券管理（领券中心）"}
+    ]}
+  ]
+}

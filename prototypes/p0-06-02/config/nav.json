@@ -1,0 +1,21 @@
+{
+  "default": "sa-select",
+  "menu": [
+    {"key": "sa-select", "label": "SA选择活动", "hash": "#sa-select"},
+    {"key": "sa-select-activity-detail", "label": "SA选活动-活动详情", "hash": "#sa-select-activity-detail"},
+    {"key": "sa-empty", "label": "SA暂无可投活动", "hash": "#sa-empty"},
+    {"key": "sa-qr", "label": "动态二维码", "hash": "#sa-qr"},
+    {"key": "sa-poster-editor", "label": "SA分享海报编辑", "hash": "#sa-poster-editor"},
+    {"key": "sa-poster-preview", "label": "SA分享海报预览", "hash": "#sa-poster-preview"},
+    {"key": "qr-invalid", "label": "二维码失效", "hash": "#qr-invalid"},
+    {"key": "sa-data-overview", "label": "我的SA数据概览", "hash": "#sa-data-overview"},
+    {"key": "sa-activity-list", "label": "SA活动列表", "hash": "#sa-activity-list"},
+    {"key": "sa-activity-detail", "label": "SA活动详情", "hash": "#sa-activity-detail"},
+    {"key": "sa-participation-detail", "label": "参与记录详情", "hash": "#sa-participation-detail"},
+    {"key": "sa-coupon-list", "label": "SA卡券列表", "hash": "#sa-coupon-list"},
+    {"key": "sa-coupon-detail", "label": "SA卡券详情", "hash": "#sa-coupon-detail"},
+    {"key": "activity-aggregation", "label": "用户活动聚合页", "hash": "#activity-aggregation"},
+    {"key": "activity-aggregation-unbound", "label": "组合活动-未绑车", "hash": "#activity-aggregation-unbound"},
+    {"key": "activity-aggregation-offline", "label": "活动下线提交结果", "hash": "#activity-aggregation-offline"}
+  ]
+}

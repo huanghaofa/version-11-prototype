@@ -1,0 +1,16 @@
+{
+  "menu": [
+    {
+      "key": "activity-group",
+      "label": "活动中心",
+      "icon": "▦",
+      "children": [
+        {
+          "key": "event-config",
+          "label": "行为事件配置",
+          "icon": "01"
+        }
+      ]
+    }
+  ]
+}

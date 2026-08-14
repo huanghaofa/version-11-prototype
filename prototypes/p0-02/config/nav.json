@@ -1,0 +1,21 @@
+{
+  "menu": [
+    {
+      "key": "coupon-center",
+      "label": "卡券中心",
+      "icon": "券",
+      "children": [
+        {
+          "key": "overview",
+          "label": "改造总览",
+          "icon": "览"
+        },
+        {
+          "key": "coupon-create",
+          "label": "新建/编辑卡券",
+          "icon": "建"
+        }
+      ]
+    }
+  ]
+}

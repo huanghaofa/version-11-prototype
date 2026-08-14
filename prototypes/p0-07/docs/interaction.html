@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卡包 VIN 共用券前端原型｜交互说明</title>
+  <style>
+    :root{--red:#b5122b;--ink:#1a1c21;--muted:#6e737c;--line:#e7e8eb;--bg:#f5f6f8}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}
+    main{width:min(980px,calc(100% - 32px));margin:32px auto 64px}.hero{padding:34px;border-radius:24px;background:linear-gradient(135deg,#8e0e22,#c61c37);color:#fff;box-shadow:0 18px 48px rgba(87,15,29,.18)}
+    .hero a{color:#fff}.eyebrow{font-size:12px;letter-spacing:.08em;opacity:.72}.hero h1{margin:8px 0;font-size:30px}.hero p{margin:0;opacity:.84}
+    section{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:18px;background:#fff}h2{margin:0 0 14px;font-size:20px}h3{margin:20px 0 6px;font-size:15px}p{margin:6px 0;color:var(--muted)}
+    .pill{display:inline-block;margin:4px 5px 0 0;padding:4px 9px;border-radius:99px;background:#f7e8eb;color:var(--red);font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#555b64;background:#fafafb}
+    code{padding:2px 5px;border-radius:5px;background:#f0f1f3;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+    .callout{padding:14px 16px;border-left:3px solid var(--red);border-radius:8px;background:#fff5f6;color:#5f2630;font-size:13px}
+    .links{display:flex;flex-wrap:wrap;gap:10px}.links a{display:inline-flex;padding:10px 14px;border-radius:10px;background:var(--ink);color:#fff;text-decoration:none;font-size:13px}
+    @media(max-width:640px){main{margin-top:16px}.hero,section{padding:20px}.hero h1{font-size:24px}.table-wrap{overflow:auto}table{min-width:680px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="eyebrow">INTERACTION SPEC · 2026-07-24</div>
+      <h1>卡包 VIN 共用券前端原型</h1>
+      <p>业务分类负责筛选，个人/VIN 负责分组，两者是正交维度。</p>
+    </header>
+
+    <section>
+      <h2>核心决策</h2>
+      <div class="callout">顶部“全部、商城、维保”等是业务分类；第二行是卡券状态；满减券、折扣券、权益券等券种直接展示在券卡内。页面始终按个人卡券和各 VIN 车辆分组。</div>
+      <p>
+        <span class="pill">后台单实例</span>
+        <span class="pill">多人动态可见</span>
+        <span class="pill">多 VIN 分组</span>
+        <span class="pill">无空分组</span>
+        <span class="pill">券种可识别</span>
+        <span class="pill">状态可筛选</span>
+      </p>
+    </section>
+
+    <section>
+      <h2>页面结构</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>区域</th><th>展示</th><th>规则</th></tr></thead>
+          <tbody>
+            <tr><td>页头</td><td>我的卡券、状态说明</td><td>不展示总券数、车辆头像和关联车辆数量</td></tr>
+            <tr><td>业务分类</td><td>全部、购车、商城、维保、车联、取送车、试驾、加油、出行、影视、其他</td><td>横向滑动；点击后原地筛选</td></tr>
+            <tr><td>卡券状态</td><td>全部状态、可使用、待激活、已使用、已过期</td><td>与业务分类组合筛选；后台“未领取”映射为“待激活”</td></tr>
+            <tr><td>个人卡券</td><td>个人卡券、脱敏手机号</td><td>隐藏“与车辆无关”；当前分类无数据时整组隐藏</td></tr>
+            <tr><td>VIN 共用券</td><td>车型、脱敏 VIN、默认车辆标识、共用说明、券卡</td><td>逐 VIN 分组；默认车辆醒目标识，不展示能源类型标签</td></tr>
+            <tr><td>券卡</td><td>券种、业务分类、优惠信息、有效期、状态、操作</td><td>已使用/已过期只保留详情</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>可评审交互</h2>
+      <h3>1. 分类筛选</h3>
+      <p>点击“商城”后展示商城个人卡券和轩逸商城券；N7 无商城券，因此整个 N7 分组隐藏。</p>
+      <p>点击“维保”后只展示轩逸和 N7 两个 VIN 分组；个人卡券中无维保券，因此个人卡券分组隐藏。</p>
+      <p>分类与状态组合后无数据时，展示统一空状态并可返回“全部”。</p>
+
+      <h3>2. 状态筛选</h3>
+      <p>默认展示“可使用”，与 Axure 当前卡包一致；“全部状态、待激活、已使用、已过期”作为评审演示入口。</p>
+      <p>轩逸以品牌红“默认车辆”标识突出展示；N7 不展示“新能源”标签。VIN 券统一提示“车辆有效关联人均可使用”。</p>
+
+      <h3>3. 卡券详情</h3>
+      <p>点击“查看详情”，从底部打开卡券详情，展示券种、状态、归属主体、渠道、来源、兑换/核销方式和规则。</p>
+
+      <h3>4. 待激活与 VIN 核销码</h3>
+      <p>“冬季车辆检测权益券”可先执行激活，激活成功后状态转为可使用，操作切换为“出示核销码”。</p>
+      <p>点击“出示核销码”进入独立移动页面，页面参照 Axure“我的卡券-核销码（线下）”，展示券摘要、条形码、数字码、二维码和归属车辆。正式链路建议以 <code>VIN + 核销码 + requestId</code> 核销同一券实例。</p>
+
+      <h3>5. 通用兑换券</h3>
+      <p>“夏日全场好礼5选2兑换券”参照既有“通用兑换券原型_20260720”，进入券详情、选商品、确认兑换、兑换成功四步流程。</p>
+      <p>支持不同商品组合、同一商品2件和跨车联网履约/直邮/到店核销组合。兑换单创建成功时卡券立即核销，履约/发货状态单独显示为处理中。</p>
+
+      <h3>6. 第三方兑换码</h3>
+      <p>“视频会员月卡兑换券”等第三方权益打开“查看兑换码”弹层，展示账号归属并支持复制；虚拟卡同时展示电子卡号。</p>
+
+      <h3>7. 历史状态</h3>
+      <p>已使用、已过期和激活超时通过状态筛选查看，只保留详情及使用/失效记录，不展示使用操作。</p>
+    </section>
+
+    <section>
+      <h2>待确认但不阻塞本原型</h2>
+      <p>正式分类是否收敛；潜客/网联车主是否动态排序；“售后”是否合并维保与取送车；真实车型与 VIN 脱敏接口；解绑后可见性规则。</p>
+    </section>
+
+    <section>
+      <h2>入口</h2>
+      <div class="links">
+        <a href="../index.html">打开交互原型</a>
+        <a href="#" aria-disabled="true">查看验收记录</a>
+        <a href="#" aria-disabled="true">查看需求基线</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

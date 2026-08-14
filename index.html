@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DFN 当前 P0 任务原型入口">
+  <link rel="icon" href="data:,">
+  <title>P0 原型中心</title>
+  <style>
+    :root { color-scheme:light; --blue:#1677ff; --ink:#172033; --muted:#687386; --line:#e7ebf2; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    .hero { padding:48px 24px 88px; color:white; background:linear-gradient(135deg,#102a56,#1769d2 68%,#55a4ff); }
+    .hero-inner, main { width:min(1180px,calc(100% - 40px)); margin:auto; }
+    .eyebrow { font-size:13px; opacity:.76; letter-spacing:.08em; }
+    h1 { margin:8px 0; font-size:36px; }
+    .subtitle { margin:0; opacity:.86; }
+    .toolbar { display:flex; gap:12px; align-items:center; margin-top:26px; flex-wrap:wrap; }
+    .search { flex:1; min-width:260px; max-width:620px; padding:13px 16px; border:0; border-radius:10px; outline:0; font-size:15px; box-shadow:0 8px 24px #0a2f6638; }
+    .count { padding:8px 12px; border-radius:999px; background:#ffffff18; font-size:13px; }
+    main { margin-top:-48px; padding-bottom:56px; }
+    .panel { padding:23px; border:1px solid var(--line); border-radius:15px; background:white; box-shadow:0 8px 28px #243c6410; }
+    .panel-heading { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
+    .panel-heading h2 { margin:0; font-size:18px; }
+    .panel-heading p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .panel-heading span { color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(285px,1fr)); gap:12px; }
+    .card { min-height:230px; padding:17px; display:flex; flex-direction:column; border:1px solid var(--line); border-radius:12px; transition:.18s ease; }
+    .card:hover { transform:translateY(-2px); border-color:#9bc5ff; box-shadow:0 8px 22px #1769d218; }
+    .card-top { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; }
+    .priority { padding:3px 8px; color:#cf1322; background:#fff1f0; border:1px solid #ffccc7; border-radius:999px; font-weight:700; }
+    .card h2 { margin:13px 0 7px; font-size:16px; line-height:1.45; }
+    .card > p { margin:0 0 16px; color:var(--muted); font-size:13px; line-height:1.65; }
+    .prototype-links { display:grid; gap:8px; margin-top:auto; }
+    .prototype-link, .sequence-link { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 11px; border-radius:9px; text-decoration:none; font-size:13px; }
+    .prototype-link { color:#1559aa; background:#f4f8ff; border:1px solid #d7e7ff; }
+    .prototype-link:hover { background:#eaf3ff; border-color:#9bc5ff; }
+    .sequence-link { color:#5b2ca0; background:#f8f4ff; border:1px solid #e1d2fa; }
+    .sequence-link:hover { background:#f1e9ff; border-color:#c9acf4; }
+    .prototype-link b, .sequence-link b { white-space:nowrap; font-size:12px; }
+    .hidden { display:none; }
+    footer { padding:20px 0 0; color:var(--muted); text-align:center; font-size:12px; }
+    @media (max-width:640px) { h1{font-size:29px} .hero{padding-top:32px} main{width:calc(100% - 24px)} .panel{padding:16px} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">DFN · P0 PROTOTYPE CENTER</div>
+      <h1>P0 原型中心</h1>
+      <p class="subtitle">仅展示 Codex 任务名称中明确标注为 P0 的最新原型。</p>
+      <div class="toolbar">
+        <input id="search" class="search" type="search" placeholder="搜索 P0 任务或原型…" autofocus>
+        <span class="count">13 个任务</span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="panel-heading">
+        <div><h2>当前 P0 任务</h2><p>部署版本：2026-08-14</p></div>
+        <span>14 个原型入口</span>
+      </div>
+      <div class="grid">
+            <article class="card" data-search="p0-兑换券卡券中心方案 兑换券卡券中心、商品下钻至 sku/规格、跨页选择与商品履约 通用兑换券原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-兑换券卡券中心方案</h2>
+              <p>兑换券卡券中心、商品下钻至 SKU/规格、跨页选择与商品履约</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-01/index.html"><span>通用兑换券原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-设计多备件券核销方案 组合折扣券支持自由组合、分组组合、excel 导入与整单核销 卡券多明细批量核销原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-设计多备件券核销方案</h2>
+              <p>组合折扣券支持自由组合、分组组合、Excel 导入与整单核销</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-02/index.html"><span>卡券多明细批量核销原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-卡券结算补贴 卡券规则、结算报表，以及商城线上与 e3s 线下结算 商城卡券结算原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-卡券结算补贴</h2>
+              <p>卡券规则、结算报表，以及商城线上与 E3S 线下结算</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-03/index.html"><span>商城卡券结算原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-增加权益编码关联选择 卡券适用范围关联 e3s 权益产品编码与基础信息 e3s 权益编码关联原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-增加权益编码关联选择</h2>
+              <p>卡券适用范围关联 E3S 权益产品编码与基础信息</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-04/index.html"><span>E3S 权益编码关联原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-设计活动中心积分发放方案 积分配置与预算、活动引用、后台发放、补偿和对账 活动中心积分奖励原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-设计活动中心积分发放方案</h2>
+              <p>积分配置与预算、活动引用、后台发放、补偿和对账</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-05/index.html"><span>活动中心积分奖励原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-梳理sa动态二维码流程 sa 动态二维码、海报模板与上传、长期有效及用户聚合页 后台管理原型 用户端聚合页原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-梳理SA动态二维码流程</h2>
+              <p>SA 动态二维码、海报模板与上传、长期有效及用户聚合页</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-06-01/index.html"><span>后台管理原型</span><b>打开 →</b></a><a class="prototype-link" href="./prototypes/p0-06-02/index.html"><span>用户端聚合页原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-共用券需求 卡包手机号通用券、vin 共用券与默认车辆提示 卡包 vin 共用券前端原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-共用券需求</h2>
+              <p>卡包手机号通用券、VIN 共用券与默认车辆提示</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-07/index.html"><span>卡包 VIN 共用券前端原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-玩法拓展 活动中心创建活动时关联兑换券与积分奖励 活动中心关联兑换券原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-玩法拓展</h2>
+              <p>活动中心创建活动时关联兑换券与积分奖励</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-08/index.html"><span>活动中心关联兑换券原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-一店一码一键领取 门店二维码一键领取、异常流程与批量领取交互 一店一码一键领取原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-一店一码一键领取</h2>
+              <p>门店二维码一键领取、异常流程与批量领取交互</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-09/index.html"><span>一店一码一键领取原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-行为上报需求 商城订单消费金额达 n 元行为事件后台配置 商城订单消费金额达 n 元行为事件后台原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-行为上报需求</h2>
+              <p>商城订单消费金额达 N 元行为事件后台配置</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-10/index.html"><span>商城订单消费金额达 N 元行为事件后台原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-设计卡券互斥叠加配置原型 叠加与互斥统一关系表，展示主券、目标券及来源活动 卡券互斥叠加并行配置原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-设计卡券互斥叠加配置原型</h2>
+              <p>叠加与互斥统一关系表，展示主券、目标券及来源活动</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-11/index.html"><span>卡券互斥叠加并行配置原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-扩展活动适用门店配置 所有活动适用门店配置，以及 sa 按所属门店查看和分享活动 活动适用门店与 sa 分享范围原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-扩展活动适用门店配置</h2>
+              <p>所有活动适用门店配置，以及 SA 按所属门店查看和分享活动</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-12/index.html"><span>活动适用门店与 SA 分享范围原型</span><b>打开 →</b></a></div>
+            </article>
+            
+            <article class="card" data-search="p0-组合活动 组合活动展示名称、适用门店及 sa 动态二维码展示与权限规则 活动中心组合活动原型">
+              <div class="card-top"><span class="priority">P0</span><span>Codex 任务</span></div>
+              <h2>P0-组合活动</h2>
+              <p>组合活动展示名称、适用门店及 SA 动态二维码展示与权限规则</p>
+              <div class="prototype-links"><a class="prototype-link" href="./prototypes/p0-13/index.html"><span>活动中心组合活动原型</span><b>打开 →</b></a></div>
+            </article>
+            </div>
+    </section>
+    <footer>本页面为静态演示站点，数据均为 Mock，不连接生产系统。</footer>
+  </main>
+  <script>
+    const search = document.querySelector('#search');
+    search.addEventListener('input', () => {
+      const query = search.value.trim().toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        card.classList.toggle('hidden', query && !card.dataset.search.includes(query));
+      });
+    });
+  </script>
+</body>
+</html>

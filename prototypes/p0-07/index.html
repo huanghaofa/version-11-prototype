@@ -1,0 +1,4057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#b5122b">
+  <title>我的卡券｜VIN 共用券前端原型</title>
+  <style data-inline-source="assets/css/global.css">
+/* ========================================
+   Global B端 Design Tokens & Shared Components
+   ======================================== */
+
+:root {
+  /* ---- Color Palette ---- */
+  --color-primary: #3370ff;
+  --color-primary-hover: #2860e1;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-danger: #ff3b30;
+  --color-info: #5ac8fa;
+
+  --color-text-primary: #1f2329;
+  --color-text-secondary: #646a73;
+  --color-text-disabled: #c0c4cc;
+  --color-text-placeholder: #8f959e;
+
+  --color-bg-page: #f5f6f8;
+  --color-bg-white: #ffffff;
+  --color-bg-hover: #f2f3f5;
+
+  --color-border: #e5e6eb;
+  --color-border-light: #f0f1f5;
+  --color-divider: #ebecf0;
+
+  /* ---- Typography ---- */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  /* ---- Spacing ---- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+
+  /* ---- Border Radius ---- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ---- Shared Component: Button ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+  color: #fff;
+}
+
+/* ---- Shared Component: Table ---- */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+thead th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+tbody tr:hover {
+  background: var(--color-bg-hover);
+}
+
+/* ---- Shared Component: Form ---- */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 80px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  resize: vertical;
+}
+
+/* ---- Shared Component: Card ---- */
+.card {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Shared Component: Modal / Dialog ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-body {
+  padding: var(--spacing-xl);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Shared Component: Pagination ---- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-lg) 0;
+}
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-item:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-item.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ---- Shared Component: Advanced Search Bar ---- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-bar .form-input,
+.search-bar .form-select {
+  width: auto;
+  min-width: 160px;
+}
+
+/* ---- Utility ---- */
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-disabled);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+</style>
+  <style data-inline-source="assets/css/app.css">
+/* ---- App Layout ---- */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  width: 240px;
+  background: var(--color-bg-white);
+  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-lg) 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--spacing-xl);
+  background: var(--color-bg-page);
+  overflow-y: auto;
+}
+
+/* ---- Nav List ---- */
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list--sub {
+  padding-left: var(--spacing-lg);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.nav-link.active {
+  background: rgba(51, 112, 255, 0.08);
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: 500;
+}
+
+.nav-link--group {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:root {
+  --brand-red: #b5122b;
+  --brand-red-dark: #8e0e22;
+  --brand-ink: #17191e;
+  --brand-muted: #6f737c;
+  --brand-line: #ececf0;
+  --surface: #ffffff;
+  --canvas: #f5f5f7;
+}
+
+html {
+  min-width: 320px;
+  background: #e8ebef;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(181, 18, 43, 0.08), transparent 25rem),
+    radial-gradient(circle at 84% 72%, rgba(46, 105, 176, 0.08), transparent 28rem),
+    #e8ebef;
+  color: var(--brand-ink);
+  overflow-x: hidden;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+.prototype-stage {
+  width: 100%;
+  min-height: 100vh;
+  padding: 26px 16px 42px;
+}
+
+.stage-caption {
+  display: flex;
+  width: min(430px, 100%);
+  margin: 0 auto 12px;
+  align-items: center;
+  gap: 8px;
+  color: #6e737c;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.stage-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-red);
+  box-shadow: 0 0 0 4px rgba(181, 18, 43, 0.11);
+}
+
+.device-shell {
+  position: relative;
+  width: min(430px, 100%);
+  min-height: 760px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(19, 24, 32, 0.1);
+  border-radius: 30px;
+  background: var(--canvas);
+  box-shadow: 0 26px 70px rgba(21, 28, 38, 0.18);
+}
+
+.wallet-app {
+  min-height: 760px;
+  padding-bottom: 44px;
+  background: var(--canvas);
+}
+
+.wallet-header {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 20px 23px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 88% 5%, rgba(255, 255, 255, 0.23), transparent 9rem),
+    linear-gradient(145deg, #8f0b22, #c41635 68%, #d83f51);
+}
+
+.wallet-header::after {
+  position: absolute;
+  right: -44px;
+  bottom: -92px;
+  width: 210px;
+  height: 210px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 28px rgba(255, 255, 255, 0.04),
+    0 0 0 58px rgba(255, 255, 255, 0.03);
+  content: "";
+}
+
+.topbar {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar-title {
+  font-size: 20px;
+  font-weight: 680;
+  letter-spacing: 0.02em;
+}
+
+.history-button {
+  display: inline-flex;
+  min-height: 34px;
+  padding: 0 12px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.11);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.history-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.category-panel {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 22px rgba(24, 29, 36, 0.05);
+  backdrop-filter: blur(16px);
+}
+
+.category-tabs {
+  display: flex;
+  padding: 12px 14px 10px;
+  gap: 7px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tab {
+  flex: 0 0 auto;
+  min-width: 54px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: #666b74;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 560;
+  scroll-snap-align: center;
+  transition: 0.18s ease;
+}
+
+.category-tab:active {
+  transform: scale(0.96);
+}
+
+.category-tab.active {
+  background: var(--brand-ink);
+  color: #fff;
+  box-shadow: 0 6px 13px rgba(23, 25, 30, 0.18);
+}
+
+.status-tabs {
+  display: flex;
+  padding: 0 14px 10px;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.status-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.status-tab {
+  display: inline-flex;
+  min-width: 78px;
+  height: 30px;
+  padding: 0 10px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #e2e4e8;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #747982;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.status-tab em {
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #eceef1;
+  color: #8a8e96;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 17px;
+}
+
+.status-tab.active {
+  border-color: #e7bdc5;
+  background: #fff2f4;
+  color: var(--brand-red);
+  font-weight: 650;
+}
+
+.status-tab.active em {
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.category-meta {
+  display: flex;
+  min-height: 38px;
+  padding: 0 20px 12px;
+  align-items: center;
+  justify-content: space-between;
+  color: #8a8e96;
+  font-size: 11px;
+}
+
+.category-meta strong {
+  color: #383c44;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.wallet-content {
+  padding: 18px 14px 0;
+}
+
+.coupon-group + .coupon-group {
+  margin-top: 24px;
+}
+
+.group-header {
+  display: flex;
+  padding: 0 5px 10px;
+  align-items: center;
+  gap: 10px;
+}
+
+.group-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border-radius: 13px;
+  background: #eceef1;
+  color: #3b4048;
+}
+
+.group-icon.account {
+  background: #f8e8ec;
+  color: var(--brand-red);
+}
+
+.group-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.group-heading {
+  min-width: 0;
+  flex: 1;
+}
+
+.group-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  font-weight: 680;
+}
+
+.group-heading p {
+  margin-top: 2px;
+  overflow: hidden;
+  color: #8a8e96;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vehicle-badge {
+  display: inline-flex;
+  min-height: 20px;
+  padding: 2px 8px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(142, 14, 34, 0.22);
+  border-radius: 99px;
+  background: linear-gradient(135deg, var(--brand-red-dark), var(--brand-red));
+  box-shadow: 0 3px 9px rgba(181, 18, 43, 0.22);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vehicle-badge::before {
+  display: inline-grid;
+  width: 12px;
+  height: 12px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  content: "✓";
+  font-size: 8px;
+}
+
+.group-count {
+  color: #92969d;
+  font-size: 11px;
+}
+
+.share-note {
+  display: flex;
+  margin: 0 4px 10px;
+  padding: 8px 10px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #e4e8ed;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.66);
+  color: #777c85;
+  font-size: 10px;
+}
+
+.share-note svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  color: #3d6f9e;
+}
+
+.coupon-list {
+  display: grid;
+  gap: 11px;
+}
+
+.coupon-card {
+  position: relative;
+  display: grid;
+  min-height: 135px;
+  grid-template-columns: 92px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(31, 35, 42, 0.08);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(27, 34, 43, 0.06);
+}
+
+.status-mark {
+  position: absolute;
+  z-index: 4;
+  top: 48px;
+  right: 12px;
+  padding: 3px 7px;
+  transform: rotate(-8deg);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  color: #8a8d93;
+  font-size: 9px;
+  font-weight: 720;
+  letter-spacing: 0.06em;
+  opacity: 0.74;
+}
+
+.status-pending_activation {
+  color: #a56b14;
+}
+
+.coupon-card::before,
+.coupon-card::after {
+  position: absolute;
+  z-index: 3;
+  left: 85px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--canvas);
+  content: "";
+}
+
+.coupon-card::before {
+  top: -7px;
+}
+
+.coupon-card::after {
+  bottom: -7px;
+}
+
+.coupon-value {
+  position: relative;
+  display: flex;
+  padding: 18px 9px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px dashed rgba(255, 255, 255, 0.46);
+  color: #fff;
+  text-align: center;
+}
+
+.coupon-value::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.25), transparent 30%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.12));
+  content: "";
+  pointer-events: none;
+}
+
+.coupon-value > * {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-coral .coupon-value { background: #c7434e; }
+.theme-gold .coupon-value { background: #b18435; }
+.theme-blue .coupon-value { background: #2e69a4; }
+.theme-purple .coupon-value { background: #67509d; }
+.theme-cyan .coupon-value { background: #277a8b; }
+.theme-green .coupon-value { background: #417d63; }
+.theme-indigo .coupon-value { background: #485a94; }
+.theme-orange .coupon-value { background: #ba6f2c; }
+.theme-violet .coupon-value { background: #71508f; }
+.theme-amber .coupon-value { background: #a76b1f; }
+.theme-teal .coupon-value { background: #28756e; }
+.theme-slate .coupon-value { background: #596573; }
+.theme-rose .coupon-value { background: #a63e5d; }
+.theme-muted .coupon-value { background: #8a8d93; }
+
+.value-line {
+  white-space: nowrap;
+}
+
+.value-main {
+  font-size: 27px;
+  font-weight: 740;
+  letter-spacing: -0.04em;
+}
+
+.value-unit {
+  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.value-caption {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.coupon-main {
+  display: flex;
+  min-width: 0;
+  padding: 14px 13px 11px 15px;
+  flex-direction: column;
+}
+
+.coupon-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.coupon-type {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #f0f1f3;
+  color: #70757e;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.coupon-tag {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #f8e8eb;
+  color: var(--brand-red);
+  font-size: 9px;
+  font-weight: 620;
+}
+
+.coupon-title {
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 680;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coupon-subtitle {
+  margin-top: 2px;
+  color: #a0a4ab;
+  font-size: 9px;
+}
+
+.coupon-expiry {
+  margin-top: 5px;
+  color: #888d95;
+  font-size: 10px;
+}
+
+.coupon-footer {
+  display: flex;
+  margin-top: auto;
+  padding-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #f0f1f3;
+}
+
+.detail-link {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #747982;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.detail-link::after {
+  display: inline-block;
+  margin-left: 3px;
+  content: "›";
+}
+
+.coupon-action {
+  min-width: 76px;
+  min-height: 29px;
+  padding: 0 12px;
+  border: 1px solid #d9dce1;
+  border-radius: 15px;
+  background: #fff;
+  color: #343840;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 620;
+}
+
+.coupon-action.primary {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.coupon-status-text {
+  min-width: 65px;
+  color: #969aa2;
+  font-size: 10px;
+  font-weight: 620;
+  text-align: right;
+}
+
+.coupon-action:active,
+.history-button:active,
+.sheet-close:active {
+  transform: scale(0.96);
+}
+
+.coupon-card.is-history {
+  filter: saturate(0.42);
+}
+
+.empty-state {
+  display: flex;
+  min-height: 350px;
+  padding: 55px 28px 30px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-illustration {
+  position: relative;
+  width: 124px;
+  height: 95px;
+}
+
+.empty-ticket {
+  position: absolute;
+  inset: 13px 8px;
+  transform: rotate(-5deg);
+  border: 2px dashed #cdd1d7;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.empty-ticket::after {
+  position: absolute;
+  top: 19px;
+  left: 26px;
+  width: 53px;
+  height: 7px;
+  border-radius: 5px;
+  background: #e8eaed;
+  box-shadow: 0 18px 0 #f0f1f3;
+  content: "";
+}
+
+.empty-state h2 {
+  margin-top: 7px;
+  font-size: 16px;
+}
+
+.empty-state p {
+  margin-top: 7px;
+  color: #8b9098;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.empty-reset {
+  min-width: 112px;
+  height: 38px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 19px;
+  background: var(--brand-ink);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.mobile-page-overlay {
+  position: fixed;
+  z-index: 940;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: rgba(13, 16, 21, 0.48);
+  animation: fade-in 0.18s ease-out;
+}
+
+.mobile-subpage {
+  width: min(430px, 100%);
+  height: 100vh;
+  overflow: auto;
+  background: #f5f5f7;
+  box-shadow: 0 18px 58px rgba(13, 18, 26, 0.24);
+  animation: page-in 0.22s ease-out;
+}
+
+.mobile-page-nav {
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  display: grid;
+  min-height: 58px;
+  padding: 8px 12px;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  border-bottom: 1px solid #eceef1;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+.mobile-page-nav h2 {
+  font-size: 17px;
+  font-weight: 680;
+  text-align: center;
+}
+
+.mobile-back,
+.mobile-page-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #292d34;
+  cursor: pointer;
+  font-size: 29px;
+  line-height: 1;
+}
+
+.mobile-page-close {
+  font-size: 21px;
+}
+
+.nav-placeholder {
+  width: 36px;
+}
+
+.mobile-page-body {
+  padding: 16px 14px 32px;
+}
+
+.code-coupon-summary {
+  display: grid;
+  grid-template-columns: 94px minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(25, 31, 40, 0.07);
+}
+
+.code-summary-value {
+  display: flex;
+  min-height: 120px;
+  padding: 15px 8px;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: baseline;
+  justify-content: center;
+  background: linear-gradient(155deg, #326da8, #285785);
+  color: #fff;
+  text-align: center;
+}
+
+.code-summary-value strong {
+  font-size: 27px;
+  line-height: 1;
+}
+
+.code-summary-value span {
+  margin-left: 2px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.code-summary-value small {
+  width: 100%;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 9px;
+}
+
+.code-summary-main {
+  padding: 15px 13px;
+}
+
+.code-summary-type,
+.code-summary-tag {
+  display: inline-flex;
+  margin-right: 5px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #f0f1f3;
+  color: #777c84;
+  font-size: 9px;
+}
+
+.code-summary-tag {
+  background: #f8e8eb;
+  color: var(--brand-red);
+}
+
+.code-summary-main h3 {
+  margin-top: 7px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.code-summary-main p {
+  margin-top: 5px;
+  color: #888d95;
+  font-size: 10px;
+}
+
+.verify-panel {
+  margin-top: 14px;
+  padding: 24px 18px 20px;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(25, 31, 40, 0.06);
+}
+
+.verify-kicker {
+  color: #676c74;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.verify-panel .barcode {
+  margin-top: 20px;
+}
+
+.verify-divider {
+  display: flex;
+  margin: 19px 0 15px;
+  align-items: center;
+  gap: 10px;
+  color: #a1a5ac;
+  font-size: 9px;
+}
+
+.verify-divider::before,
+.verify-divider::after {
+  height: 1px;
+  flex: 1;
+  background: #e9eaed;
+  content: "";
+}
+
+.qr-code {
+  position: relative;
+  width: 164px;
+  height: 164px;
+  margin: 0 auto;
+  border: 10px solid #fff;
+  background:
+    linear-gradient(90deg, transparent 44%, #17191e 44% 53%, transparent 53%),
+    linear-gradient(transparent 46%, #17191e 46% 55%, transparent 55%),
+    repeating-conic-gradient(#17191e 0 25%, #fff 0 50%) 0 0 / 14px 14px;
+  box-shadow: 0 0 0 1px #e1e3e6;
+}
+
+.qr-code::before,
+.qr-code::after,
+.qr-code i {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border: 7px solid #17191e;
+  background: #fff;
+  box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 12px #17191e;
+  content: "";
+}
+
+.qr-code::before {
+  top: 5px;
+  left: 5px;
+}
+
+.qr-code::after {
+  top: 5px;
+  right: 5px;
+}
+
+.qr-code i {
+  bottom: 5px;
+  left: 5px;
+}
+
+.code-vin {
+  margin-top: 15px;
+}
+
+.verify-notice {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e8eaed;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.verify-notice strong {
+  font-size: 12px;
+}
+
+.verify-notice p {
+  margin-top: 6px;
+  color: #777c85;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.exchange-steps {
+  display: flex;
+  padding: 12px 72px;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.exchange-steps span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8eaed;
+  color: #8c9199;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.exchange-steps span.active {
+  background: var(--brand-red);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(181, 18, 43, 0.1);
+}
+
+.exchange-body {
+  padding-bottom: 40px;
+}
+
+.exchange-hero {
+  padding: 22px 18px;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #8f0b22, #c41635 72%, #d83f51);
+  color: #fff;
+}
+
+.exchange-hero span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+}
+
+.exchange-hero h3 {
+  margin-top: 7px;
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.exchange-hero p {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 10px;
+}
+
+.exchange-card {
+  margin-top: 12px;
+  padding: 15px;
+  border: 1px solid #eceef1;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.exchange-card h3 {
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.exchange-card > strong {
+  color: #373b43;
+  font-size: 12px;
+}
+
+.exchange-card > p {
+  margin-top: 5px;
+  color: #70757e;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.exchange-card > small {
+  display: block;
+  margin-top: 5px;
+  color: #989ca4;
+  font-size: 9px;
+}
+
+.choice-rule {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.choice-rule strong {
+  color: var(--brand-red);
+  font-size: 22px;
+}
+
+.choice-rule span {
+  color: #555a63;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.choice-rule-card > p {
+  margin-top: 8px;
+}
+
+.exchange-product-list {
+  display: grid;
+  gap: 9px;
+}
+
+.exchange-product {
+  display: flex;
+  min-height: 66px;
+  padding: 9px 0;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.exchange-product:last-child {
+  border-bottom: 0;
+}
+
+.exchange-product-icon {
+  display: grid;
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #f4e4e8, #f8f1f3);
+  color: var(--brand-red);
+  font-size: 16px;
+  font-weight: 720;
+}
+
+.exchange-product-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.exchange-product-info h4 {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exchange-product-info p,
+.exchange-product-info small {
+  margin-top: 4px;
+  color: #90949c;
+  font-size: 9px;
+}
+
+.exchange-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exchange-qty button {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid #dfe1e5;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.exchange-qty button:disabled {
+  color: #c5c8cd;
+  cursor: default;
+}
+
+.exchange-qty span {
+  min-width: 12px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.exchange-more {
+  padding-top: 9px;
+  text-align: center;
+}
+
+.exchange-selection-tip {
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 14px;
+  background: #fff1f3;
+}
+
+.exchange-selection-tip strong {
+  color: var(--brand-red);
+  font-size: 18px;
+}
+
+.exchange-selection-tip span {
+  color: #636871;
+  font-size: 11px;
+}
+
+.exchange-selection-tip b {
+  color: var(--brand-red);
+}
+
+.exchange-helper {
+  margin: 9px 2px 12px;
+  color: #858a93;
+  font-size: 10px;
+}
+
+.exchange-primary,
+.exchange-secondary {
+  width: 100%;
+  height: 44px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--brand-red);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 660;
+}
+
+.exchange-primary:disabled {
+  background: #d6d8dc;
+  cursor: default;
+}
+
+.exchange-secondary {
+  margin-top: 9px;
+  border: 1px solid #dfe1e5;
+  background: #fff;
+  color: #555a63;
+}
+
+.exchange-total-card p,
+.exchange-result-card p {
+  display: flex;
+  margin-top: 0;
+  padding: 7px 0;
+  align-items: center;
+  justify-content: space-between;
+  color: #666b74;
+  font-size: 10px;
+}
+
+.exchange-total-card p + p,
+.exchange-result-card p + p {
+  border-top: 1px solid #f0f1f3;
+}
+
+.exchange-total-card strong,
+.exchange-result-card strong {
+  color: #343840;
+  font-size: 11px;
+}
+
+.exchange-total-card .zero-price {
+  color: #e1513f;
+}
+
+.exchange-warning {
+  margin-top: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #fff3e6;
+  color: #85511f;
+}
+
+.exchange-warning strong {
+  font-size: 11px;
+}
+
+.exchange-warning p {
+  margin-top: 5px;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.exchange-success-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  margin: 24px auto 12px;
+  place-items: center;
+  border-radius: 50%;
+  background: #42a56b;
+  color: #fff;
+  font-size: 31px;
+  box-shadow: 0 8px 24px rgba(66, 165, 107, 0.22);
+}
+
+.exchange-success-title,
+.exchange-success-subtitle {
+  text-align: center;
+}
+
+.exchange-success-title {
+  font-size: 18px;
+}
+
+.exchange-success-subtitle {
+  margin: 6px 0 18px;
+  color: #868b94;
+  font-size: 10px;
+}
+
+.exchange-result-card em,
+.exchange-result-card i {
+  padding: 3px 7px;
+  border-radius: 8px;
+  background: #fff0de;
+  color: #a7651d;
+  font-size: 9px;
+  font-style: normal;
+}
+
+.exchange-result-card i {
+  background: #eceef1;
+  color: #737881;
+}
+
+.exchange-notice {
+  margin-top: 12px;
+  padding: 12px 13px;
+  border: 1px solid #dfe8f1;
+  border-radius: 11px;
+  background: #f3f8fc;
+  color: #587189;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.sheet-overlay {
+  position: fixed;
+  z-index: 900;
+  inset: 0;
+  display: flex;
+  padding: 16px;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(12, 14, 19, 0.48);
+  animation: fade-in 0.18s ease-out;
+}
+
+.bottom-sheet {
+  width: min(430px, 100%);
+  max-height: min(78vh, 680px);
+  overflow: auto;
+  border-radius: 24px 24px 16px 16px;
+  background: #fff;
+  box-shadow: 0 22px 55px rgba(11, 14, 20, 0.26);
+  animation: sheet-up 0.25s cubic-bezier(0.22, 0.8, 0.25, 1);
+}
+
+.sheet-handle {
+  width: 38px;
+  height: 4px;
+  margin: 9px auto 4px;
+  border-radius: 2px;
+  background: #d9dce0;
+}
+
+.sheet-header {
+  display: flex;
+  padding: 13px 20px 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet-header h2 {
+  font-size: 17px;
+}
+
+.sheet-close {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f2f4;
+  color: #555a63;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.sheet-body {
+  padding: 0 20px 24px;
+}
+
+.detail-hero {
+  padding: 18px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, #f9edef, #fff 72%);
+}
+
+.detail-hero .detail-category {
+  margin-top: 9px;
+  color: var(--brand-red);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.detail-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-type,
+.detail-status {
+  padding: 3px 7px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.detail-type {
+  background: #fff;
+  color: #6d727a;
+}
+
+.detail-status {
+  background: #f8e8eb;
+  color: var(--brand-red);
+}
+
+.detail-hero h3 {
+  margin-top: 5px;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.detail-owner {
+  display: flex;
+  margin-top: 13px;
+  align-items: center;
+  gap: 7px;
+  color: #5e636c;
+  font-size: 11px;
+}
+
+.detail-owner svg {
+  width: 15px;
+  height: 15px;
+  color: var(--brand-red);
+}
+
+.detail-grid {
+  display: grid;
+  margin: 17px 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.detail-cell {
+  padding: 12px;
+  border: 1px solid #eceef1;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.detail-cell-wide {
+  grid-column: 1 / -1;
+}
+
+.detail-cell span {
+  display: block;
+  color: #979ba3;
+  font-size: 9px;
+}
+
+.detail-cell strong {
+  display: block;
+  margin-top: 4px;
+  color: #383c44;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.rule-block h4 {
+  font-size: 13px;
+}
+
+.rule-list {
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-list li {
+  position: relative;
+  padding: 5px 0 5px 17px;
+  color: #676c75;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.rule-list li::before {
+  position: absolute;
+  top: 11px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand-red);
+  content: "";
+}
+
+.sheet-primary {
+  width: 100%;
+  height: 44px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--brand-red);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 660;
+}
+
+.sheet-primary.neutral {
+  background: #2f333a;
+}
+
+.code-sheet .sheet-body {
+  text-align: center;
+}
+
+.code-kicker {
+  color: #888d96;
+  font-size: 11px;
+}
+
+.code-title {
+  margin-top: 5px;
+  font-size: 17px;
+}
+
+.barcode {
+  width: 250px;
+  max-width: 90%;
+  height: 92px;
+  margin: 24px auto 14px;
+  border: 12px solid #fff;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #17191e 0,
+      #17191e 3px,
+      transparent 3px,
+      transparent 6px,
+      #17191e 6px,
+      #17191e 8px,
+      transparent 8px,
+      transparent 12px
+    );
+  box-shadow: 0 0 0 1px #e5e7ea;
+}
+
+.code-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.code-cardno {
+  margin-top: 9px;
+  color: #666b74;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+.code-vin {
+  margin-top: 13px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f7f7f8;
+  color: #6e737b;
+  font-size: 11px;
+}
+
+.code-tip {
+  margin: 13px auto 0;
+  max-width: 280px;
+  color: #9599a1;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.code-copy {
+  width: 100%;
+  height: 42px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 21px;
+  background: var(--brand-red);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.status-help-list {
+  display: grid;
+  gap: 10px;
+}
+
+.status-help-list > div {
+  padding: 13px 14px;
+  border: 1px solid #eceef1;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.status-help-list strong {
+  color: #343840;
+  font-size: 12px;
+}
+
+.status-help-list p {
+  margin-top: 3px;
+  color: #777c85;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.toast-root {
+  position: fixed;
+  z-index: 1200;
+  right: 0;
+  bottom: 40px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.toast {
+  max-width: min(330px, calc(100vw - 36px));
+  padding: 11px 16px;
+  border-radius: 11px;
+  background: rgba(24, 27, 33, 0.92);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(10, 12, 16, 0.18);
+  animation: toast-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes sheet-up {
+  from { opacity: 0; transform: translateY(28px); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateX(24px); }
+}
+
+@media (min-width: 521px) {
+  .mobile-page-overlay {
+    padding: 16px;
+    align-items: center;
+  }
+
+  .mobile-subpage {
+    height: min(820px, calc(100vh - 32px));
+    border-radius: 26px;
+  }
+}
+
+@media (max-width: 520px) {
+  body {
+    background: var(--canvas);
+  }
+
+  .prototype-stage {
+    padding: 0;
+  }
+
+  .stage-caption {
+    display: none;
+  }
+
+  .device-shell {
+    width: 100%;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .wallet-app {
+    min-height: 100vh;
+  }
+
+  .topbar-title {
+    padding-left: 40px;
+  }
+
+  .sheet-overlay {
+    padding: 0;
+  }
+
+  .bottom-sheet {
+    border-radius: 24px 24px 0 0;
+  }
+}
+
+@media (max-width: 350px) {
+  .coupon-card {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+
+  .coupon-card::before,
+  .coupon-card::after {
+    left: 75px;
+  }
+
+  .coupon-main {
+    padding-right: 10px;
+    padding-left: 12px;
+  }
+
+  .coupon-action {
+    min-width: 68px;
+    padding: 0 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
+  <style data-inline-source="annotations/annotation.css">
+/* Prototype annotation runtime. All selectors are scoped with anno-. */
+#anno-toggle-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 99990;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #ff4d4f;
+  border-radius: 50%;
+  background: #fff;
+  color: #ff4d4f;
+  box-shadow: 0 4px 14px rgba(255, 77, 79, 0.25);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#anno-toggle-btn:hover {
+  background: #fff1f0;
+}
+
+#anno-toggle-btn.anno-hidden {
+  border-color: #d9d9d9;
+  color: #8c8c8c;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+#anno-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99980;
+  pointer-events: none;
+}
+
+.anno-marker {
+  position: fixed;
+  z-index: 99981;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #ff4d4f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.anno-marker:hover {
+  transform: scale(1.12);
+}
+
+.anno-popup {
+  position: fixed;
+  z-index: 99992;
+  width: 560px;
+  min-width: min(420px, calc(100vw - 32px));
+  min-height: 300px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  resize: both;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  color: #262626;
+}
+
+.anno-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.anno-popup-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.anno-popup-close {
+  border: 0;
+  background: transparent;
+  color: #8c8c8c;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.anno-popup-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.anno-popup-desc {
+  white-space: normal;
+}
+
+.anno-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.anno-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #262626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.anno-btn:hover {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.anno-btn-primary {
+  border-color: #ff4d4f;
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.anno-btn-primary:hover {
+  border-color: #ff7875;
+  background: #ff7875;
+  color: #fff;
+}
+
+.anno-edit-field {
+  margin-bottom: 12px;
+}
+
+.anno-edit-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #595959;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anno-edit-input,
+.anno-edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #262626;
+  font: inherit;
+}
+
+.anno-edit-textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.anno-edit-input:focus,
+.anno-edit-textarea:focus {
+  outline: none;
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.12);
+}
+
+.anno-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 100000;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 13px;
+}
+
+</style>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <div class="prototype-stage">
+    <div class="stage-caption" aria-hidden="true">
+      <span class="stage-dot"></span>
+      移动端交互原型 · 卡券中心 H5
+    </div>
+    <div class="device-shell">
+      <main id="app" class="wallet-app" aria-live="polite"></main>
+      <div id="modal-root"></div>
+      <div id="toast-root" class="toast-root" aria-live="assertive"></div>
+    </div>
+  </div>
+
+  <script data-inline-source="mock/data.js">
+(function () {
+  'use strict';
+
+  window.CouponWalletData = {
+    categories: [
+      { id: 'all', label: '全部' },
+      { id: 'purchase', label: '购车' },
+      { id: 'mall', label: '商城' },
+      { id: 'maintenance', label: '维保' },
+      { id: 'telematics', label: '车联' },
+      { id: 'pickup', label: '取送车' },
+      { id: 'testdrive', label: '试驾' },
+      { id: 'fuel', label: '加油' },
+      { id: 'mobility', label: '出行' },
+      { id: 'entertainment', label: '影视' },
+      { id: 'other', label: '其他' }
+    ],
+    statuses: [
+      { id: 'all', label: '全部状态' },
+      { id: 'AVAILABLE', label: '可使用' },
+      { id: 'PENDING_ACTIVATION', label: '待激活' },
+      { id: 'USED', label: '已使用' },
+      { id: 'EXPIRED', label: '已过期' }
+    ],
+    profile: {
+      name: '陈先生',
+      phoneMasked: '138****6218',
+      vehicleIds: ['vin-sylphy', 'vin-n7']
+    },
+    vehicles: [
+      {
+        id: 'vin-sylphy',
+        model: '轩逸',
+        vinMasked: 'VIN 尾号 8K32',
+        badge: '默认车辆',
+        color: 'pearl'
+      },
+      {
+        id: 'vin-n7',
+        model: 'N7',
+        vinMasked: 'VIN 尾号 2M19',
+        color: 'graphite'
+      }
+    ],
+    exchangeProducts: [
+      {
+        id: 'SKU-10001',
+        name: '车机流量包 10GB',
+        category: '车联网商品',
+        fulfillment: '车联网履约',
+        fulfillmentType: 'telematics',
+        stock: '充足',
+        icon: '流'
+      },
+      {
+        id: 'SKU-10002',
+        name: '智能座舱主题皮肤·星河',
+        category: '车联网商品',
+        fulfillment: '车联网履约',
+        fulfillmentType: 'telematics',
+        stock: '充足',
+        icon: '肤'
+      },
+      {
+        id: 'SKU-20001',
+        name: '日产舒适头枕',
+        category: '精品实物',
+        fulfillment: '直邮',
+        fulfillmentType: 'direct_ship',
+        stock: '156',
+        icon: '枕'
+      },
+      {
+        id: 'SKU-20002',
+        name: '车载香氛礼盒',
+        category: '精品实物',
+        fulfillment: '直邮',
+        fulfillmentType: 'direct_ship',
+        stock: '82',
+        icon: '香'
+      },
+      {
+        id: 'SKU-30001',
+        name: '基础洗车服务 1 次',
+        category: '门店服务',
+        fulfillment: '到店核销',
+        fulfillmentType: 'store_verify',
+        stock: '充足',
+        icon: '洗'
+      }
+    ],
+    coupons: [
+      {
+        id: 'cp-account-mall-01',
+        category: 'mall',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '满减券',
+        title: '商城满200减30元',
+        eyebrow: '新商城',
+        value: '30',
+        unit: '元',
+        valueCaption: '满200元可用',
+        expiresAt: '2026-08-08',
+        expiryText: '有效期至 2026.08.08',
+        tag: '即将过期',
+        theme: 'coral',
+        action: '去使用',
+        actionType: 'USE',
+        channel: '新商城',
+        rules: ['订单商品金额满200元可用', '仅限新商城自营车品', '不与其他满减券叠加'],
+        source: '夏日车品活动'
+      },
+      {
+        id: 'cp-account-purchase-01',
+        category: 'purchase',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '代金券',
+        title: '新车订购抵扣券',
+        eyebrow: '购车优惠',
+        value: '1000',
+        unit: '元',
+        valueCaption: '订车可抵',
+        expiresAt: '2026-09-30',
+        expiryText: '有效期至 2026.09.30',
+        tag: '',
+        theme: 'gold',
+        action: '查看详情',
+        actionType: 'DETAIL',
+        channel: '日产 APP / 专营店',
+        rules: ['适用于指定日产车型订购', '到店出示券详情后由销售顾问确认', '不可兑换现金'],
+        source: '新车上市活动'
+      },
+      {
+        id: 'cp-vin-sylphy-maint-01',
+        category: 'maintenance',
+        ownerType: 'VIN',
+        vehicleId: 'vin-sylphy',
+        status: 'AVAILABLE',
+        couponType: '代金券',
+        title: '基础保养服务抵扣券',
+        eyebrow: '维保优惠',
+        value: '300',
+        unit: '元',
+        valueCaption: '保养抵扣',
+        expiresAt: '2026-08-20',
+        expiryText: '有效期至 2026.08.20',
+        tag: '车辆共用',
+        theme: 'blue',
+        action: '出示核销码',
+        actionType: 'CODE',
+        channel: '授权专营店',
+        redeemCode: 'VX8K-32A7',
+        rules: ['仅限本券归属车辆使用', '车辆有效关联人均可到店使用', '一次核销，不可拆分'],
+        source: '保客维系活动'
+      },
+      {
+        id: 'cp-vin-sylphy-mall-01',
+        category: 'mall',
+        ownerType: 'VIN',
+        vehicleId: 'vin-sylphy',
+        status: 'AVAILABLE',
+        couponType: '折扣券',
+        title: '轩逸专属车品8折券',
+        eyebrow: '商城优惠',
+        value: '8',
+        unit: '折',
+        valueCaption: '最高减200元',
+        expiresAt: '2026-09-15',
+        expiryText: '有效期至 2026.09.15',
+        tag: '车辆专享',
+        theme: 'purple',
+        action: '去使用',
+        actionType: 'USE',
+        channel: '新商城',
+        rules: ['适用于轩逸适配车品', '优惠金额最高200元', '下单时需保持当前车辆为轩逸'],
+        source: '车主专享活动'
+      },
+      {
+        id: 'cp-vin-sylphy-exchange-01',
+        category: 'mall',
+        ownerType: 'VIN',
+        vehicleId: 'vin-sylphy',
+        status: 'AVAILABLE',
+        couponType: '通用兑换券',
+        title: '夏日全场好礼5选2兑换券',
+        eyebrow: '新商城兑换',
+        value: '5选2',
+        unit: '',
+        valueCaption: '任选2件商品',
+        expiresAt: '2026-08-31',
+        expiryText: '有效期至 2026.08.31',
+        tag: '车辆共用',
+        theme: 'rose',
+        action: '去兑换',
+        actionType: 'EXCHANGE_FLOW',
+        channel: '卡券中心 / 新商城',
+        exchangeRule: {
+          mode: 'choice',
+          poolSize: 5,
+          redeemQuantity: 2,
+          allowSameSku: true
+        },
+        rules: ['5种候选商品中任选2件', '支持选择不同商品，也可选择同一商品2件', '确认兑换后卡券立即核销，履约状态独立更新'],
+        source: '夏日车主好礼',
+        redeemMethod: '卡券中心在线选品兑换'
+      },
+      {
+        id: 'cp-vin-sylphy-telematics-01',
+        category: 'telematics',
+        ownerType: 'VIN',
+        vehicleId: 'vin-sylphy',
+        status: 'AVAILABLE',
+        couponType: '权益券',
+        title: '车联流量月包兑换券',
+        eyebrow: '车联权益',
+        value: '1',
+        unit: '个月',
+        valueCaption: '2GB流量包',
+        expiresAt: '2026-10-31',
+        expiryText: '有效期至 2026.10.31',
+        tag: '',
+        theme: 'cyan',
+        action: '立即兑换',
+        actionType: 'USE',
+        channel: '日产智联',
+        rules: ['仅限本券归属车辆激活', '兑换后预计5分钟内到账', '每辆车限兑换一次'],
+        source: '车联网回馈活动'
+      },
+      {
+        id: 'cp-vin-n7-maint-01',
+        category: 'maintenance',
+        ownerType: 'VIN',
+        vehicleId: 'vin-n7',
+        status: 'AVAILABLE',
+        couponType: '服务券',
+        title: 'N7 首保服务券',
+        eyebrow: '维保优惠',
+        value: '首保',
+        unit: '',
+        valueCaption: '基础检查+工时',
+        expiresAt: '2027-01-31',
+        expiryText: '有效期至 2027.01.31',
+        tag: '车辆共用',
+        theme: 'green',
+        action: '出示核销码',
+        actionType: 'CODE',
+        channel: '授权专营店',
+        redeemCode: 'N7M2-19B6',
+        rules: ['仅限本券归属车辆使用', '车辆有效关联人均可到店使用', '需提前预约服务时间'],
+        source: '新车首保权益'
+      },
+      {
+        id: 'cp-vin-n7-pickup-01',
+        category: 'pickup',
+        ownerType: 'VIN',
+        vehicleId: 'vin-n7',
+        status: 'AVAILABLE',
+        couponType: '服务券',
+        title: '上门取送车服务券',
+        eyebrow: '取送车',
+        value: '1',
+        unit: '次',
+        valueCaption: '20公里内',
+        expiresAt: '2026-12-31',
+        expiryText: '有效期至 2026.12.31',
+        tag: '车辆共用',
+        theme: 'indigo',
+        action: '立即预约',
+        actionType: 'USE',
+        channel: '日产 APP',
+        rules: ['仅限本券归属车辆预约', '服务半径以专营店确认结果为准', '预约成功后不可转赠'],
+        source: '新能源车主权益'
+      },
+      {
+        id: 'cp-account-mobility-01',
+        category: 'mobility',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '代金券',
+        title: '出行平台10元券',
+        eyebrow: '出行优惠',
+        value: '10',
+        unit: '元',
+        valueCaption: '无门槛',
+        expiresAt: '2026-08-31',
+        expiryText: '有效期至 2026.08.31',
+        tag: '',
+        theme: 'orange',
+        action: '去使用',
+        actionType: 'USE',
+        channel: '合作出行平台',
+        rules: ['领取后跳转合作平台使用', '每个账号限用一次', '不可兑换现金'],
+        source: '会员关怀'
+      },
+      {
+        id: 'cp-account-ent-code-01',
+        category: 'entertainment',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '第三方券',
+        title: '视频会员月卡兑换券',
+        eyebrow: '影视权益',
+        value: '月卡',
+        unit: '',
+        valueCaption: '爱奇艺黄金会员',
+        expiresAt: '2026-09-30',
+        expiryText: '有效期至 2026.09.30',
+        tag: '新领取',
+        theme: 'violet',
+        action: '查看兑换码',
+        actionType: 'EXCHANGE_CODE',
+        channel: '爱奇艺',
+        redeemCode: 'IQY7-K9PX-M2Q8',
+        rules: ['复制兑换码后前往爱奇艺会员中心兑换', '每个账号限兑换一次', '兑换成功后不可退换'],
+        source: '会员月度福利',
+        applicableProduct: '爱奇艺黄金会员月卡',
+        redeemMethod: '第三方平台兑换码'
+      },
+      {
+        id: 'cp-account-fuel-code-01',
+        category: 'fuel',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '满减券',
+        title: '加油满100减15元',
+        eyebrow: '加油优惠',
+        value: '15',
+        unit: '元',
+        valueCaption: '满100元可用',
+        expiresAt: '2026-10-15',
+        expiryText: '有效期至 2026.10.15',
+        tag: '',
+        theme: 'amber',
+        action: '查看兑换码',
+        actionType: 'EXCHANGE_CODE',
+        channel: '合作加油平台',
+        redeemCode: 'FUEL-15-2864',
+        rules: ['单笔加油订单满100元可用', '需在合作加油平台输入兑换码', '不可与平台其他券叠加'],
+        source: '出行关怀活动',
+        redeemMethod: '第三方平台兑换码'
+      },
+      {
+        id: 'cp-vin-n7-pending-01',
+        category: 'maintenance',
+        ownerType: 'VIN',
+        vehicleId: 'vin-n7',
+        status: 'PENDING_ACTIVATION',
+        couponType: '权益券',
+        title: '冬季车辆检测权益券',
+        eyebrow: '维保权益',
+        value: '检测',
+        unit: '',
+        valueCaption: '12项冬季检查',
+        expiresAt: '2026-08-31',
+        expiryText: '需在 2026.08.31 前激活',
+        tag: '待激活',
+        theme: 'teal',
+        action: '激活',
+        actionType: 'ACTIVATE',
+        afterActivateAction: '出示核销码',
+        afterActivateActionType: 'CODE',
+        channel: '授权专营店',
+        redeemCode: 'N7CK-2M19',
+        rules: ['激活后方可预约并到店使用', '仅限本券归属车辆使用', '车辆有效关联人均可激活，但仅生成一个券实例'],
+        source: '冬季车主关怀',
+        redeemMethod: '到店出示核销码'
+      },
+      {
+        id: 'cp-account-virtual-01',
+        category: 'other',
+        ownerType: 'ACCOUNT',
+        status: 'AVAILABLE',
+        couponType: '虚拟卡',
+        title: '洗车电子储值卡',
+        eyebrow: '第三方权益',
+        value: '50',
+        unit: '元',
+        valueCaption: '电子储值卡',
+        expiresAt: '2026-12-31',
+        expiryText: '有效期至 2026.12.31',
+        tag: '',
+        theme: 'slate',
+        action: '查看兑换码',
+        actionType: 'EXCHANGE_CODE',
+        channel: '合作洗车平台',
+        redeemCode: 'WASH-5K8D-62',
+        cardNo: 'Card No. 8026 6218 3005',
+        rules: ['出示卡号或兑换码后由门店核验', '余额一次性抵扣，不设找零', '不可兑换现金'],
+        source: '车主服务礼包',
+        redeemMethod: '电子卡号 / 兑换码'
+      },
+      {
+        id: 'cp-vin-sylphy-used-01',
+        category: 'maintenance',
+        ownerType: 'VIN',
+        vehicleId: 'vin-sylphy',
+        status: 'USED',
+        couponType: '服务券',
+        title: '空调系统养护券',
+        eyebrow: '维保优惠',
+        value: '200',
+        unit: '元',
+        valueCaption: '已使用',
+        expiresAt: '2026-07-30',
+        expiryText: '使用时间 2026.07.12',
+        tag: '',
+        theme: 'muted',
+        action: '查看详情',
+        actionType: 'DETAIL',
+        channel: '上海联友专营店',
+        rules: ['已于2026年7月12日核销', '核销车辆为轩逸 VIN尾号8K32'],
+        source: '夏季养护活动',
+        usedAt: '2026.07.12 14:32',
+        usedStore: '上海联友专营店'
+      },
+      {
+        id: 'cp-account-ent-expired-01',
+        category: 'entertainment',
+        ownerType: 'ACCOUNT',
+        status: 'EXPIRED',
+        couponType: '第三方券',
+        title: '视频会员月卡',
+        eyebrow: '影视权益',
+        value: '月卡',
+        unit: '',
+        valueCaption: '已过期',
+        expiresAt: '2026-06-30',
+        expiryText: '已于 2026.06.30 过期',
+        tag: '',
+        theme: 'muted',
+        action: '查看详情',
+        actionType: 'DETAIL',
+        channel: '第三方权益平台',
+        rules: ['该券已过期，无法兑换'],
+        source: '会员月度福利',
+        statusReason: '已过期'
+      },
+      {
+        id: 'cp-vin-n7-activation-timeout-01',
+        category: 'maintenance',
+        ownerType: 'VIN',
+        vehicleId: 'vin-n7',
+        status: 'EXPIRED',
+        couponType: '权益券',
+        title: '轮胎安全检测权益券',
+        eyebrow: '维保权益',
+        value: '检测',
+        unit: '',
+        valueCaption: '激活超时',
+        expiresAt: '2026-06-15',
+        expiryText: '激活截止 2026.06.15',
+        tag: '',
+        theme: 'muted',
+        action: '查看详情',
+        actionType: 'DETAIL',
+        channel: '授权专营店',
+        rules: ['该券未在规定时间内激活，当前不可使用', '如有疑问请联系客户服务'],
+        source: '安全检查活动',
+        statusReason: '激活超时'
+      }
+    ]
+  };
+})();
+
+</script>
+  <script data-inline-source="js/app.js">
+(function () {
+  'use strict';
+
+  var data = window.CouponWalletData;
+  var app = document.getElementById('app');
+  var modalRoot = document.getElementById('modal-root');
+  var toastRoot = document.getElementById('toast-root');
+  var state = {
+    category: 'all',
+    status: 'AVAILABLE',
+    selectedCouponId: null,
+    exchangeStep: 'detail',
+    exchangeQuantities: {}
+  };
+  var toastTimer = null;
+
+  var icons = {
+    account: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.8"/><path d="M4.8 20c.7-3.2 3.3-5.2 7.2-5.2s6.5 2 7.2 5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    car: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5.1 10 1.5-4h10.8l1.5 4M4 11.5h16v6H4v-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 17.5V20m10-2.5V20M7.5 14.5h.01m8.99 0h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    shared: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 12.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm8-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2.8 19c.5-3 2.4-4.6 5.2-4.6s4.7 1.6 5.2 4.6m.3-5.3c.7-.4 1.5-.6 2.5-.6 2.8 0 4.5 1.7 4.8 4.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.5V16m0-8.2v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  };
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function getCategoryLabel(categoryId) {
+    var item = data.categories.find(function (category) {
+      return category.id === categoryId;
+    });
+    return item ? item.label : '其他';
+  }
+
+  function getStatusLabel(status) {
+    var labels = {
+      AVAILABLE: '可使用',
+      PENDING_ACTIVATION: '待激活',
+      USED: '已使用',
+      EXPIRED: '已过期'
+    };
+    return labels[status] || '未知状态';
+  }
+
+  function getStatusFilterLabel(status) {
+    var item = data.statuses.find(function (entry) {
+      return entry.id === status;
+    });
+    return item ? item.label : '全部状态';
+  }
+
+  function getVehicle(vehicleId) {
+    return data.vehicles.find(function (vehicle) {
+      return vehicle.id === vehicleId;
+    });
+  }
+
+  function getCoupon(couponId) {
+    return data.coupons.find(function (coupon) {
+      return coupon.id === couponId;
+    });
+  }
+
+  function couponsForCurrentView() {
+    var statusOrder = {
+      PENDING_ACTIVATION: 0,
+      AVAILABLE: 1,
+      USED: 2,
+      EXPIRED: 3
+    };
+    return data.coupons
+      .filter(function (coupon) {
+        return state.status === 'all' || coupon.status === state.status;
+      })
+      .filter(function (coupon) {
+        return state.category === 'all' || coupon.category === state.category;
+      })
+      .sort(function (a, b) {
+        if (statusOrder[a.status] !== statusOrder[b.status]) {
+          return statusOrder[a.status] - statusOrder[b.status];
+        }
+        if (a.tag === '即将过期' && b.tag !== '即将过期') return -1;
+        if (b.tag === '即将过期' && a.tag !== '即将过期') return 1;
+        return String(a.expiresAt).localeCompare(String(b.expiresAt));
+      });
+  }
+
+  function renderHeader() {
+    return [
+      '<header class="wallet-header">',
+        '<div class="topbar">',
+          '<h1 class="topbar-title">我的卡券</h1>',
+          '<button class="history-button" type="button" data-action="status-help" data-testid="status-help">',
+            icons.info, '<span>状态说明</span>',
+          '</button>',
+        '</div>',
+      '</header>'
+    ].join('');
+  }
+
+  function renderFilters(viewCoupons) {
+    var currentLabel = state.category === 'all' ? '全部业务分类' : getCategoryLabel(state.category);
+    return [
+      '<section class="category-panel" aria-label="卡券筛选">',
+        '<div class="category-tabs" role="tablist" aria-label="业务分类" data-testid="category-tabs">',
+          data.categories.map(function (category) {
+            var active = category.id === state.category;
+            return [
+              '<button type="button" role="tab" class="category-tab', active ? ' active' : '', '"',
+                ' aria-selected="', active ? 'true' : 'false', '"',
+                ' data-category="', escapeHtml(category.id), '"',
+                ' data-testid="category-', escapeHtml(category.id), '">',
+                escapeHtml(category.label),
+              '</button>'
+            ].join('');
+          }).join(''),
+        '</div>',
+        '<div class="status-tabs" role="tablist" aria-label="卡券状态" data-testid="status-tabs">',
+          data.statuses.map(function (status) {
+            var active = status.id === state.status;
+            var count = data.coupons.filter(function (coupon) {
+              var categoryMatched = state.category === 'all' || coupon.category === state.category;
+              return categoryMatched && (status.id === 'all' || coupon.status === status.id);
+            }).length;
+            return [
+              '<button type="button" role="tab" class="status-tab', active ? ' active' : '', '"',
+                ' aria-selected="', active ? 'true' : 'false', '"',
+                ' data-status="', escapeHtml(status.id), '" data-testid="status-', escapeHtml(status.id), '">',
+                '<span>', escapeHtml(status.label), '</span><em>', count, '</em>',
+              '</button>'
+            ].join('');
+          }).join(''),
+        '</div>',
+        '<div class="category-meta">',
+          '<strong>', escapeHtml(currentLabel), ' · ', escapeHtml(getStatusFilterLabel(state.status)), '</strong>',
+          '<span>筛选后 ', viewCoupons.length, ' 张</span>',
+        '</div>',
+      '</section>'
+    ].join('');
+  }
+
+  function renderStatusMark(coupon) {
+    if (coupon.status === 'AVAILABLE') return '';
+    var label = coupon.statusReason || getStatusLabel(coupon.status);
+    return '<span class="status-mark status-' + escapeHtml(coupon.status.toLowerCase()) + '">' + escapeHtml(label) + '</span>';
+  }
+
+  function renderCouponCard(coupon) {
+    var actionable = coupon.status === 'AVAILABLE' || coupon.status === 'PENDING_ACTIVATION';
+    var primary = actionable && coupon.actionType !== 'DETAIL';
+    var historyClass = coupon.status === 'USED' || coupon.status === 'EXPIRED' ? ' is-history' : '';
+    return [
+      '<article class="coupon-card theme-', escapeHtml(coupon.theme), historyClass, '"',
+        ' data-coupon-id="', escapeHtml(coupon.id), '" data-category="', escapeHtml(coupon.category), '"',
+        ' data-status="', escapeHtml(coupon.status), '" data-owner-type="', escapeHtml(coupon.ownerType), '">',
+        renderStatusMark(coupon),
+        '<div class="coupon-value">',
+          '<div class="value-line"><span class="value-main">', escapeHtml(coupon.value), '</span>',
+            '<span class="value-unit">', escapeHtml(coupon.unit), '</span></div>',
+          '<p class="value-caption">', escapeHtml(coupon.valueCaption), '</p>',
+        '</div>',
+        '<div class="coupon-main">',
+          '<div class="coupon-topline">',
+            '<span class="coupon-type">', escapeHtml(coupon.couponType), '</span>',
+            coupon.tag ? '<span class="coupon-tag">' + escapeHtml(coupon.tag) + '</span>' : '',
+          '</div>',
+          '<h3 class="coupon-title">', escapeHtml(coupon.title), '</h3>',
+          '<p class="coupon-subtitle">', escapeHtml(coupon.eyebrow), ' · ', escapeHtml(getCategoryLabel(coupon.category)), '</p>',
+          '<p class="coupon-expiry">', escapeHtml(coupon.expiryText), '</p>',
+          '<div class="coupon-footer">',
+            '<button class="detail-link" type="button" data-action="detail" data-coupon="', escapeHtml(coupon.id), '">查看详情</button>',
+            actionable
+              ? '<button class="coupon-action' + (primary ? ' primary' : '') + '" type="button" data-action="coupon-action" data-coupon="' + escapeHtml(coupon.id) + '">' + escapeHtml(coupon.action) + '</button>'
+              : '<span class="coupon-status-text">' + escapeHtml(coupon.statusReason || getStatusLabel(coupon.status)) + '</span>',
+          '</div>',
+        '</div>',
+      '</article>'
+    ].join('');
+  }
+
+  function renderAccountGroup(coupons) {
+    if (!coupons.length) return '';
+    return [
+      '<section class="coupon-group" data-group="account" data-testid="group-account">',
+        '<div class="group-header">',
+          '<span class="group-icon account">', icons.account, '</span>',
+          '<div class="group-heading"><h2>个人卡券</h2><p>', escapeHtml(data.profile.phoneMasked), '</p></div>',
+          '<span class="group-count">', coupons.length, ' 张</span>',
+        '</div>',
+        '<div class="coupon-list">', coupons.map(renderCouponCard).join(''), '</div>',
+      '</section>'
+    ].join('');
+  }
+
+  function renderVehicleGroup(vehicle, coupons) {
+    if (!coupons.length) return '';
+    var hasUsable = coupons.some(function (coupon) {
+      return coupon.status === 'AVAILABLE' || coupon.status === 'PENDING_ACTIVATION';
+    });
+    return [
+      '<section class="coupon-group" data-group="', escapeHtml(vehicle.id), '" data-testid="group-', escapeHtml(vehicle.id), '">',
+        '<div class="group-header">',
+          '<span class="group-icon">', icons.car, '</span>',
+          '<div class="group-heading">',
+            '<h2>', escapeHtml(vehicle.model),
+              vehicle.badge ? '<span class="vehicle-badge">' + escapeHtml(vehicle.badge) + '</span>' : '',
+            '</h2>',
+            '<p>', escapeHtml(vehicle.vinMasked), '</p>',
+          '</div>',
+          '<span class="group-count">', coupons.length, ' 张</span>',
+        '</div>',
+        hasUsable
+          ? '<p class="share-note">' + icons.shared + '<span>车辆有效关联人均可使用</span></p>'
+          : '',
+        '<div class="coupon-list">', coupons.map(renderCouponCard).join(''), '</div>',
+      '</section>'
+    ].join('');
+  }
+
+  function renderEmpty() {
+    var categoryLabel = state.category === 'all' ? '' : getCategoryLabel(state.category);
+    return [
+      '<section class="empty-state" data-testid="empty-state">',
+        '<div class="empty-illustration"><div class="empty-ticket"></div></div>',
+        '<h2>暂无', escapeHtml(categoryLabel), escapeHtml(getStatusFilterLabel(state.status)), '卡券</h2>',
+        '<p>当前筛选下没有符合条件的卡券<br>可以切换其他分类或状态继续查看</p>',
+        '<button type="button" class="empty-reset" data-action="reset-filter">查看全部</button>',
+      '</section>'
+    ].join('');
+  }
+
+  function renderContent(viewCoupons) {
+    if (!viewCoupons.length) return '<div class="wallet-content">' + renderEmpty() + '</div>';
+    var accountCoupons = viewCoupons.filter(function (coupon) {
+      return coupon.ownerType === 'ACCOUNT';
+    });
+    var groups = renderAccountGroup(accountCoupons);
+    data.vehicles.forEach(function (vehicle) {
+      var vehicleCoupons = viewCoupons.filter(function (coupon) {
+        return coupon.ownerType === 'VIN' && coupon.vehicleId === vehicle.id;
+      });
+      groups += renderVehicleGroup(vehicle, vehicleCoupons);
+    });
+    return '<div class="wallet-content" data-testid="wallet-content">' + groups + '</div>';
+  }
+
+  function render() {
+    var viewCoupons = couponsForCurrentView();
+    app.innerHTML = renderHeader() + renderFilters(viewCoupons) + renderContent(viewCoupons);
+    bindEvents();
+  }
+
+  function bindEvents() {
+    app.querySelectorAll('[data-category]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.category = button.getAttribute('data-category');
+        render();
+      });
+    });
+
+    app.querySelectorAll('[data-status]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.status = button.getAttribute('data-status');
+        render();
+      });
+    });
+
+    app.querySelectorAll('[data-action]').forEach(function (button) {
+      var action = button.getAttribute('data-action');
+      if (action === 'detail') {
+        button.addEventListener('click', function () {
+          openDetail(button.getAttribute('data-coupon'));
+        });
+      }
+      if (action === 'coupon-action') {
+        button.addEventListener('click', function () {
+          handleCouponAction(button.getAttribute('data-coupon'));
+        });
+      }
+      if (action === 'reset-filter') {
+        button.addEventListener('click', function () {
+          state.category = 'all';
+          state.status = 'AVAILABLE';
+          render();
+        });
+      }
+      if (action === 'status-help') {
+        button.addEventListener('click', openStatusHelp);
+      }
+    });
+  }
+
+  function ownerText(coupon) {
+    if (coupon.ownerType === 'ACCOUNT') {
+      return '个人卡券 · ' + data.profile.phoneMasked;
+    }
+    var vehicle = getVehicle(coupon.vehicleId);
+    return vehicle.model + ' · ' + vehicle.vinMasked + ' · 关联人共用';
+  }
+
+  function buildConditionalDetails(coupon) {
+    var items = [];
+    if (coupon.applicableProduct) items.push(['适用商品', coupon.applicableProduct]);
+    if (coupon.redeemMethod) items.push(['兑换/核销方式', coupon.redeemMethod]);
+    if (coupon.cardNo) items.push(['电子卡号', coupon.cardNo]);
+    if (coupon.usedAt) items.push(['使用时间', coupon.usedAt]);
+    if (coupon.usedStore) items.push(['使用门店', coupon.usedStore]);
+    return items.map(function (item) {
+      return '<div class="detail-cell detail-cell-wide"><span>' + escapeHtml(item[0]) + '</span><strong>' + escapeHtml(item[1]) + '</strong></div>';
+    }).join('');
+  }
+
+  function detailPrimaryLabel(coupon) {
+    if (coupon.status === 'USED' || coupon.status === 'EXPIRED' || coupon.actionType === 'DETAIL') return '关闭';
+    return coupon.action;
+  }
+
+  function openDetail(couponId) {
+    var coupon = getCoupon(couponId);
+    if (!coupon) return;
+    state.selectedCouponId = coupon.id;
+    modalRoot.innerHTML = [
+      '<div class="sheet-overlay" data-action="overlay-close">',
+        '<section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title" data-testid="detail-sheet">',
+          '<div class="sheet-handle"></div>',
+          '<div class="sheet-header">',
+            '<h2 id="detail-title">卡券详情</h2>',
+            '<button class="sheet-close" type="button" aria-label="关闭" data-action="close-modal">×</button>',
+          '</div>',
+          '<div class="sheet-body">',
+            '<div class="detail-hero">',
+              '<div class="detail-hero-top"><span class="detail-type">', escapeHtml(coupon.couponType), '</span><span class="detail-status">', escapeHtml(coupon.statusReason || getStatusLabel(coupon.status)), '</span></div>',
+              '<p class="detail-category">', escapeHtml(getCategoryLabel(coupon.category)), ' · ', escapeHtml(coupon.eyebrow), '</p>',
+              '<h3>', escapeHtml(coupon.title), '</h3>',
+              '<p class="detail-owner">', coupon.ownerType === 'VIN' ? icons.car : icons.account,
+                '<span>', escapeHtml(ownerText(coupon)), '</span></p>',
+            '</div>',
+            '<div class="detail-grid">',
+              '<div class="detail-cell"><span>有效期</span><strong>', escapeHtml(coupon.expiryText), '</strong></div>',
+              '<div class="detail-cell"><span>使用渠道</span><strong>', escapeHtml(coupon.channel), '</strong></div>',
+              '<div class="detail-cell"><span>券来源</span><strong>', escapeHtml(coupon.source), '</strong></div>',
+              '<div class="detail-cell"><span>当前状态</span><strong>', escapeHtml(coupon.statusReason || getStatusLabel(coupon.status)), '</strong></div>',
+              buildConditionalDetails(coupon),
+            '</div>',
+            '<div class="rule-block"><h4>使用规则</h4><ul class="rule-list">',
+              coupon.rules.map(function (rule) { return '<li>' + escapeHtml(rule) + '</li>'; }).join(''),
+            '</ul></div>',
+            '<button class="sheet-primary', coupon.status === 'USED' || coupon.status === 'EXPIRED' ? ' neutral' : '', '" type="button" data-action="detail-primary" data-coupon="', escapeHtml(coupon.id), '">',
+              escapeHtml(detailPrimaryLabel(coupon)),
+            '</button>',
+          '</div>',
+        '</section>',
+      '</div>'
+    ].join('');
+    bindModalEvents();
+    focusModal();
+  }
+
+  function openCode(couponId, codeKind) {
+    var coupon = getCoupon(couponId);
+    if (!coupon) return;
+    var vehicle = coupon.vehicleId ? getVehicle(coupon.vehicleId) : null;
+    var isExchange = codeKind === 'exchange' || coupon.actionType === 'EXCHANGE_CODE';
+    state.selectedCouponId = coupon.id;
+    if (!isExchange) {
+      modalRoot.innerHTML = [
+        '<div class="mobile-page-overlay">',
+          '<section class="mobile-subpage verify-code-page" role="dialog" aria-modal="true" aria-labelledby="code-title" data-testid="code-sheet" data-code-kind="redemption">',
+            '<header class="mobile-page-nav">',
+              '<button class="mobile-back" type="button" aria-label="返回卡包" data-action="close-modal">‹</button>',
+              '<h2 id="code-title">核销码</h2>',
+              '<span class="nav-placeholder"></span>',
+            '</header>',
+            '<div class="mobile-page-body">',
+              '<article class="code-coupon-summary">',
+                '<div class="code-summary-value"><strong>', escapeHtml(coupon.value), '</strong><span>', escapeHtml(coupon.unit), '</span><small>', escapeHtml(coupon.valueCaption), '</small></div>',
+                '<div class="code-summary-main">',
+                  '<div><span class="code-summary-type">', escapeHtml(coupon.couponType), '</span>', coupon.tag ? '<span class="code-summary-tag">' + escapeHtml(coupon.tag) + '</span>' : '', '</div>',
+                  '<h3>', escapeHtml(coupon.title), '</h3>',
+                  '<p>', escapeHtml(coupon.expiryText), '</p>',
+                  '<p>', escapeHtml(vehicle ? vehicle.model + ' · ' + vehicle.vinMasked : data.profile.phoneMasked), '</p>',
+                '</div>',
+              '</article>',
+              '<section class="verify-panel">',
+                '<p class="verify-kicker">请向商家出示以下核销码</p>',
+                '<div class="barcode" aria-label="条形核销码"></div>',
+                '<p class="code-value">', escapeHtml(coupon.redeemCode || 'DEMO-2026'), '</p>',
+                '<div class="verify-divider"><span>或使用二维码核销</span></div>',
+                '<div class="qr-code" aria-label="二维码核销码"><i></i><b></b><em></em></div>',
+                '<p class="code-vin">核销车辆：', escapeHtml(vehicle.model), ' · ', escapeHtml(vehicle.vinMasked), '</p>',
+              '</section>',
+              '<div class="verify-notice">',
+                '<strong>使用说明</strong>',
+                '<p>本页面对应同一个 VIN 券实例，车辆有效关联人均可出示；核销成功后其他关联人同步看到已使用状态。</p>',
+                '<p>多人同时操作时，仅首个有效核销请求成功。</p>',
+              '</div>',
+            '</div>',
+          '</section>',
+        '</div>'
+      ].join('');
+      bindModalEvents();
+      focusModal();
+      return;
+    }
+    modalRoot.innerHTML = [
+      '<div class="sheet-overlay" data-action="overlay-close">',
+        '<section class="bottom-sheet code-sheet" role="dialog" aria-modal="true" aria-labelledby="code-title" data-testid="code-sheet" data-code-kind="exchange">',
+          '<div class="sheet-handle"></div>',
+          '<div class="sheet-header">',
+            '<h2 id="code-title">查看兑换码</h2>',
+            '<button class="sheet-close" type="button" aria-label="关闭" data-action="close-modal">×</button>',
+          '</div>',
+          '<div class="sheet-body">',
+            '<p class="code-kicker">请复制后前往合作平台兑换</p>',
+            '<h3 class="code-title">', escapeHtml(coupon.title), '</h3>',
+            '<div class="barcode" aria-hidden="true"></div>',
+            '<p class="code-value">', escapeHtml(coupon.redeemCode || 'DEMO-2026'), '</p>',
+            coupon.cardNo ? '<p class="code-cardno">' + escapeHtml(coupon.cardNo) + '</p>' : '',
+            vehicle
+              ? '<p class="code-vin">核销车辆：' + escapeHtml(vehicle.model) + ' · ' + escapeHtml(vehicle.vinMasked) + '</p>'
+              : '<p class="code-vin">归属账号：' + escapeHtml(data.profile.phoneMasked) + '</p>',
+            '<p class="code-tip">',
+              '兑换结果以合作平台为准，兑换成功后卡券状态将同步更新。',
+            '</p>',
+            '<button class="code-copy" type="button" data-action="copy-code" data-code="', escapeHtml(coupon.redeemCode || ''), '">复制兑换码</button>',
+          '</div>',
+        '</section>',
+      '</div>'
+    ].join('');
+    bindModalEvents();
+    focusModal();
+  }
+
+  function exchangeQuantity(productId) {
+    return state.exchangeQuantities[productId] || 0;
+  }
+
+  function exchangeTotal() {
+    return Object.keys(state.exchangeQuantities).reduce(function (sum, productId) {
+      return sum + exchangeQuantity(productId);
+    }, 0);
+  }
+
+  function selectedExchangeProducts() {
+    return data.exchangeProducts.filter(function (product) {
+      return exchangeQuantity(product.id) > 0;
+    });
+  }
+
+  function renderExchangeProduct(product, selectable) {
+    var quantity = exchangeQuantity(product.id);
+    return [
+      '<article class="exchange-product">',
+        '<span class="exchange-product-icon">', escapeHtml(product.icon), '</span>',
+        '<div class="exchange-product-info">',
+          '<h4>', escapeHtml(product.name), quantity && !selectable ? ' × ' + quantity : '', '</h4>',
+          '<p>', escapeHtml(product.category), ' · ', escapeHtml(product.fulfillment), '</p>',
+          selectable ? '<small>库存 ' + escapeHtml(product.stock) + '</small>' : '',
+        '</div>',
+        selectable
+          ? '<div class="exchange-qty"><button type="button" data-exchange-dec="' + escapeHtml(product.id) + '"' + (quantity === 0 ? ' disabled' : '') + '>−</button><span>' + quantity + '</span><button type="button" data-exchange-inc="' + escapeHtml(product.id) + '"' + (exchangeTotal() >= 2 ? ' disabled' : '') + '>＋</button></div>'
+          : '',
+      '</article>'
+    ].join('');
+  }
+
+  function exchangeDetailHtml(coupon) {
+    var vehicle = getVehicle(coupon.vehicleId);
+    return [
+      '<div class="exchange-hero">',
+        '<span>通用兑换券 · 新商城</span>',
+        '<h3>', escapeHtml(coupon.title), '</h3>',
+        '<p>', escapeHtml(coupon.expiryText), '</p>',
+      '</div>',
+      '<section class="exchange-card choice-rule-card">',
+        '<div class="choice-rule"><strong>5选2</strong><span>5种候选商品中任选2件</span></div>',
+        '<p>支持选择不同商品，也可将同一商品数量选为2。</p>',
+      '</section>',
+      '<section class="exchange-card">',
+        '<h3>绑定车辆</h3>',
+        '<strong>', escapeHtml(vehicle.model), '</strong>',
+        '<p>', escapeHtml(vehicle.vinMasked), '</p>',
+        '<small>券实例已绑定该 VIN，兑换时无需选车。</small>',
+      '</section>',
+      '<section class="exchange-card">',
+        '<h3>候选商品（5种）</h3>',
+        data.exchangeProducts.slice(0, 3).map(function (product) {
+          return renderExchangeProduct(product, false);
+        }).join(''),
+        '<p class="exchange-more">还有2种商品，进入选品页查看</p>',
+      '</section>',
+      '<section class="exchange-card">',
+        '<h3>使用说明</h3>',
+        '<p>确认兑换后卡券立即核销；履约、发货或到店核销进度在兑换单中独立更新。</p>',
+      '</section>',
+      '<button class="exchange-primary" type="button" data-exchange-next="select">去选商品</button>'
+    ].join('');
+  }
+
+  function exchangeSelectHtml() {
+    return [
+      '<div class="exchange-selection-tip"><strong>5选2</strong><span>已选 <b>', exchangeTotal(), '</b> / 2 件</span></div>',
+      '<p class="exchange-helper">可跨履约方式选择2件商品，也可将同一商品数量选为2。</p>',
+      '<div class="exchange-product-list">',
+        data.exchangeProducts.map(function (product) {
+          return renderExchangeProduct(product, true);
+        }).join(''),
+      '</div>',
+      '<button class="exchange-primary" type="button" data-exchange-next="confirm"', exchangeTotal() === 2 ? '' : ' disabled', '>选好了，确认兑换</button>'
+    ].join('');
+  }
+
+  function exchangeFulfillmentHtml(coupon) {
+    var selected = selectedExchangeProducts();
+    var vehicle = getVehicle(coupon.vehicleId);
+    var types = selected.map(function (product) { return product.fulfillmentType; });
+    var html = '';
+    if (types.indexOf('telematics') > -1) {
+      html += '<section class="exchange-card"><h3>车联网履约车辆</h3><strong>' + escapeHtml(vehicle.model) + '</strong><p>' + escapeHtml(vehicle.vinMasked) + '</p><small>车辆由券实例自动带入，不可修改。</small></section>';
+    }
+    if (types.indexOf('direct_ship') > -1) {
+      html += '<section class="exchange-card"><h3>直邮收货信息</h3><strong>陈先生 · 138****6218</strong><p>广东省深圳市南山区深南大道 1001 号</p><small>默认地址只读展示。</small></section>';
+    }
+    if (types.indexOf('store_verify') > -1) {
+      html += '<section class="exchange-card"><h3>到店核销说明</h3><strong>适用专营店到店核销</strong><p>兑换后生成待核销权益，可在兑换单中查看。</p></section>';
+    }
+    return html;
+  }
+
+  function exchangeConfirmHtml(coupon) {
+    return [
+      '<section class="exchange-card">',
+        '<h3>兑换内容（共2件）</h3>',
+        selectedExchangeProducts().map(function (product) {
+          return renderExchangeProduct(product, false);
+        }).join(''),
+      '</section>',
+      exchangeFulfillmentHtml(coupon),
+      '<section class="exchange-card exchange-total-card">',
+        '<p><span>使用兑换券</span><strong>1张</strong></p>',
+        '<p><span>应付金额</span><strong class="zero-price">¥0.00</strong></p>',
+      '</section>',
+      '<div class="exchange-warning"><strong>确认兑换后卡券立即核销</strong><p>履约、发货或到店核销状态不影响券状态；本原型不演示撤销、退款或恢复。</p></div>',
+      '<button class="exchange-primary" type="button" data-exchange-next="success">确认兑换</button>'
+    ].join('');
+  }
+
+  function exchangeSuccessHtml() {
+    return [
+      '<div class="exchange-success-icon">✓</div>',
+      '<h3 class="exchange-success-title">兑换成功</h3>',
+      '<p class="exchange-success-subtitle">兑换单已创建，本张兑换券已核销</p>',
+      '<section class="exchange-card exchange-result-card">',
+        '<p><span>兑换单号</span><strong>RD202607241436</strong></p>',
+        '<p><span>兑换商品</span><strong>', selectedExchangeProducts().length, '种 / ', exchangeTotal(), '件</strong></p>',
+        '<p><span>履约 / 发货</span><em>处理中</em></p>',
+        '<p><span>卡券状态</span><i>已核销</i></p>',
+      '</section>',
+      '<div class="exchange-notice">后续状态按商品履约方式分别更新，可随时查询本兑换单。</div>',
+      '<button class="exchange-primary" type="button" data-exchange-fulfillment>查看履约 / 发货进度</button>',
+      '<button class="exchange-secondary" type="button" data-exchange-finish>完成</button>'
+    ].join('');
+  }
+
+  function renderExchangeFlow() {
+    var coupon = getCoupon(state.selectedCouponId);
+    if (!coupon) return;
+    var titles = {
+      detail: '兑换券详情',
+      select: '选择兑换商品',
+      confirm: '确认兑换',
+      success: '兑换结果'
+    };
+    var content = state.exchangeStep === 'detail'
+      ? exchangeDetailHtml(coupon)
+      : state.exchangeStep === 'select'
+        ? exchangeSelectHtml()
+        : state.exchangeStep === 'confirm'
+          ? exchangeConfirmHtml(coupon)
+          : exchangeSuccessHtml();
+    modalRoot.innerHTML = [
+      '<div class="mobile-page-overlay">',
+        '<section class="mobile-subpage exchange-page" role="dialog" aria-modal="true" aria-labelledby="exchange-title" data-testid="exchange-flow" data-exchange-step="', escapeHtml(state.exchangeStep), '">',
+          '<header class="mobile-page-nav">',
+            '<button class="mobile-back" type="button" aria-label="返回" data-exchange-back>‹</button>',
+            '<h2 id="exchange-title">', escapeHtml(titles[state.exchangeStep]), '</h2>',
+            '<button class="mobile-page-close" type="button" aria-label="关闭兑换流程" data-action="close-modal">×</button>',
+          '</header>',
+          '<div class="exchange-steps">',
+            ['detail', 'select', 'confirm', 'success'].map(function (step, index) {
+              return '<span class="' + (step === state.exchangeStep ? 'active' : '') + '">' + (index + 1) + '</span>';
+            }).join(''),
+          '</div>',
+          '<div class="mobile-page-body exchange-body">', content, '</div>',
+        '</section>',
+      '</div>'
+    ].join('');
+    bindModalEvents();
+    bindExchangeEvents();
+    focusModal();
+  }
+
+  function openExchangeFlow(couponId) {
+    var coupon = getCoupon(couponId);
+    if (!coupon) return;
+    state.selectedCouponId = coupon.id;
+    state.exchangeStep = 'detail';
+    state.exchangeQuantities = {};
+    renderExchangeFlow();
+  }
+
+  function bindExchangeEvents() {
+    modalRoot.querySelectorAll('[data-exchange-inc]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (exchangeTotal() >= 2) return;
+        var productId = button.getAttribute('data-exchange-inc');
+        state.exchangeQuantities[productId] = exchangeQuantity(productId) + 1;
+        renderExchangeFlow();
+      });
+    });
+    modalRoot.querySelectorAll('[data-exchange-dec]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var productId = button.getAttribute('data-exchange-dec');
+        state.exchangeQuantities[productId] = Math.max(0, exchangeQuantity(productId) - 1);
+        renderExchangeFlow();
+      });
+    });
+    var next = modalRoot.querySelector('[data-exchange-next]');
+    if (next) {
+      next.addEventListener('click', function () {
+        var target = next.getAttribute('data-exchange-next');
+        if ((target === 'confirm' || target === 'success') && exchangeTotal() !== 2) {
+          showToast('请先选择2件商品');
+          return;
+        }
+        state.exchangeStep = target;
+        renderExchangeFlow();
+      });
+    }
+    var back = modalRoot.querySelector('[data-exchange-back]');
+    if (back) {
+      back.addEventListener('click', function () {
+        var previous = { select: 'detail', confirm: 'select', success: 'confirm' };
+        if (state.exchangeStep === 'detail') {
+          closeModal();
+          return;
+        }
+        state.exchangeStep = previous[state.exchangeStep] || 'detail';
+        renderExchangeFlow();
+      });
+    }
+    var fulfillment = modalRoot.querySelector('[data-exchange-fulfillment]');
+    if (fulfillment) {
+      fulfillment.addEventListener('click', function () {
+        showToast('履约/发货进度：处理中（原型演示）');
+      });
+    }
+    var finish = modalRoot.querySelector('[data-exchange-finish]');
+    if (finish) {
+      finish.addEventListener('click', function () {
+        var coupon = getCoupon(state.selectedCouponId);
+        coupon.status = 'USED';
+        coupon.statusReason = '已核销';
+        coupon.expiryText = '兑换时间 2026.07.24 14:36';
+        coupon.valueCaption = '卡券已核销';
+        coupon.action = '查看详情';
+        coupon.actionType = 'DETAIL';
+        closeModal();
+        render();
+        showToast('兑换完成，可在已使用中查看');
+      });
+    }
+  }
+
+  function openStatusHelp() {
+    modalRoot.innerHTML = [
+      '<div class="sheet-overlay">',
+        '<section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="status-help-title" data-testid="status-help-sheet">',
+          '<div class="sheet-handle"></div>',
+          '<div class="sheet-header"><h2 id="status-help-title">卡券状态说明</h2><button class="sheet-close" type="button" aria-label="关闭" data-action="close-modal">×</button></div>',
+          '<div class="sheet-body"><div class="status-help-list">',
+            '<div><strong>可使用</strong><p>已领取且在有效期内，可直接使用、预约或出示核销/兑换码。</p></div>',
+            '<div><strong>待激活</strong><p>后台“未领取”映射到前台的状态，用户激活后才可使用。</p></div>',
+            '<div><strong>已使用</strong><p>已完成核销或兑换，仅保留详情和使用记录。</p></div>',
+            '<div><strong>已过期</strong><p>包括正常过期和激活超时，均不可继续使用。</p></div>',
+          '</div><button class="sheet-primary neutral" type="button" data-action="close-modal">知道了</button></div>',
+        '</section>',
+      '</div>'
+    ].join('');
+    bindModalEvents();
+    focusModal();
+  }
+
+  function bindModalEvents() {
+    var overlay = modalRoot.querySelector('.sheet-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) closeModal();
+      });
+    }
+    modalRoot.querySelectorAll('[data-action="close-modal"]').forEach(function (close) {
+      close.addEventListener('click', closeModal);
+    });
+    var primary = modalRoot.querySelector('[data-action="detail-primary"]');
+    if (primary) {
+      primary.addEventListener('click', function () {
+        var coupon = getCoupon(primary.getAttribute('data-coupon'));
+        if (!coupon || coupon.status === 'USED' || coupon.status === 'EXPIRED' || coupon.actionType === 'DETAIL') {
+          closeModal();
+          return;
+        }
+        closeModal();
+        handleCouponAction(coupon.id);
+      });
+    }
+    var copy = modalRoot.querySelector('[data-action="copy-code"]');
+    if (copy) {
+      copy.addEventListener('click', function () {
+        var code = copy.getAttribute('data-code');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).catch(function () {});
+        }
+        showToast('兑换码已复制');
+      });
+    }
+  }
+
+  function focusModal() {
+    var close = modalRoot.querySelector('.sheet-close, .mobile-back, .mobile-page-close');
+    if (close) close.focus();
+  }
+
+  function closeModal() {
+    modalRoot.innerHTML = '';
+    state.selectedCouponId = null;
+  }
+
+  function activateCoupon(coupon) {
+    coupon.status = 'AVAILABLE';
+    coupon.tag = '已激活';
+    coupon.action = coupon.afterActivateAction || '去使用';
+    coupon.actionType = coupon.afterActivateActionType || 'USE';
+    coupon.expiryText = '有效期至 ' + String(coupon.expiresAt).replace(/-/g, '.');
+    showToast('激活成功，现在可以使用该券');
+    render();
+  }
+
+  function handleCouponAction(couponId) {
+    var coupon = getCoupon(couponId);
+    if (!coupon) return;
+    if (coupon.status === 'PENDING_ACTIVATION' && coupon.actionType === 'ACTIVATE') {
+      activateCoupon(coupon);
+      return;
+    }
+    if (coupon.status !== 'AVAILABLE') {
+      openDetail(coupon.id);
+      return;
+    }
+    if (coupon.actionType === 'CODE') {
+      openCode(coupon.id, 'redemption');
+      return;
+    }
+    if (coupon.actionType === 'EXCHANGE_CODE') {
+      openCode(coupon.id, 'exchange');
+      return;
+    }
+    if (coupon.actionType === 'EXCHANGE_FLOW') {
+      openExchangeFlow(coupon.id);
+      return;
+    }
+    if (coupon.actionType === 'DETAIL') {
+      openDetail(coupon.id);
+      return;
+    }
+    showToast('将前往「' + coupon.channel + '」使用该券（原型演示）');
+  }
+
+  function showToast(message) {
+    if (toastTimer) window.clearTimeout(toastTimer);
+    toastRoot.innerHTML = '<div class="toast">' + escapeHtml(message) + '</div>';
+    toastTimer = window.setTimeout(function () {
+      toastRoot.innerHTML = '';
+    }, 2200);
+  }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && modalRoot.innerHTML) closeModal();
+  });
+
+  window.CouponWalletPrototype = {
+    getState: function () {
+      return {
+        category: state.category,
+        status: state.status,
+        selectedCouponId: state.selectedCouponId,
+        exchangeStep: state.exchangeStep,
+        exchangeTotal: exchangeTotal(),
+        visibleCouponIds: couponsForCurrentView().map(function (coupon) { return coupon.id; })
+      };
+    },
+    setCategory: function (categoryId) {
+      if (!data.categories.some(function (category) { return category.id === categoryId; })) return;
+      state.category = categoryId;
+      render();
+    },
+    setStatus: function (statusId) {
+      if (!data.statuses.some(function (status) { return status.id === statusId; })) return;
+      state.status = statusId;
+      render();
+    }
+  };
+
+  render();
+})();
+
+</script>
+  <script>
+    window.AnnotationConfig = {
+      projectId: "vin-e5ef058d",
+      dataVersion: "1",
+      page: "index"
+    };
+  </script>
+  <script data-inline-source="annotations/annotations.js">
+window.AnnotationData = {};
+
+</script>
+  <script data-inline-source="annotations/annotation-runtime.js">
+(function () {
+  'use strict';
+
+  var visible = true;
+  var activePopup = null;
+  var currentAnno = null;
+  var dragState = null;
+  var observer = null;
+
+  var sectionFields = [
+    ['functionName', '功能名称'],
+    ['functionDesc', '功能说明'],
+    ['permissionScope', '权限范围'],
+    ['dataSource', '数据来源'],
+    ['valueLogic', '取值逻辑'],
+    ['fieldDesc', '字段说明'],
+    ['interactionDesc', '交互说明'],
+    ['judgeRule', '判断规则'],
+    ['exceptionRule', '异常规则'],
+    ['otherDesc', '其他说明']
+  ];
+
+  function getConfig() {
+    return window.AnnotationConfig || {};
+  }
+
+  function getPageKey() {
+    var cfg = getConfig();
+    if (typeof cfg.page === 'function') return cfg.page();
+    if (cfg.page) return cfg.page;
+    var active = document.querySelector('.nav-sub-item.active');
+    return active && active.id ? active.id : 'index';
+  }
+
+  function getRawAnnotations() {
+    var cfg = getConfig();
+    var page = getPageKey();
+    if (cfg.dataKey && Array.isArray(window[cfg.dataKey])) {
+      return window[cfg.dataKey].filter(function (item) { return item.page === page; });
+    }
+    if (window.AnnotationData && Array.isArray(window.AnnotationData[page])) {
+      return window.AnnotationData[page];
+    }
+    return [];
+  }
+
+  function storageKey() {
+    var cfg = getConfig();
+    var projectId = cfg.projectId || window.location.pathname || 'default-project';
+    var dataVersion = cfg.dataVersion || '1';
+    return ['prototype_annotations', projectId, dataVersion, getPageKey()].join('_');
+  }
+
+  function loadCached() {
+    try {
+      var raw = window.localStorage.getItem(storageKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveCached(items) {
+    try {
+      window.localStorage.setItem(storageKey(), JSON.stringify(items));
+    } catch (err) {
+      showToast('保存到浏览器缓存失败');
+    }
+  }
+
+  function getAnnotations() {
+    var source = getRawAnnotations();
+    if (!source.length) return [];
+    var cached = loadCached();
+    var cachedMap = {};
+    cached.forEach(function (item) {
+      if (item && item.id != null) cachedMap[item.id] = item;
+    });
+    return source.map(function (item) {
+      return clone(cachedMap[item.id] || item);
+    }).sort(function (a, b) {
+      return Number(a.id) - Number(b.id);
+    });
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function ensureToggle() {
+    var buttons = document.querySelectorAll('#anno-toggle-btn');
+    buttons.forEach(function (btn, index) {
+      if (index > 0) btn.remove();
+    });
+    var btn = document.getElementById('anno-toggle-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'anno-toggle-btn';
+      btn.type = 'button';
+      btn.title = '显示/隐藏标注';
+      btn.textContent = '●';
+      btn.addEventListener('click', function () {
+        visible = !visible;
+        btn.classList.toggle('anno-hidden', !visible);
+        closePopup();
+        render();
+      });
+      document.body.appendChild(btn);
+    }
+    placeToggle(btn);
+  }
+
+  function placeToggle(btn) {
+    var topBar = document.querySelector('.top-bar');
+    var sideMenu = document.querySelector('.side-menu, .sidebar, .nav-panel');
+    var top = topBar ? topBar.getBoundingClientRect().bottom + 12 : 16;
+    var left = sideMenu ? sideMenu.getBoundingClientRect().right + 16 : 16;
+    btn.style.top = Math.max(16, top) + 'px';
+    btn.style.left = Math.max(16, left) + 'px';
+  }
+
+  function ensureOverlay() {
+    var overlay = document.getElementById('anno-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'anno-overlay';
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  }
+
+  function render() {
+    ensureToggle();
+    var overlay = ensureOverlay();
+    overlay.innerHTML = '';
+    if (!visible) return;
+    getAnnotations().forEach(function (anno, index) {
+      var target = resolveTarget(anno.target);
+      if (!target) return;
+      var marker = document.createElement('button');
+      marker.type = 'button';
+      marker.className = 'anno-marker';
+      marker.textContent = anno.id || String(index + 1);
+      marker.title = anno.title || '';
+      marker.addEventListener('click', function (event) {
+        event.stopPropagation();
+        openPopup(anno, marker);
+      });
+      overlay.appendChild(marker);
+      positionMarker(marker, target, anno.position);
+    });
+  }
+
+  function resolveTarget(selector) {
+    if (!selector) return null;
+    try {
+      var nodes = document.querySelectorAll(selector);
+      return nodes.length === 1 ? nodes[0] : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function positionMarker(marker, target, position) {
+    var rect = target.getBoundingClientRect();
+    var pos = position || {};
+    var placement = pos.placement || 'top-right';
+    var x = rect.right;
+    var y = rect.top;
+    if (placement.indexOf('left') >= 0) x = rect.left;
+    if (placement.indexOf('bottom') >= 0) y = rect.bottom;
+    if (placement.indexOf('center') >= 0) y = rect.top + rect.height / 2;
+    marker.style.left = Math.round(x + Number(pos.offsetX || 0) - 10) + 'px';
+    marker.style.top = Math.round(y + Number(pos.offsetY || 0) - 10) + 'px';
+  }
+
+  function openPopup(anno, marker) {
+    closePopup();
+    currentAnno = clone(anno);
+    currentAnno.desc = currentAnno.desc || generateDesc(currentAnno.sections);
+    activePopup = document.createElement('div');
+    activePopup.className = 'anno-popup';
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    document.body.appendChild(activePopup);
+    positionPopup(activePopup, marker);
+    bindViewEvents();
+    bindDrag();
+  }
+
+  function positionPopup(popup, marker) {
+    var rect = marker.getBoundingClientRect();
+    var popupWidth = popup.offsetWidth;
+    var popupHeight = popup.offsetHeight;
+    var left = rect.right + 12;
+    var top = rect.top;
+    if (left + popupWidth > window.innerWidth - 16) {
+      left = rect.left - popupWidth - 12;
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - popupWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - popupHeight - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function fitPopupToViewport(popup) {
+    if (!popup) return;
+    var rect = popup.getBoundingClientRect();
+    var left = Math.max(16, Math.min(rect.left, window.innerWidth - rect.width - 16));
+    var top = Math.max(16, Math.min(rect.top, window.innerHeight - rect.height - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function buildViewHTML(anno) {
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">' + escapeHTML(anno.title || '未命名标注') + '</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body"><div class="anno-popup-desc">' + (anno.desc || generateDesc(anno.sections)) + '</div></div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-edit" type="button">编辑</button>'
+      + '</div>';
+  }
+
+  function buildEditHTML(anno) {
+    var sections = anno.sections || {};
+    var fields = sectionFields.map(function (field) {
+      return ''
+        + '<div class="anno-edit-field">'
+        + '  <label class="anno-edit-label">' + field[1] + '</label>'
+        + '  <textarea class="anno-edit-textarea" data-section="' + field[0] + '">' + escapeHTML(sections[field[0]] || '') + '</textarea>'
+        + '</div>';
+    }).join('');
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">编辑标注</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body">'
+      + '  <div class="anno-edit-field">'
+      + '    <label class="anno-edit-label">标注标题</label>'
+      + '    <input class="anno-edit-input" id="anno-edit-title" value="' + escapeHTML(anno.title || '') + '">'
+      + '  </div>'
+      + fields
+      + '</div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-cancel" type="button">取消</button>'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-save" type="button">保存</button>'
+      + '</div>';
+  }
+
+  function bindViewEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-edit').addEventListener('click', function () {
+      activePopup.innerHTML = buildEditHTML(currentAnno);
+      bindEditEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+  }
+
+  function bindEditEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-cancel').addEventListener('click', function () {
+      activePopup.innerHTML = buildViewHTML(currentAnno);
+      bindViewEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-save').addEventListener('click', saveEdit);
+  }
+
+  function saveEdit() {
+    currentAnno.title = activePopup.querySelector('#anno-edit-title').value.trim();
+    currentAnno.sections = {};
+    activePopup.querySelectorAll('[data-section]').forEach(function (field) {
+      currentAnno.sections[field.getAttribute('data-section')] = field.value.trim();
+    });
+    sectionFields.forEach(function (field) {
+      if (!(field[0] in currentAnno.sections)) currentAnno.sections[field[0]] = '';
+    });
+    currentAnno.desc = generateDesc(currentAnno.sections);
+    var items = getAnnotations();
+    var found = false;
+    items = items.map(function (item) {
+      if (item.id === currentAnno.id) {
+        found = true;
+        return clone(currentAnno);
+      }
+      return item;
+    });
+    if (!found) items.push(clone(currentAnno));
+    saveCached(items);
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    bindViewEvents();
+    bindDrag();
+    fitPopupToViewport(activePopup);
+    showToast('已保存到浏览器缓存');
+  }
+
+  function copyCurrent() {
+    if (!currentAnno) return;
+    copyText(JSON.stringify(currentAnno, null, 2));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showToast('数据已复制'); });
+      return;
+    }
+    var input = document.createElement('textarea');
+    input.value = text;
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    input.remove();
+    showToast('数据已复制');
+  }
+
+  function bindDrag() {
+    var header = activePopup.querySelector('.anno-popup-header');
+    header.addEventListener('mousedown', function (event) {
+      if (event.target.closest('button')) return;
+      var rect = activePopup.getBoundingClientRect();
+      dragState = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      event.preventDefault();
+    });
+  }
+
+  function closePopup() {
+    if (activePopup) activePopup.remove();
+    activePopup = null;
+    currentAnno = null;
+    dragState = null;
+  }
+
+  function generateDesc(sections) {
+    var data = sections || {};
+    return sectionFields.map(function (field, index) {
+      return (index + 1) + '. ' + field[1] + '：' + escapeHTML(data[field[0]] || '待确认');
+    }).join('<br>');
+  }
+
+  function escapeHTML(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showToast(text) {
+    var old = document.querySelector('.anno-toast');
+    if (old) old.remove();
+    var toast = document.createElement('div');
+    toast.className = 'anno-toast';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 1800);
+  }
+
+  document.addEventListener('mousemove', function (event) {
+    if (!dragState || !activePopup) return;
+    var x = Math.max(8, Math.min(event.clientX - dragState.x, window.innerWidth - activePopup.offsetWidth - 8));
+    var y = Math.max(8, Math.min(event.clientY - dragState.y, window.innerHeight - activePopup.offsetHeight - 8));
+    activePopup.style.left = x + 'px';
+    activePopup.style.top = y + 'px';
+  });
+
+  document.addEventListener('mouseup', function () {
+    dragState = null;
+    fitPopupToViewport(activePopup);
+  });
+
+  window.addEventListener('resize', function () {
+    render();
+    fitPopupToViewport(activePopup);
+  });
+  window.addEventListener('scroll', render, true);
+
+  function observeChanges() {
+    var root = document.getElementById('page-content') || document.body;
+    var _lastRender = 0;
+    var _rafPending = false;
+
+    function scheduleRender() {
+      var now = Date.now();
+      // Burst protection: skip if we rendered within the last 200 ms.
+      if (now - _lastRender < 200) return;
+      if (_rafPending) return;
+      _rafPending = true;
+      window.requestAnimationFrame(function () {
+        _rafPending = false;
+        _lastRender = Date.now();
+        render();
+      });
+    }
+
+    observer = new MutationObserver(function (mutations) {
+      // Skip entirely when annotations are hidden.
+      if (!visible) return;
+
+      var shouldRender = false;
+      for (var i = 0; i < mutations.length; i++) {
+        var target = mutations[i].target;
+        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, .anno-popup, .anno-toast')) {
+          continue;
+        }
+        shouldRender = true;
+        break;
+      }
+      if (!shouldRender) return;
+
+      window.clearTimeout(observer._debounceTimer);
+      observer._debounceTimer = window.setTimeout(scheduleRender, 300);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+  }
+
+  function init() {
+    try {
+      ensureToggle();
+      ensureOverlay();
+      render();
+      observeChanges();
+    } catch (err) {
+      console.warn('[AnnotationRuntime] init failed:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  window.AnnotationRuntime = {
+    refresh: render,
+    getPageKey: getPageKey,
+    getAnnotations: getAnnotations,
+    close: closePopup
+  };
+})();
+
+</script>
+</body>
+</html>

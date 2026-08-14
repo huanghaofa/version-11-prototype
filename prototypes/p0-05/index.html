@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动中心积分奖励原型</title>
+  <link rel="icon" href="data:,">
+  <style data-inline-source="assets/css/global.css?v=20260814-2">
+/* ========================================
+   Global B端 Design Tokens & Shared Components
+   ======================================== */
+
+:root {
+  /* ---- Color Palette ---- */
+  --color-primary: #3370ff;
+  --color-primary-hover: #2860e1;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-danger: #ff3b30;
+  --color-info: #5ac8fa;
+
+  --color-text-primary: #1f2329;
+  --color-text-secondary: #646a73;
+  --color-text-disabled: #c0c4cc;
+  --color-text-placeholder: #8f959e;
+
+  --color-bg-page: #f5f6f8;
+  --color-bg-white: #ffffff;
+  --color-bg-hover: #f2f3f5;
+
+  --color-border: #e5e6eb;
+  --color-border-light: #f0f1f5;
+  --color-divider: #ebecf0;
+
+  /* ---- Typography ---- */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  /* ---- Spacing ---- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+
+  /* ---- Border Radius ---- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ---- Shared Component: Button ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+  color: #fff;
+}
+
+/* ---- Shared Component: Table ---- */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+thead th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+tbody tr:hover {
+  background: var(--color-bg-hover);
+}
+
+/* ---- Shared Component: Form ---- */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 80px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  resize: vertical;
+}
+
+/* ---- Shared Component: Card ---- */
+.card {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Shared Component: Modal / Dialog ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-body {
+  padding: var(--spacing-xl);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Shared Component: Pagination ---- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-lg) 0;
+}
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-item:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-item.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ---- Shared Component: Advanced Search Bar ---- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-bar .form-input,
+.search-bar .form-select {
+  width: auto;
+  min-width: 160px;
+}
+
+/* ---- Utility ---- */
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-disabled);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+</style>
+  <style data-inline-source="assets/css/app.css?v=20260814-2">
+.prototype-shell { min-height: 100vh; }
+.top-bar { height: 52px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:#fff; border-bottom:1px solid var(--color-border); position:sticky; top:0; z-index:20; }
+.brand-area,.top-actions { display:flex; align-items:center; gap:12px; }
+.brand-mark { display:inline-flex; align-items:center; justify-content:center; width:34px; height:30px; color:#fff; background:var(--color-primary); border-radius:7px; font-weight:700; }
+.brand-title { font-weight:600; }
+.environment-tag { padding:2px 8px; color:#7a4d00; background:#fff4d6; border:1px solid #ffd591; border-radius:10px; font-size:12px; }
+.header-icon,.icon-button { border:0; background:transparent; cursor:pointer; color:var(--color-text-secondary); position:relative; font-size:16px; }
+.header-icon { width:30px; height:30px; border-radius:5px; }
+.header-icon:hover,.icon-button:hover { background:var(--color-bg-hover); color:var(--color-primary); }
+.top-count { position:absolute; top:-3px; right:-3px; min-width:15px; height:15px; line-height:15px; color:#fff; background:var(--color-danger); border-radius:8px; font-size:10px; }
+.global-search { display:flex; align-items:center; gap:6px; width:190px; height:32px; padding:0 10px; background:#f4f5f7; border-radius:5px; }
+.global-search input { border:0; outline:0; background:transparent; width:100%; }
+.top-action { height:32px; padding:0 12px; border:1px solid var(--color-primary); color:var(--color-primary); background:#fff; border-radius:5px; cursor:pointer; }
+.admin-name { padding-left:12px; border-left:1px solid var(--color-border); }
+.app-layout { display:flex; min-height:calc(100vh - 52px); }
+.app-sidebar { width:226px; background:#15253e; color:#c5d0df; flex-shrink:0; overflow-y:auto; transition:width .2s; }
+.app-main { flex:1; min-width:0; padding:22px; background:#f3f5f8; overflow:auto; outline:none; }
+.nav-product { padding:20px; border-bottom:1px solid rgba(255,255,255,.1); }
+.nav-product span { display:block; color:#fff; font-weight:600; }
+.nav-product small { color:#8fa2bb; }
+.nav-list { list-style:none; }
+.nav-list--root { padding:10px 0; }
+.nav-list--sub { padding-bottom:8px; }
+.nav-link { display:flex; align-items:center; gap:10px; min-height:40px; padding:0 18px; color:#c5d0df; border-left:3px solid transparent; }
+.nav-list--sub .nav-link { padding-left:48px; font-size:13px; min-height:36px; }
+.nav-link:hover { color:#fff; background:rgba(255,255,255,.07); }
+.nav-link.active { color:#fff; background:rgba(51,112,255,.3); border-left-color:#5d8bff; }
+.nav-link--group { color:#8fa2bb; font-size:12px; font-weight:600; cursor:default; margin-top:6px; }
+.nav-link--group:hover { color:#8fa2bb; background:transparent; }
+.nav-icon { width:18px; text-align:center; }
+.nav-error { padding:18px; color:#ffb6b6; }
+.sidebar-collapsed .app-sidebar { width:72px; }
+.sidebar-collapsed .nav-product span,.sidebar-collapsed .nav-product small,.sidebar-collapsed .nav-label { display:none; }
+.sidebar-collapsed .nav-list--sub .nav-link { padding-left:25px; }
+.page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:18px; }
+.page-header h1 { font-size:22px; margin:4px 0; }
+.page-header p,.breadcrumb,.muted-text { color:var(--color-text-secondary); }
+.breadcrumb { font-size:12px; }
+.page-actions { display:flex; gap:8px; align-items:center; }
+.metrics-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:16px; }
+.metric-card { min-height:116px; padding:18px; background:#fff; border:1px solid var(--color-border); border-top:3px solid var(--color-primary); border-radius:8px; box-shadow:var(--shadow-sm); }
+.metric-card span,.metric-card small { display:block; color:var(--color-text-secondary); }
+.metric-card strong { display:block; margin:8px 0 4px; font-size:28px; line-height:1; }
+.metric-card.success { border-top-color:var(--color-success); }.metric-card.warning { border-top-color:var(--color-warning); }.metric-card.danger { border-top-color:var(--color-danger); }
+.content-grid { display:grid; gap:16px; margin-bottom:16px; }.two-columns { grid-template-columns:1.08fr .92fr; }
+.panel { background:#fff; border:1px solid var(--color-border); border-radius:8px; padding:20px; box-shadow:var(--shadow-sm); margin-bottom:16px; }
+.panel-title { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.panel-title h2 { font-size:16px; }
+.rule-list { list-style:none; display:grid; gap:12px; }
+.rule-list li { padding:10px 12px; background:#f7f9fc; border-left:3px solid #8fb0ff; border-radius:4px; }
+.badge { display:inline-flex; align-items:center; min-height:22px; padding:0 8px; border-radius:11px; font-size:12px; background:#edf2ff; color:#315fb4; }
+.badge.success { color:#137333; background:#e6f4ea; }.badge.warning { color:#8b5a00; background:#fff4d6; }.badge.danger { color:#b3261e; background:#fce8e6; }.badge.muted { color:#6b7280; background:#eef0f3; }.badge.info { color:#195b8a; background:#e8f4fc; }
+.flow-line { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:150px; }
+.flow-line div { flex:1; min-width:0; text-align:center; }.flow-line b { display:flex; align-items:center; justify-content:center; width:34px; height:34px; margin:0 auto 8px; color:#fff; background:var(--color-primary); border-radius:50%; }.flow-line span { display:block; font-size:12px; }.flow-line i { color:#9aa4b2; font-style:normal; }
+.scope-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }.scope-cards div { display:flex; align-items:center; gap:10px; padding:12px; background:#f7f9fc; border:1px solid #edf0f5; border-radius:6px; }.scope-cards b { color:var(--color-primary); }
+.empty-state { text-align:center; padding:70px 20px; }.empty-icon { font-size:46px; color:#9bb5e9; }.empty-state h2 { margin:10px 0; }
+.filter-panel { padding:16px 20px; }.filter-grid { display:grid; grid-template-columns:1.3fr 1fr 1fr auto; gap:14px; align-items:end; }.filter-grid label,.form-grid label { display:grid; gap:6px; color:var(--color-text-secondary); font-size:13px; }.filter-actions,.row-actions { display:flex; gap:8px; align-items:center; }
+.data-table { min-width:1380px; }.data-table td { vertical-align:top; }.table-link,.link-button { color:var(--color-primary); }.table-link:hover { text-decoration:underline; }.link-button { padding:0; border:0; background:transparent; cursor:pointer; }.link-button:disabled { color:var(--color-text-disabled); cursor:not-allowed; }.cell-sub { display:block; color:var(--color-text-secondary); margin-top:4px; }.number-cell { text-align:right; font-weight:600; }.table-empty { padding:36px; text-align:center; color:var(--color-text-secondary); }.table-footer { display:flex; justify-content:space-between; align-items:center; margin-top:16px; color:var(--color-text-secondary); }.btn-small { width:30px; padding:0; }.btn-small.active { color:#fff; background:var(--color-primary); border-color:var(--color-primary); }
+.budget-cell { min-width:160px; }.progress-row { display:flex; justify-content:space-between; gap:8px; margin-bottom:7px; }.progress-row small { color:var(--color-text-secondary); }.progress-track { height:7px; background:#edf0f4; border-radius:4px; overflow:hidden; }.progress-track i { display:block; height:100%; background:var(--color-success); border-radius:4px; }.progress-track i.warning { background:var(--color-warning); }.progress-track i.danger { background:var(--color-danger); }
+.notice { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border:1px solid #bad8f1; border-radius:6px; background:#f1f8fe; color:#31546f; }.notice span { color:var(--color-text-secondary); }
+.status-flow { display:flex; align-items:center; justify-content:center; gap:12px; padding:16px; margin-bottom:16px; background:#fff; border:1px solid var(--color-border); border-radius:8px; }.status-flow div { display:flex; align-items:center; gap:8px; color:var(--color-text-secondary); }.status-flow b { display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#e8ebf0; }.status-flow .active { color:var(--color-primary); font-weight:600; }.status-flow .active b { color:#fff; background:var(--color-primary); }.status-flow i { width:54px; height:1px; background:var(--color-border); }
+.form-section { max-width:1160px; margin-left:auto; margin-right:auto; }.form-grid { display:grid; gap:18px 22px; }.form-grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }.form-grid .full { grid-column:1/-1; }.form-grid label>span { color:var(--color-text-primary); font-weight:500; }.form-grid label>small { color:var(--color-text-secondary); }.required::before { content:'*'; color:var(--color-danger); margin-right:4px; }.readonly { color:var(--color-text-secondary); background:#f5f6f8; }.input-suffix { position:relative; }.input-suffix .form-input { padding-right:55px; }.input-suffix em { position:absolute; right:12px; top:7px; color:var(--color-text-secondary); font-style:normal; }.form-footer { position:sticky; bottom:0; z-index:10; display:flex; justify-content:flex-end; gap:10px; padding:14px 22px; background:#fff; border-top:1px solid var(--color-border); box-shadow:0 -4px 12px rgba(0,0,0,.05); }
+.detail-hero { display:flex; align-items:center; justify-content:space-between; padding:22px; margin-bottom:16px; color:#fff; background:linear-gradient(135deg,#315fc4,#4b7ee8); border-radius:8px; }.detail-hero p { margin-top:6px; color:#dce7ff; }.title-line { display:flex; align-items:center; gap:10px; }.hero-number { text-align:right; }.hero-number span,.hero-number small { display:block; color:#dce7ff; }.hero-number strong { display:inline-block; margin:4px 6px; font-size:34px; }.detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }.detail-grid>div { padding:12px; background:#f7f9fc; border-radius:6px; }.detail-grid span { display:block; color:var(--color-text-secondary); font-size:12px; margin-bottom:5px; }.budget-summary>strong { display:block; font-size:32px; }.budget-summary>span { display:block; margin-bottom:18px; color:var(--color-text-secondary); }.budget-split { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }.budget-split div { padding:12px; background:#f7f9fc; border-radius:6px; }.budget-split b,.budget-split span { display:block; }.budget-split span { color:var(--color-text-secondary); font-size:12px; }
+.timeline { position:relative; margin-left:8px; }.timeline::before { content:''; position:absolute; left:5px; top:5px; bottom:5px; width:1px; background:var(--color-border); }.timeline-item { position:relative; display:flex; gap:18px; padding:0 0 22px; }.timeline-item>i { position:relative; z-index:1; width:11px; height:11px; margin-top:5px; background:var(--color-primary); border:3px solid #dbe6ff; border-radius:50%; flex:none; }.timeline-item p { margin:5px 0; }.timeline-item small { color:var(--color-text-secondary); }
+.loading-card { padding:24px; background:#fff; border-radius:8px; }
+.side-drawer { position:fixed; top:0; right:0; bottom:0; width:620px; max-width:92vw; background:#fff; z-index:80; transform:translateX(100%); transition:transform .22s; box-shadow:-8px 0 24px rgba(0,0,0,.12); overflow:auto; }.side-drawer.open { transform:translateX(0); }.drawer-mask { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:70; }.drawer-header { position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:18px 22px; background:#fff; border-bottom:1px solid var(--color-border); }.drawer-header h2 { font-size:18px; }.drawer-body { padding:22px; }
+.toast { position:fixed; left:50%; bottom:28px; z-index:120; transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:10px 16px; color:#fff; background:#263238; border-radius:6px; transition:.2s; }.toast.show { transform:translate(-50%,0); opacity:1; }.toast.success { background:#1f7a3d; }.toast.danger { background:#b3261e; }
+@media (max-width:1050px) { .metrics-grid { grid-template-columns:repeat(2,1fr); }.two-columns { grid-template-columns:1fr; }.scope-cards { grid-template-columns:repeat(2,1fr); }.filter-grid { grid-template-columns:1fr 1fr; } }
+@media (max-width:720px) { .brand-title,.environment-tag,.global-search,.admin-name { display:none; }.app-sidebar { width:72px; }.nav-product span,.nav-product small,.nav-label { display:none; }.nav-list--sub .nav-link { padding-left:25px; }.app-main { padding:14px; }.metrics-grid,.scope-cards,.filter-grid,.form-grid.two,.detail-grid { grid-template-columns:1fr; }.page-header { flex-direction:column; }.flow-line { align-items:flex-start; flex-direction:column; }.flow-line i { transform:rotate(90deg); align-self:center; }.status-flow { align-items:flex-start; flex-direction:column; }.status-flow i { width:1px; height:16px; margin-left:13px; }.detail-hero { align-items:flex-start; flex-direction:column; }.hero-number { margin-top:16px; text-align:left; } }
+
+.selection-empty { padding:34px; border:1px dashed var(--color-border); border-radius:8px; text-align:center; color:var(--color-text-secondary); background:#fafbfd; }
+.snapshot-card { margin-top:16px; border:1px solid #cfe0ff; background:#f7faff; border-radius:8px; padding:16px; }
+.snapshot-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:14px; }.snapshot-head>div { display:flex; flex-direction:column; gap:4px; }.snapshot-head span { color:var(--color-text-secondary); font-size:12px; }
+.snapshot-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }.snapshot-grid>div { background:#fff; border:1px solid #e6edf8; border-radius:6px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; }.snapshot-grid span { color:var(--color-text-secondary); font-size:12px; }
+.snapshot-lock { margin-top:12px; padding-top:10px; border-top:1px solid #dbe7f8; color:#315f9f; font-size:12px; }
+.reward-toolbar { display:flex; justify-content:space-between; align-items:center; margin:18px 0 12px; }.reward-toolbar>div,.prize-card-head>div { display:flex; flex-direction:column; gap:4px; }.reward-toolbar span,.prize-card-head span { color:var(--color-text-secondary); font-size:12px; }
+.prize-card { border:1px solid var(--color-border); border-radius:8px; padding:16px; margin-bottom:14px; background:#fff; }.prize-card-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.prize-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }.prize-grid label { display:flex; flex-direction:column; gap:7px; }
+.coupon-summary { margin-top:14px; background:#f7f8fa; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:4px; }.coupon-summary span { color:var(--color-text-secondary); font-size:12px; }
+.notice.compact { margin:0; }.danger-text { color:var(--color-danger); }
+.rule-tiles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }.rule-tiles>div { padding:14px; background:#f7f8fa; border-radius:6px; display:flex; flex-direction:column; gap:6px; }.rule-tiles span { color:var(--color-text-secondary); font-size:12px; line-height:1.6; }
+.date-pair { display:flex; align-items:center; gap:8px; }.date-pair em { color:var(--color-text-secondary); font-style:normal; }
+.activity-hero { background:linear-gradient(120deg,#214f9a,#3186df); }.eligibility-seal { text-align:right; display:flex; flex-direction:column; gap:2px; }.eligibility-seal span,.eligibility-seal small { color:rgba(255,255,255,.78); }.eligibility-seal strong { font-size:28px; }
+.published-prizes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }.published-prizes article { border:1px solid var(--color-border); border-radius:8px; padding:16px; display:flex; align-items:center; gap:14px; }.published-prizes article>div:nth-child(2) { flex:1; display:flex; flex-direction:column; gap:4px; }.published-prizes span,.published-prizes small { color:var(--color-text-secondary); font-size:12px; }.prize-rank { width:54px; height:54px; border-radius:50%; display:grid; place-items:center; background:#edf4ff; color:var(--color-primary); font-weight:700; flex:none; }
+@media (max-width:1100px) { .snapshot-grid,.prize-grid,.published-prizes { grid-template-columns:1fr 1fr; }.rule-tiles { grid-template-columns:1fr 1fr; } }
+@media (max-width:700px) { .snapshot-grid,.prize-grid,.published-prizes,.rule-tiles { grid-template-columns:1fr; }.date-pair { flex-direction:column; align-items:stretch; } }
+
+.compact-metrics .metric-card { min-height:96px; }.reward-filters { grid-template-columns:1.2fr .8fr 1fr auto; }.reconciliation-filters { grid-template-columns:.8fr 1fr 1fr 1fr auto; }.reward-table { min-width:2050px; }.vin-cell { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; white-space:nowrap; }
+.drawer-status { display:flex; justify-content:space-between; align-items:center; padding:18px; color:#fff; background:linear-gradient(135deg,#315fc4,#4b7ee8); border-radius:8px; }.drawer-status>div { display:flex; flex-direction:column; gap:6px; }.drawer-status>div:last-child { text-align:right; }.drawer-status span { color:#dce7ff; }.drawer-status strong { font-size:24px; }.drawer-section { margin-top:22px; }.drawer-section h3 { margin-bottom:12px; font-size:15px; }.drawer-notice { margin-top:12px!important; }.drawer-actions { position:sticky; bottom:0; display:flex; justify-content:flex-end; gap:8px; padding:14px 0; background:#fff; border-top:1px solid var(--color-border); }
+.thresholds { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }.thresholds>div { display:flex; flex-direction:column; align-items:center; gap:4px; padding:18px 10px; color:#8b5a00; background:#fff7e6; border-radius:8px; }.thresholds>div.danger { color:#b3261e; background:#fce8e6; }.thresholds b { font-size:24px; }.thresholds span { font-size:12px; }
+.difference-card { display:flex; flex-direction:column; gap:8px; padding:16px; border:1px solid #ffd591; background:#fffaf0; border-radius:8px; }.difference-card span { color:var(--color-text-secondary); }.difference-card em { margin-top:5px; padding-top:10px; border-top:1px solid #ffe7ba; color:#8b5a00; font-style:normal; }
+@media (max-width:1100px) { .reward-filters,.reconciliation-filters { grid-template-columns:1fr 1fr; } }
+@media (max-width:700px) { .reward-filters,.reconciliation-filters,.thresholds { grid-template-columns:1fr; }.drawer-status { align-items:flex-start; flex-direction:column; gap:16px; }.drawer-status>div:last-child { text-align:left; } }
+
+</style>
+  <style data-inline-source="annotations/annotation.css?v=20260814-2">
+/* Prototype annotation runtime. All selectors are scoped with anno-. */
+#anno-toggle-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 99990;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #ff4d4f;
+  border-radius: 50%;
+  background: #fff;
+  color: #ff4d4f;
+  box-shadow: 0 4px 14px rgba(255, 77, 79, 0.25);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#anno-toggle-btn:hover {
+  background: #fff1f0;
+}
+
+#anno-toggle-btn.anno-hidden {
+  border-color: #d9d9d9;
+  color: #8c8c8c;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+#anno-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99980;
+  pointer-events: none;
+}
+
+.anno-marker {
+  position: fixed;
+  z-index: 99981;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #ff4d4f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.anno-marker:hover {
+  transform: scale(1.12);
+}
+
+.anno-popup {
+  position: fixed;
+  z-index: 99992;
+  width: 560px;
+  min-width: min(420px, calc(100vw - 32px));
+  min-height: 300px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  resize: both;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  color: #262626;
+}
+
+.anno-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.anno-popup-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.anno-popup-close {
+  border: 0;
+  background: transparent;
+  color: #8c8c8c;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.anno-popup-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.anno-popup-desc {
+  white-space: normal;
+}
+
+.anno-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.anno-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #262626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.anno-btn:hover {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.anno-btn-primary {
+  border-color: #ff4d4f;
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.anno-btn-primary:hover {
+  border-color: #ff7875;
+  background: #ff7875;
+  color: #fff;
+}
+
+.anno-edit-field {
+  margin-bottom: 12px;
+}
+
+.anno-edit-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #595959;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anno-edit-input,
+.anno-edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #262626;
+  font: inherit;
+}
+
+.anno-edit-textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.anno-edit-input:focus,
+.anno-edit-textarea:focus {
+  outline: none;
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.12);
+}
+
+.anno-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 100000;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 13px;
+}
+
+</style>
+</head>
+<body class="dfn-shell">
+  <div class="prototype-shell">
+    <header class="top-bar">
+      <div class="brand-area">
+        <button class="header-icon" id="menuModeToggle" type="button" aria-label="折叠菜单">☰</button>
+        <span class="brand-mark">DFN</span>
+        <span class="brand-title">数字营销业务中台</span>
+        <span class="environment-tag">原型演示</span>
+      </div>
+      <div class="top-actions">
+        <label class="global-search"><span>⌕</span><input type="search" id="globalSearch" placeholder="菜单查询" aria-label="菜单查询"></label>
+        <button class="header-icon" type="button" title="消息">◉<span class="top-count">3</span></button>
+        <button class="top-action" id="globalSpecButton" type="button">原型说明</button>
+        <span class="admin-name">超级管理员</span>
+      </div>
+    </header>
+    <div class="app-layout">
+      <nav id="main-nav" class="app-sidebar" aria-label="主导航"></nav>
+      <main id="app" class="app-main" tabindex="-1">
+        <div class="loading-card">正在加载原型…</div>
+      </main>
+    </div>
+  </div>
+
+  <aside id="drawer" class="side-drawer" aria-hidden="true"></aside>
+  <div id="drawerMask" class="drawer-mask" hidden></div>
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script data-inline-source="mock/data.js?v=20260814-2">
+(function () {
+  'use strict';
+
+  window.MockData = {
+    summary: {
+      activeConfigs: 3,
+      referencedActivities: 10,
+      issuedPoints: 1286500,
+      exceptionRecords: 7
+    },
+    configStats: [
+      { label: '预算使用率', value: '76.8%', tone: 'warning' },
+      { label: '今日成功积分', value: '36,800', tone: 'success' },
+      { label: '待人工处理', value: '3', tone: 'danger' }
+    ],
+    pointConfigs: [
+      { id: 'PC-2026-001', name: '保客活动认证积分100', version: 'V3', points: 100, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-SH-2026-001', sceneCode: 'ACT_OWNER_REWARD', costCenter: 'CC-SH-1001', totalBudget: 2000000, usedBudget: 1536200, warning: 90, start: '2026-07-01', end: '2026-12-31', status: '已启用', owner: '售后运营中心', referenced: 4 },
+      { id: 'PC-2026-002', name: '认证抽奖一等奖1000', version: 'V1', points: 1000, mainScenario: '售前营销', subScenario: '节点营销', budgetNo: 'YS-MKT-2026-016', sceneCode: 'ACT_LOTTERY_HIGH', costCenter: 'CC-MKT-2001', totalBudget: 500000, usedBudget: 352000, warning: 90, start: '2026-07-15', end: '2026-10-31', status: '已启用', owner: '市场营销部', referenced: 2 },
+      { id: 'PC-2026-003', name: '认证抽奖二等奖500', version: 'V2', points: 500, mainScenario: '售前营销', subScenario: '区域活动', budgetNo: 'YS-MKT-2026-016', sceneCode: 'ACT_LOTTERY_MID', costCenter: 'CC-MKT-2001', totalBudget: 600000, usedBudget: 546000, warning: 90, start: '2026-07-15', end: '2026-10-31', status: '已启用', owner: '市场营销部', referenced: 3 },
+      { id: 'PC-2026-004', name: '预约维保认证积分200', version: 'V1', points: 200, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-AS-2026-033', sceneCode: 'ACT_BOOKING_MAINTAIN', costCenter: 'CC-AS-3102', totalBudget: 800000, usedBudget: 800000, warning: 90, start: '2026-06-01', end: '2026-09-30', status: '已停用', owner: '售后服务部', referenced: 1 },
+      { id: 'PC-2026-005', name: '外品牌获客积分300', version: 'V1', points: 300, mainScenario: '售前营销', subScenario: '试驾', budgetNo: 'YS-GROWTH-2026-008', sceneCode: 'ACT_CONQUEST', costCenter: 'CC-GR-4008', totalBudget: 300000, usedBudget: 0, warning: 70, start: '2026-08-01', end: '2026-11-30', status: '待审核', owner: '用户增长部', referenced: 0 },
+      { id: 'PC-2026-006', name: '会员日认证积分50', version: 'V1', points: 50, mainScenario: '商城营销', subScenario: '会员商城(新)', budgetNo: 'YS-MEMBER-2026-012', sceneCode: 'ACT_MEMBER_DAY', costCenter: 'CC-MB-1201', totalBudget: 150000, usedBudget: 0, warning: 90, start: '2026-08-01', end: '2026-12-31', status: '草稿', owner: '会员运营部', referenced: 0 }
+    ],
+    configVersions: [
+      { version: 'V3', points: 100, budgetNo: 'YS-SH-2026-001', changed: '业务场景按卡券中心枚举调整为售后营销 / 维保活动', operator: '张运营', time: '2026-07-18 10:20', status: '当前版本' },
+      { version: 'V2', points: 100, budgetNo: 'YS-SH-2026-001', changed: '积分数量调整为100', operator: '李审核', time: '2026-07-01 09:30', status: '历史版本' },
+      { version: 'V1', points: 100, budgetNo: 'YS-SH-2026-001', changed: '首次启用', operator: '张运营', time: '2026-06-25 16:40', status: '历史版本' }
+    ],
+    activities: [
+      { id: 'ACT-2026-0718', name: '夏日车主关怀抽奖', level: '认证级', play: '抽奖', status: '进行中', configId: 'PC-2026-002', configVersion: 'V1' },
+      { id: 'ACT-2026-0701', name: '保客回厂积分礼遇', level: '认证级', play: '行为触发', status: '进行中', configId: 'PC-2026-001', configVersion: 'V3' },
+      { id: 'ACT-2026-0620', name: '预约维保积分回馈', level: '认证级', play: '直接奖励', status: '已暂停', configId: 'PC-2026-004', configVersion: 'V1' }
+    ],
+    rewardRecords: [
+      { id: 'RW-20260722-0001', activity: '保客回厂积分礼遇', oneId: 'ONE-683921', mobile: '138****2198', vin: 'LGBM4AE48MS000128', config: '保客活动认证积分100', version: 'V3', points: 100, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-SH-2026-001', sceneCode: 'ACT_OWNER_REWARD', costCenter: 'CC-SH-1001', requestId: 'REQ-ACT0701-683921-01', transactionId: 'PTS-260722-890012', status: '成功', created: '2026-07-22 09:31:20', reason: '-', retries: 0 },
+      { id: 'RW-20260722-0002', activity: '夏日车主关怀抽奖', oneId: 'ONE-119230', mobile: '186****5033', vin: 'LGBH52E04NS001736', config: '认证抽奖一等奖1000', version: 'V1', points: 1000, mainScenario: '售前营销', subScenario: '节点营销', budgetNo: 'YS-MKT-2026-016', sceneCode: 'ACT_LOTTERY_HIGH', costCenter: 'CC-MKT-2001', requestId: 'REQ-ACT0718-119230-01', transactionId: 'PTS-260722-890021', status: '成功', created: '2026-07-22 10:04:51', reason: '-', retries: 0 },
+      { id: 'RW-20260722-0003', activity: '保客回厂积分礼遇', oneId: 'ONE-872311', mobile: '139****6671', vin: 'LGBM2DE43PS003908', config: '保客活动认证积分100', version: 'V3', points: 100, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-SH-2026-001', sceneCode: 'ACT_OWNER_REWARD', costCenter: 'CC-SH-1001', requestId: 'REQ-ACT0701-872311-01', transactionId: '-', status: '发放中', created: '2026-07-22 10:12:03', reason: '积分系统处理中', retries: 0 },
+      { id: 'RW-20260722-0004', activity: '夏日车主关怀抽奖', oneId: 'ONE-220431', mobile: '137****8820', vin: 'LGBH52E02NS005611', config: '认证抽奖二等奖500', version: 'V2', points: 500, mainScenario: '售前营销', subScenario: '区域活动', budgetNo: 'YS-MKT-2026-016', sceneCode: 'ACT_LOTTERY_MID', costCenter: 'CC-MKT-2001', requestId: 'REQ-ACT0718-220431-01', transactionId: '-', status: '失败', created: '2026-07-22 10:18:44', reason: 'P102：积分系统拒绝发放', retries: 2 },
+      { id: 'RW-20260722-0005', activity: '保客回厂积分礼遇', oneId: 'ONE-500177', mobile: '188****1066', vin: 'LGBM4AE46MS009812', config: '保客活动认证积分100', version: 'V3', points: 100, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-SH-2026-001', sceneCode: 'ACT_OWNER_REWARD', costCenter: 'CC-SH-1001', requestId: 'REQ-ACT0701-500177-01', transactionId: '-', status: '待人工处理', created: '2026-07-22 10:25:07', reason: 'P500：积分系统返回未知状态，已转人工', retries: 1 },
+      { id: 'RW-20260721-0091', activity: '预约维保积分回馈', oneId: 'ONE-391022', mobile: '136****9031', vin: 'LGBM4AE40MS008144', config: '预约维保认证积分200', version: 'V1', points: 200, mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-AS-2026-033', sceneCode: 'ACT_BOOKING_MAINTAIN', costCenter: 'CC-AS-3102', requestId: 'REQ-ACT0620-391022-02', transactionId: 'PTS-260721-889210', status: '已冲正', created: '2026-07-21 16:42:11', reason: '预留状态演示，未启用自动冲正', retries: 0 }
+    ],
+    reconciliationTasks: [
+      { id: 'RC-20260722-01', date: '2026-07-21', mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-SH-2026-001', sceneCode: 'ACT_OWNER_REWARD', costCenter: 'CC-SH-1001', localCount: 3256, remoteCount: 3256, localPoints: 325600, remotePoints: 325600, diff: 0, status: '无差异' },
+      { id: 'RC-20260722-02', date: '2026-07-21', mainScenario: '售前营销', subScenario: '区域活动', budgetNo: 'YS-MKT-2026-016', sceneCode: 'ACT_LOTTERY_MID', costCenter: 'CC-MKT-2001', localCount: 1104, remoteCount: 1103, localPoints: 552000, remotePoints: 551500, diff: 500, status: '有差异' },
+      { id: 'RC-20260722-03', date: '2026-07-21', mainScenario: '售后营销', subScenario: '维保活动', budgetNo: 'YS-AS-2026-033', sceneCode: 'ACT_BOOKING_MAINTAIN', costCenter: 'CC-AS-3102', localCount: 820, remoteCount: 820, localPoints: 164000, remotePoints: 164000, diff: 0, status: '已处理' }
+    ]
+  };
+})();
+
+</script>
+  <script data-inline-source="js/common.js?v=20260814-2">
+(function () {
+  'use strict';
+
+  window.escapeHtml = function (value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+    });
+  };
+
+  window.formatNumber = function (value) {
+    return Number(value || 0).toLocaleString('zh-CN');
+  };
+
+  window.statusClass = function (status) {
+    if (['已启用', '成功', '无差异', '已处理', '当前版本', '进行中'].indexOf(status) >= 0) return 'success';
+    if (['待审核', '发放中', '重试中', '处理中'].indexOf(status) >= 0) return 'warning';
+    if (['失败', '有差异', '待人工处理'].indexOf(status) >= 0) return 'danger';
+    if (['已停用', '已过期', '已暂停', '已冲正'].indexOf(status) >= 0) return 'muted';
+    return 'info';
+  };
+
+  window.showToast = function (message, tone) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.className = 'toast show ' + (tone || 'info');
+    toast.textContent = message;
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(function () { toast.className = 'toast'; }, 2600);
+  };
+
+  window.openDrawer = function (title, content, width) {
+    var drawer = document.getElementById('drawer');
+    var mask = document.getElementById('drawerMask');
+    if (!drawer || !mask) return;
+    drawer.style.width = width || '620px';
+    drawer.innerHTML = '<div class="drawer-header"><h2>' + escapeHtml(title) + '</h2><button class="icon-button" id="closeDrawer" type="button" aria-label="关闭">×</button></div><div class="drawer-body">' + content + '</div>';
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    mask.hidden = false;
+    document.getElementById('closeDrawer').addEventListener('click', window.closeDrawer);
+    mask.addEventListener('click', window.closeDrawer, { once: true });
+  };
+
+  window.closeDrawer = function () {
+    var drawer = document.getElementById('drawer');
+    var mask = document.getElementById('drawerMask');
+    if (!drawer || !mask) return;
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    mask.hidden = true;
+  };
+
+  window.openModal = function (title, content, footer) {
+    var root = document.getElementById('modalRoot');
+    if (!root) return;
+    root.innerHTML = '<div class="modal-overlay"><section class="modal-content" role="dialog" aria-modal="true" aria-label="' + escapeHtml(title) + '"><div class="modal-header"><h2>' + escapeHtml(title) + '</h2><button class="icon-button" id="closeModal" type="button">×</button></div><div class="modal-body">' + content + '</div><div class="modal-footer">' + (footer || '<button class="btn" id="cancelModal" type="button">取消</button>') + '</div></section></div>';
+    document.getElementById('closeModal').addEventListener('click', window.closeModal);
+    var cancel = document.getElementById('cancelModal');
+    if (cancel) cancel.addEventListener('click', window.closeModal);
+  };
+
+  window.closeModal = function () {
+    var root = document.getElementById('modalRoot');
+    if (root) root.innerHTML = '';
+  };
+})();
+
+</script>
+  <script data-inline-source="js/app.js?v=20260814-2">
+(function () {
+  'use strict';
+
+  var data = window.MockData;
+  var COUPON_SCENARIOS = {
+    '售前营销': ['在线购车', '节点营销', 'CAP活动', '直播活动', '区域活动', '试驾', '新车上市'],
+    '售后营销': ['维保活动', '续保活动'],
+    '售后营销-上门取送车': ['取送车活动'],
+    '商城营销': ['会员商城(新)', '新商城']
+  };
+  window.Pages = window.Pages || {};
+
+  function pageHeader(title, description, actions) {
+    return '<div class="page-header"><div><div class="breadcrumb">活动中心 / ' + escapeHtml(title) + '</div><h1>' + escapeHtml(title) + '</h1><p>' + escapeHtml(description || '') + '</p></div><div class="page-actions">' + (actions || '') + '</div></div>';
+  }
+
+  function metric(label, value, note, tone) {
+    return '<article class="metric-card ' + (tone || '') + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong><small>' + escapeHtml(note || '') + '</small></article>';
+  }
+
+  window.Pages.overview = {
+    render: function () {
+      return pageHeader('积分奖励方案总览', '配置在前、活动引用、认证级准入、默认卡 VIN 发放。', '<button class="btn btn-primary" data-go="config-list">查看积分配置</button>') +
+        '<section class="metrics-grid">' +
+          metric('已启用积分配置', data.summary.activeConfigs + ' 项', '统一维护积分数量与卡券场景', 'primary') +
+          metric('引用活动', data.summary.referencedActivities + ' 个', '均为认证级活动', 'success') +
+          metric('累计发放积分', formatNumber(data.summary.issuedPoints), 'Mock 演示数据', 'warning') +
+          metric('待处理异常', data.summary.exceptionRecords + ' 笔', '接口与对账异常', 'danger') +
+        '</section>' +
+        '<section class="content-grid two-columns">' +
+          '<article class="panel"><div class="panel-title"><h2>已确认业务规则</h2><span class="badge success">评审口径</span></div><ul class="rule-list"><li><b>准入门槛：</b>只有认证级活动允许选择积分奖励。</li><li><b>配置边界：</b>积分数量、预算配置和业务场景统一在积分配置中维护。</li><li><b>预算规则：</b>预算号、预算额度和预警阈值独立配置，其余成本字段继续隐藏。</li><li><b>业务场景：</b>主场景与子场景严格复用卡券中心两级枚举及级联关系。</li><li><b>活动操作：</b>只选择一项已生效配置，不允许二次修改。</li><li><b>发放对象：</b>使用用户默认卡对应 VIN，并在首次请求时锁定。</li><li><b>失败原则：</b>中奖结果不变，超时先查询，失败进入补偿。</li></ul></article>' +
+          '<article class="panel"><div class="panel-title"><h2>核心链路</h2><span class="badge info">静态演示</span></div><div class="flow-line"><div><b>1</b><span>积分配置</span></div><i>→</i><div><b>2</b><span>认证级活动选择</span></div><i>→</i><div><b>3</b><span>锁定版本</span></div><i>→</i><div><b>4</b><span>默认卡VIN发放</span></div><i>→</i><div><b>5</b><span>对账补偿</span></div></div></article>' +
+        '</section>' +
+        '<section class="panel"><div class="panel-title"><h2>页面范围</h2><span class="muted-text">8 个评审视图</span></div><div class="scope-cards">' +
+          ['积分配置列表','新增/编辑配置','配置详情与版本','活动新增/编辑','活动详情快照','奖励发放记录','发放详情','积分对账与异常'].map(function (name, index) { return '<div><b>' + String(index + 1).padStart(2, '0') + '</b><span>' + name + '</span></div>'; }).join('') +
+        '</div></section>';
+    },
+    init: function () {
+      var go = document.querySelector('[data-go="config-list"]');
+      if (go) go.addEventListener('click', function () { window.navigateTo('config-list'); });
+    }
+  };
+
+  ['config-list','config-form','config-detail','activity-edit','activity-detail','reward-records','reconciliation'].forEach(function (key) {
+    window.Pages[key] = {
+      render: function () {
+        return pageHeader('页面建设中', '该路由已纳入本次实施步骤。') + '<section class="panel empty-state"><div class="empty-icon">◇</div><h2>功能即将接入</h2><p>导航和页面容器已经准备完成。</p></section>';
+      }
+    };
+  });
+
+  window.AppState = window.AppState || { detailConfigId: 'PC-2026-001', editConfigId: null };
+
+  function configById(id) {
+    return data.pointConfigs.filter(function (item) { return item.id === id; })[0] || data.pointConfigs[0];
+  }
+
+  function tag(status) {
+    return '<span class="badge ' + statusClass(status) + '">' + escapeHtml(status) + '</span>';
+  }
+
+  function budgetUsage(config) {
+    if (!config.totalBudget) return 0;
+    return Math.min(100, Math.round(config.usedBudget / config.totalBudget * 1000) / 10);
+  }
+
+  function budgetTone(config) {
+    var usage = budgetUsage(config);
+    if (usage >= 100) return 'danger';
+    if (usage >= config.warning) return 'warning';
+    return '';
+  }
+
+  function budgetProgress(config) {
+    var usage = budgetUsage(config);
+    return '<div class="budget-cell"><div class="progress-row"><b>' + usage + '%</b><small>' + formatNumber(config.usedBudget) + ' / ' + formatNumber(config.totalBudget) + '</small></div><div class="progress-track"><i class="' + budgetTone(config) + '" style="width:' + usage + '%"></i></div><small class="cell-sub">预警阈值 ' + config.warning + '%</small></div>';
+  }
+
+  function configRows(items) {
+    if (!items.length) return '<tr><td colspan="10"><div class="table-empty">未找到符合条件的积分配置</div></td></tr>';
+    return items.map(function (config) {
+      var canEdit = config.status === '草稿' || config.status === '待审核';
+      return '<tr><td><a href="#" class="table-link" data-detail="' + config.id + '">' + config.id + '</a><small class="cell-sub">' + config.version + '</small></td>' +
+        '<td><b>' + escapeHtml(config.name) + '</b><small class="cell-sub">' + escapeHtml(config.owner) + '</small></td>' +
+        '<td class="number-cell">' + formatNumber(config.points) + '</td><td>' + escapeHtml(config.mainScenario) + '</td><td>' + escapeHtml(config.subScenario) + '</td><td>' + escapeHtml(config.budgetNo) + '</td><td>' + budgetProgress(config) + '</td>' +
+        '<td>' + escapeHtml(config.start) + '<small class="cell-sub">至 ' + escapeHtml(config.end) + '</small></td><td>' + tag(config.status) + '</td>' +
+        '<td><div class="row-actions"><button type="button" class="link-button" data-detail="' + config.id + '">详情</button><button type="button" class="link-button" data-edit="' + config.id + '"' + (canEdit ? '' : ' disabled title="已被发布活动引用，需创建新版本"') + '>编辑</button><button type="button" class="link-button" data-toggle="' + config.id + '">' + (config.status === '已启用' ? '停用' : '启用') + '</button></div></td></tr>';
+    }).join('');
+  }
+
+  function bindConfigRowActions() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-detail]'), function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        window.AppState.detailConfigId = this.getAttribute('data-detail');
+        window.navigateTo('config-detail');
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-edit]'), function (button) {
+      button.addEventListener('click', function () {
+        window.AppState.editConfigId = this.getAttribute('data-edit');
+        window.navigateTo('config-form');
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-toggle]'), function (button) {
+      button.addEventListener('click', function () {
+        showToast('静态演示：配置状态校验已触发，真实启停需审核权限。', 'success');
+      });
+    });
+  }
+
+  window.Pages['config-list'] = {
+    render: function () {
+      return pageHeader('积分配置列表', '统一维护积分数量、预算配置、卡券同源业务场景及有效期。', '<button class="btn btn-primary" id="newConfig" type="button">＋ 新增积分配置</button>') +
+        '<section class="panel filter-panel"><div class="filter-grid"><label>配置名称/编码<input class="form-input" id="configKeyword" placeholder="请输入配置名称或编码"></label><label>配置状态<select class="form-select" id="configStatus"><option value="">全部状态</option><option>草稿</option><option>待审核</option><option>已启用</option><option>已停用</option><option>已过期</option></select></label><div class="filter-actions"><button class="btn btn-primary" id="searchConfigs" type="button">查询</button><button class="btn" id="resetConfigs" type="button">重置</button></div></div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>积分配置</h2><span class="muted-text">共 <b id="configCount">' + data.pointConfigs.length + '</b> 条</span></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>配置编码/版本</th><th>配置名称</th><th>积分数量</th><th>业务主场景</th><th>业务子场景</th><th>预算号</th><th>预算使用</th><th>有效期</th><th>状态</th><th>操作</th></tr></thead><tbody id="configTableBody">' + configRows(data.pointConfigs) + '</tbody></table></div><div class="table-footer"><span>展示 1-' + data.pointConfigs.length + ' 条</span><div class="pagination"><button class="btn btn-small active" type="button">1</button></div></div></section>' +
+        '<section class="notice info"><b>规则说明</b><span>预算在积分配置中独立维护，活动只选择配置；其余成本字段继续隐藏。业务主场景与业务子场景严格复用卡券中心枚举。</span></section>';
+    },
+    init: function () {
+      function filter() {
+        var keyword = document.getElementById('configKeyword').value.trim().toLowerCase();
+        var status = document.getElementById('configStatus').value;
+        var items = data.pointConfigs.filter(function (config) {
+          var text = [config.id, config.name, config.budgetNo].join(' ').toLowerCase();
+          return (!keyword || text.indexOf(keyword) >= 0) && (!status || config.status === status);
+        });
+        document.getElementById('configTableBody').innerHTML = configRows(items);
+        document.getElementById('configCount').textContent = items.length;
+        bindConfigRowActions();
+      }
+      document.getElementById('searchConfigs').addEventListener('click', filter);
+      document.getElementById('resetConfigs').addEventListener('click', function () {
+        document.getElementById('configKeyword').value = '';
+        document.getElementById('configStatus').value = '';
+        filter();
+      });
+      document.getElementById('newConfig').addEventListener('click', function () { window.AppState.editConfigId = null; window.navigateTo('config-form'); });
+      bindConfigRowActions();
+    }
+  };
+
+  function formValue(config, field) {
+    return config ? escapeHtml(config[field]) : '';
+  }
+
+  function scenarioOptions(items, selected) {
+    return '<option value="">请选择</option>' + items.map(function (item) {
+      return '<option value="' + escapeHtml(item) + '"' + (item === selected ? ' selected' : '') + '>' + escapeHtml(item) + '</option>';
+    }).join('');
+  }
+
+  function plainOptions(items) {
+    return items.map(function (item) {
+      return '<option value="' + escapeHtml(item) + '">' + escapeHtml(item) + '</option>';
+    }).join('');
+  }
+
+  window.Pages['config-form'] = {
+    render: function () {
+      var config = window.AppState.editConfigId ? configById(window.AppState.editConfigId) : null;
+      var title = config ? '编辑积分配置' : '新增积分配置';
+      return pageHeader(title, '积分参数只在此处维护；活动中只选择配置并查看只读摘要。', '<button class="btn" id="backConfigList" type="button">返回列表</button>') +
+        '<section class="status-flow"><div class="active"><b>1</b><span>填写配置</span></div><i></i><div><b>2</b><span>提交审核</span></div><i></i><div><b>3</b><span>审核启用</span></div><i></i><div><b>4</b><span>活动引用</span></div></section>' +
+        '<form id="configForm" novalidate><section class="panel form-section"><div class="panel-title"><h2>基础信息</h2><span class="badge info">统一配置</span></div><div class="form-grid two"><label><span class="required">配置名称</span><input class="form-input" name="name" value="' + formValue(config, 'name') + '" placeholder="如：认证抽奖一等奖1000"></label><label><span>配置编码</span><input class="form-input readonly" value="' + (config ? config.id : '保存后自动生成') + '" readonly></label><label><span class="required">固定积分数量</span><div class="input-suffix"><input class="form-input" name="points" type="number" min="1" step="1" value="' + formValue(config, 'points') + '" placeholder="请输入正整数"><em>积分</em></div><small>活动内不可修改此数量</small></label><label><span class="required">业务归属部门</span><input class="form-input" name="owner" value="' + formValue(config, 'owner') + '" placeholder="请输入业务归属部门"></label></div></section>' +
+        '<section class="panel form-section"><div class="panel-title"><h2>预算配置</h2><span class="badge warning">活动只读引用</span></div><div class="form-grid two"><label><span class="required">预算号</span><input class="form-input" name="budgetNo" value="' + formValue(config, 'budgetNo') + '" placeholder="请输入预算号，如 YS-SH-2026-001"></label><label><span class="required">预算额度</span><div class="input-suffix"><input class="form-input" name="totalBudget" type="number" min="1" step="1" value="' + formValue(config, 'totalBudget') + '" placeholder="请输入正整数"><em>积分</em></div></label><label><span class="required">预警阈值</span><div class="input-suffix"><input class="form-input" name="warning" type="number" min="1" max="100" step="1" value="' + formValue(config, 'warning') + '" placeholder="1-100"><em>%</em></div><small>达到阈值后提示预警，达到100%停止新发放</small></label><label><span>已用 / 剩余预算</span><input class="form-input readonly" value="' + (config ? formatNumber(config.usedBudget) + ' / ' + formatNumber(Math.max(0, config.totalBudget - config.usedBudget)) : '保存后由积分系统返回') + '" readonly><small>预算余额以积分系统查询结果为准</small></label></div></section>' +
+        '<section class="panel form-section"><div class="panel-title"><h2>业务场景</h2><span class="badge info">卡券同源枚举</span></div><div class="form-grid two"><label><span class="required">业务主场景</span><select class="form-select" name="mainScenario" id="mainScenario">' + scenarioOptions(Object.keys(COUPON_SCENARIOS), config ? config.mainScenario : '') + '</select><small>选项与卡券中心业务主场景保持一致</small></label><label><span class="required">业务子场景</span><select class="form-select" name="subScenario" id="subScenario"' + (config ? '' : ' disabled') + '>' + scenarioOptions(config ? COUPON_SCENARIOS[config.mainScenario] : [], config ? config.subScenario : '') + '</select><small>按业务主场景级联加载卡券中心对应子场景</small></label></div></section>' +
+        '<section class="panel form-section"><div class="panel-title"><h2>生效与审核</h2></div><div class="form-grid two"><label><span class="required">生效日期</span><input class="form-input" name="start" type="date" value="' + formValue(config, 'start') + '"></label><label><span class="required">失效日期</span><input class="form-input" name="end" type="date" value="' + formValue(config, 'end') + '"></label><label class="full"><span>使用说明</span><textarea class="form-textarea" name="remark" placeholder="说明适用活动范围等">' + (config ? '仅供认证级活动选择，发放时按用户默认卡VIN入账。' : '') + '</textarea></label></div></section>' +
+        '<div class="form-footer"><button class="btn" id="cancelConfig" type="button">取消</button><button class="btn" id="saveDraft" type="button">保存草稿</button><button class="btn btn-primary" id="submitReview" type="submit">提交审核</button></div></form>';
+    },
+    init: function () {
+      function validate() {
+        var form = document.getElementById('configForm');
+        var fields = ['name','points','owner','budgetNo','totalBudget','warning','mainScenario','subScenario','start','end'];
+        var missing = fields.filter(function (name) { return !form.elements[name].value.trim(); });
+        if (missing.length) { showToast('请完整填写所有必填字段。', 'danger'); return false; }
+        if (!/^\d+$/.test(form.elements.points.value) || Number(form.elements.points.value) <= 0) { showToast('积分数量必须为大于0的整数。', 'danger'); return false; }
+        if (!/^\d+$/.test(form.elements.totalBudget.value) || Number(form.elements.totalBudget.value) <= 0) { showToast('预算额度必须为大于0的整数。', 'danger'); return false; }
+        if (!/^\d+$/.test(form.elements.warning.value) || Number(form.elements.warning.value) < 1 || Number(form.elements.warning.value) > 100) { showToast('预警阈值必须为1-100的整数。', 'danger'); return false; }
+        if (form.elements.end.value < form.elements.start.value) { showToast('失效日期不能早于生效日期。', 'danger'); return false; }
+        return true;
+      }
+      document.getElementById('configForm').addEventListener('submit', function (event) { event.preventDefault(); if (validate()) showToast('静态演示：已提交审核，状态更新为“待审核”。', 'success'); });
+      document.getElementById('mainScenario').addEventListener('change', function () {
+        var subSelect = document.getElementById('subScenario');
+        subSelect.innerHTML = scenarioOptions(COUPON_SCENARIOS[this.value] || [], '');
+        subSelect.disabled = !this.value;
+      });
+      document.getElementById('saveDraft').addEventListener('click', function () { if (validate()) showToast('静态演示：草稿已保存。', 'success'); });
+      document.getElementById('backConfigList').addEventListener('click', function () { window.navigateTo('config-list'); });
+      document.getElementById('cancelConfig').addEventListener('click', function () { window.navigateTo('config-list'); });
+    }
+  };
+
+  function detailItem(label, value) {
+    return '<div><span>' + escapeHtml(label) + '</span><b>' + escapeHtml(value) + '</b></div>';
+  }
+
+  window.Pages['config-detail'] = {
+    render: function () {
+      var config = configById(window.AppState.detailConfigId);
+      var refs = data.activities.filter(function (activity) { return activity.configId === config.id; });
+      return pageHeader('积分配置详情', '查看不可变配置版本、卡券同源业务场景和活动引用。', '<button class="btn" id="backToConfigs" type="button">返回列表</button><button class="btn btn-primary" id="newVersion" type="button">创建新版本</button>') +
+        '<section class="detail-hero"><div><div class="title-line"><h2>' + escapeHtml(config.name) + '</h2>' + tag(config.status) + '</div><p>' + config.id + ' · ' + config.version + ' · ' + escapeHtml(config.owner) + '</p></div><div class="hero-number"><span>固定积分</span><strong>' + formatNumber(config.points) + '</strong><small>积分/次</small></div></section>' +
+        '<section class="content-grid two-columns"><article class="panel"><div class="panel-title"><h2>配置快照</h2><span class="badge info">发布活动锁定版本</span></div><div class="detail-grid">' + detailItem('配置编码', config.id) + detailItem('当前版本', config.version) + detailItem('业务主场景', config.mainScenario) + detailItem('业务子场景', config.subScenario) + detailItem('有效期', config.start + ' 至 ' + config.end) + detailItem('业务归属部门', config.owner) + '</div></article>' +
+        '<article class="panel"><div class="panel-title"><h2>固定履约规则</h2><span class="badge success">统一执行</span></div><ul class="rule-list"><li><b>准入：</b>仅认证级活动允许引用。</li><li><b>车辆：</b>按用户默认卡对应 VIN 发放。</li><li><b>场景：</b>' + escapeHtml(config.mainScenario) + ' / ' + escapeHtml(config.subScenario) + '。</li><li><b>引用活动：</b>' + config.referenced + ' 个。</li></ul></article></section>' +
+        '<section class="panel"><div class="panel-title"><h2>预算配置</h2><span class="badge ' + (budgetTone(config) || 'success') + '">' + (budgetUsage(config) >= 100 ? '预算已用尽' : budgetUsage(config) >= config.warning ? '预算预警' : '预算正常') + '</span></div><div class="detail-grid">' + detailItem('预算号', config.budgetNo) + detailItem('预算额度', formatNumber(config.totalBudget) + ' 积分') + detailItem('已用预算', formatNumber(config.usedBudget) + ' 积分') + detailItem('剩余预算', formatNumber(Math.max(0, config.totalBudget - config.usedBudget)) + ' 积分') + detailItem('预算使用率', budgetUsage(config) + '%') + detailItem('预警阈值', config.warning + '%') + '</div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>引用活动</h2><span class="muted-text">发布后引用关系不可静默变更</span></div><div class="table-wrapper"><table><thead><tr><th>活动ID</th><th>活动名称</th><th>准入表达</th><th>玩法</th><th>锁定版本</th><th>活动状态</th></tr></thead><tbody>' + (refs.length ? refs.map(function (activity) { return '<tr><td>' + activity.id + '</td><td>' + escapeHtml(activity.name) + '</td><td>' + tag(activity.level) + '</td><td>' + activity.play + '</td><td>' + activity.configVersion + '</td><td>' + tag(activity.status) + '</td></tr>'; }).join('') : '<tr><td colspan="6"><div class="table-empty">暂无活动引用此配置</div></td></tr>') + '</tbody></table></div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>版本记录</h2><span class="muted-text">核心字段变更必须生成新版本</span></div><div class="timeline">' + data.configVersions.map(function (version) { return '<div class="timeline-item"><i></i><div><div class="title-line"><b>' + version.version + '</b>' + tag(version.status) + '</div><p>' + escapeHtml(version.changed) + '</p><small>' + escapeHtml(version.operator) + ' · ' + version.time + '</small></div></div>'; }).join('') + '</div></section>';
+    },
+    init: function () {
+      document.getElementById('backToConfigs').addEventListener('click', function () { window.navigateTo('config-list'); });
+      document.getElementById('newVersion').addEventListener('click', function () { window.AppState.editConfigId = window.AppState.detailConfigId; showToast('静态演示：已基于当前配置生成新版本草稿。', 'success'); window.navigateTo('config-form'); });
+    }
+  };
+
+  function enabledPointConfigs() {
+    return data.pointConfigs.filter(function (config) { return config.status === '已启用'; });
+  }
+
+  function configOptions(selectedId) {
+    return '<option value="">请选择已启用积分配置</option>' + enabledPointConfigs().map(function (config) {
+      return '<option value="' + config.id + '"' + (selectedId === config.id ? ' selected' : '') + '>' + escapeHtml(config.name) + '（' + formatNumber(config.points) + '积分）</option>';
+    }).join('');
+  }
+
+  function configSnapshot(configId) {
+    if (!configId) return '<div class="selection-empty">选择积分配置后，在此展示只读快照</div>';
+    var config = configById(configId);
+    return '<div class="snapshot-card"><div class="snapshot-head"><div><b>' + escapeHtml(config.name) + '</b><span>' + config.id + ' · ' + config.version + '</span></div>' + tag(config.status) + '</div><div class="snapshot-grid">' + detailItem('固定积分', formatNumber(config.points) + ' 积分') + detailItem('业务主场景', config.mainScenario) + detailItem('业务子场景', config.subScenario) + detailItem('预算号', config.budgetNo) + detailItem('有效期', config.start + ' 至 ' + config.end) + '</div><div class="snapshot-lock">🔒 活动仅选择积分配置；积分、预算和业务场景均为只读快照</div></div>';
+  }
+
+  function rewardTypeOptions(selected, pointsDisabled) {
+    return '<option value="coupon"' + (selected === 'coupon' ? ' selected' : '') + '>卡券</option><option value="points"' + (selected === 'points' ? ' selected' : '') + (pointsDisabled ? ' disabled' : '') + '>积分</option>';
+  }
+
+  function rewardEditorHtml() {
+    var draft = window.AppState.activityDraft;
+    var pointsDisabled = draft.level !== '认证级';
+    var isLottery = draft.play === '抽奖';
+    var notice = pointsDisabled ? '<div class="notice warning compact"><b>积分奖励不可选</b><span>仅当准入表达为“认证级”时，才允许选择积分奖励。</span></div>' : '<div class="notice success compact"><b>已满足积分准入条件</b><span>系统将在发放时读取用户默认卡 VIN，并在首次请求时锁定。</span></div>';
+    return notice + '<div class="reward-toolbar"><div><b>' + (isLottery ? '奖项设置' : '奖励设置') + '</b><span>' + (isLottery ? '每个奖项可独立选择卡券或积分配置' : '直接奖励仅配置一项奖励') + '</span></div>' + (isLottery ? '<button class="btn btn-small" id="addPrize" type="button">＋ 新增奖项</button>' : '') + '</div><div id="prizeList">' + draft.prizes.map(function (prize, index) {
+      var title = isLottery ? (prize.name || ('奖项' + (index + 1))) : '奖励内容';
+      var valueEditor = prize.type === 'points' ? '<label><span class="required">积分配置</span><select class="form-select prize-config" data-index="' + index + '">' + configOptions(prize.configId) + '</select></label>' : '<label><span class="required">卡券</span><select class="form-select prize-coupon" data-index="' + index + '"><option>精洗服务券（30天）</option><option>商城满200减30券</option><option>空调清洁服务券</option></select></label>';
+      return '<article class="prize-card"><div class="prize-card-head"><div><b>' + escapeHtml(title) + '</b><span>' + (isLottery ? '中奖概率与库存沿用原活动能力' : '完成活动后发放') + '</span></div>' + (isLottery && draft.prizes.length > 1 ? '<button class="link-button danger-text remove-prize" data-index="' + index + '" type="button">删除</button>' : '') + '</div><div class="prize-grid">' + (isLottery ? '<label><span>奖项名称</span><input class="form-input prize-name" data-index="' + index + '" value="' + escapeHtml(prize.name || '') + '"></label>' : '') + '<label><span class="required">奖励类型</span><select class="form-select prize-type" data-index="' + index + '">' + rewardTypeOptions(prize.type, pointsDisabled) + '</select></label>' + valueEditor + '</div>' + (prize.type === 'points' ? configSnapshot(prize.configId) : '<div class="coupon-summary"><b>卡券由卡券中心发放</b><span>活动发布时锁定所选券批次；券库存与有效期沿用现有校验。</span></div>') + '</article>';
+    }).join('') + '</div>';
+  }
+
+  function bindRewardEditor() {
+    var draft = window.AppState.activityDraft;
+    Array.prototype.forEach.call(document.querySelectorAll('.prize-type'), function (select) {
+      select.addEventListener('change', function () {
+        var index = Number(this.getAttribute('data-index'));
+        if (this.value === 'points' && draft.level !== '认证级') {
+          this.value = 'coupon';
+          showToast('只有认证级活动允许选择积分奖励。', 'danger');
+          return;
+        }
+        draft.prizes[index].type = this.value;
+        draft.prizes[index].configId = this.value === 'points' ? '' : null;
+        renderRewardEditor();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.prize-config'), function (select) {
+      select.addEventListener('change', function () {
+        draft.prizes[Number(this.getAttribute('data-index'))].configId = this.value;
+        renderRewardEditor();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.prize-name'), function (input) {
+      input.addEventListener('input', function () { draft.prizes[Number(this.getAttribute('data-index'))].name = this.value; });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.remove-prize'), function (button) {
+      button.addEventListener('click', function () {
+        draft.prizes.splice(Number(this.getAttribute('data-index')), 1);
+        renderRewardEditor();
+      });
+    });
+    var add = document.getElementById('addPrize');
+    if (add) add.addEventListener('click', function () {
+      draft.prizes.push({ name: '新增奖项', type: 'coupon', configId: null });
+      renderRewardEditor();
+    });
+  }
+
+  function renderRewardEditor() {
+    var host = document.getElementById('rewardEditor');
+    if (!host) return;
+    host.innerHTML = rewardEditorHtml();
+    bindRewardEditor();
+  }
+
+  window.Pages['activity-edit'] = {
+    render: function () {
+      window.AppState.activityDraft = { level: '认证级', play: '抽奖', prizes: [
+        { name: '一等奖', type: 'points', configId: 'PC-2026-002' },
+        { name: '二等奖', type: 'points', configId: 'PC-2026-003' },
+        { name: '三等奖', type: 'coupon', configId: null }
+      ] };
+      return pageHeader('活动新增/编辑', '中奖可发卡券或积分；积分严格依赖认证级准入，并引用独立积分配置。', '<button class="btn" id="viewActivityDetail" type="button">查看发布快照</button>') +
+        '<section class="panel form-section"><div class="panel-title"><h2>活动基础信息</h2><span class="badge warning">关键联动演示</span></div><div class="form-grid two"><label><span class="required">活动名称</span><input id="activityName" class="form-input" value="夏日车主关怀抽奖"></label><label><span>活动编码</span><input class="form-input readonly" value="ACT-2026-0718" readonly></label><label><span class="required">活动玩法</span><select class="form-select" id="activityPlay"><option>直接奖励</option><option selected>抽奖</option></select></label><label><span class="required">准入表达</span><select class="form-select" id="activityLevel"><option>号码级</option><option>绑车级</option><option selected>认证级</option></select><small>积分奖励的硬性前置条件</small></label><label><span>活动时间</span><div class="date-pair"><input class="form-input" type="date" value="2026-07-18"><em>至</em><input class="form-input" type="date" value="2026-08-31"></div></label><label><span>参与对象</span><input class="form-input readonly" value="认证车主（按 OneID 识别）" readonly></label></div></section>' +
+        '<section class="panel form-section"><div class="panel-title"><h2>奖励配置</h2><span class="muted-text">积分参数不在活动内维护</span></div><div id="rewardEditor">' + rewardEditorHtml() + '</div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>发放规则</h2><span class="badge info">系统自动执行</span></div><div class="rule-tiles"><div><b>发放时点</b><span>活动最后环节确认中奖/达标后</span></div><div><b>发放 VIN</b><span>用户默认卡对应 VIN</span></div><div><b>请求锁定</b><span>首次请求固化 VIN、配置ID和版本</span></div><div><b>失败处理</b><span>不重抽；查询、重试、补偿均沿用原 VIN</span></div></div></section>' +
+        '<div class="form-footer"><button class="btn" id="saveActivityDraft" type="button">保存草稿</button><button class="btn btn-primary" id="publishActivity" type="button">校验并发布</button></div>';
+    },
+    init: function () {
+      renderRewardEditor();
+      document.getElementById('activityLevel').addEventListener('change', function () {
+        var draft = window.AppState.activityDraft;
+        draft.level = this.value;
+        if (draft.level !== '认证级') {
+          var removed = draft.prizes.some(function (prize) { return prize.type === 'points'; });
+          draft.prizes.forEach(function (prize) { if (prize.type === 'points') { prize.type = 'coupon'; prize.configId = null; } });
+          if (removed) showToast('准入表达已降级，原积分奖项已清空并切换为卡券。', 'danger');
+        }
+        renderRewardEditor();
+      });
+      document.getElementById('activityPlay').addEventListener('change', function () {
+        var draft = window.AppState.activityDraft;
+        draft.play = this.value;
+        if (draft.play === '直接奖励') draft.prizes = [draft.prizes[0] || { name: '奖励', type: 'coupon', configId: null }];
+        renderRewardEditor();
+      });
+      document.getElementById('publishActivity').addEventListener('click', function () {
+        var draft = window.AppState.activityDraft;
+        var invalidPoints = draft.prizes.some(function (prize) { return prize.type === 'points' && (!prize.configId || draft.level !== '认证级'); });
+        if (invalidPoints) { showToast('请为所有积分奖项选择有效配置，并确认准入表达为认证级。', 'danger'); return; }
+        showToast('校验通过：发布后将锁定配置编码与版本。', 'success');
+      });
+      document.getElementById('saveActivityDraft').addEventListener('click', function () { showToast('静态演示：活动草稿已保存。', 'success'); });
+      document.getElementById('viewActivityDetail').addEventListener('click', function () { window.navigateTo('activity-detail'); });
+    }
+  };
+
+  window.Pages['activity-detail'] = {
+    render: function () {
+      var first = configById('PC-2026-002');
+      var second = configById('PC-2026-003');
+      return pageHeader('活动详情', '发布活动的奖励配置快照与发放规则。', '<button class="btn" id="backActivityEdit" type="button">返回活动编辑</button>') +
+        '<section class="detail-hero activity-hero"><div><div class="title-line"><h2>夏日车主关怀抽奖</h2>' + tag('进行中') + '</div><p>ACT-2026-0718 · 抽奖 · 2026-07-18 至 2026-08-31</p></div><div class="eligibility-seal"><span>准入表达</span><strong>认证级</strong><small>允许积分奖励</small></div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>奖项及发布快照</h2><span class="badge warning">发布后锁定</span></div><div class="published-prizes"><article><div class="prize-rank">一等奖</div><div><b>积分 · ' + formatNumber(first.points) + '积分</b><span>' + first.name + '</span><small>' + first.id + ' · ' + first.version + '</small></div>' + tag(first.status) + '</article><article><div class="prize-rank">二等奖</div><div><b>积分 · ' + formatNumber(second.points) + '积分</b><span>' + second.name + '</span><small>' + second.id + ' · ' + second.version + '</small></div>' + tag(second.status) + '</article><article><div class="prize-rank">三等奖</div><div><b>卡券 · 精洗服务券</b><span>券批次 COUPON-BATCH-2607-18</span><small>由卡券中心发放</small></div>' + tag('已启用') + '</article></div></section>' +
+        '<section class="content-grid two-columns"><article class="panel"><div class="panel-title"><h2>一等奖积分配置快照</h2></div><div class="detail-grid">' + detailItem('固定积分', formatNumber(first.points)) + detailItem('业务主场景', first.mainScenario) + detailItem('业务子场景', first.subScenario) + detailItem('预算号', first.budgetNo) + detailItem('配置编码', first.id) + detailItem('锁定版本', first.version) + '</div></article><article class="panel"><div class="panel-title"><h2>履约约束</h2></div><ul class="rule-list"><li><b>身份：</b>仅认证级用户进入积分奖池。</li><li><b>车辆：</b>使用该用户默认卡对应 VIN。</li><li><b>幂等：</b>中奖记录生成唯一请求号。</li><li><b>失败：</b>不改变中奖结果，不重新抽奖。</li><li><b>补偿：</b>继续使用首次锁定 VIN、配置版本与预算号。</li></ul></article></section>' +
+        '<section class="notice info"><b>范围保留项</b><span>自动冲正暂不纳入本期；数据模型保留冲正状态与原交易号，待业务明确触发条件后再启用。</span></section>';
+    },
+    init: function () { document.getElementById('backActivityEdit').addEventListener('click', function () { window.navigateTo('activity-edit'); }); }
+  };
+
+  function rewardRows(items) {
+    if (!items.length) return '<tr><td colspan="10"><div class="table-empty">未找到符合条件的发放记录</div></td></tr>';
+    return items.map(function (record) {
+      return '<tr><td><button class="link-button reward-detail" data-id="' + record.id + '" type="button">' + record.id + '</button></td><td><b>' + escapeHtml(record.activity) + '</b><small class="cell-sub">' + record.oneId + '</small></td><td>' + record.mobile + '</td><td class="vin-cell">' + record.vin + '<small class="cell-sub">首次请求已锁定</small></td><td>' + escapeHtml(record.config) + '<small class="cell-sub">' + record.version + '</small></td><td class="number-cell">' + formatNumber(record.points) + '</td><td>' + escapeHtml(record.budgetNo) + '</td><td>' + escapeHtml(record.mainScenario) + '<small class="cell-sub">' + escapeHtml(record.subScenario) + '</small></td><td>' + tag(record.status) + '<small class="cell-sub">' + escapeHtml(record.reason) + '</small></td><td>' + record.created + '</td></tr>';
+    }).join('');
+  }
+
+  function recordById(id) {
+    return data.rewardRecords.filter(function (record) { return record.id === id; })[0] || data.rewardRecords[0];
+  }
+
+  function recordDrawerContent(record) {
+    var attempts = record.retries ? '<div class="timeline-item"><i></i><div><b>结果查询 / 重试 ' + record.retries + ' 次</b><p>始终使用原请求号与锁定 VIN，未重新读取默认卡。</p><small>' + record.created + '</small></div></div>' : '';
+    return '<div class="drawer-status"><div><span>当前状态</span><div class="title-line"><strong>' + record.status + '</strong>' + tag(record.status) + '</div></div><div><span>积分数量</span><strong>' + formatNumber(record.points) + '</strong></div></div>' +
+      '<section class="drawer-section"><h3>发放对象与幂等信息</h3><div class="detail-grid">' + detailItem('OneID', record.oneId) + detailItem('手机号', record.mobile) + detailItem('锁定 VIN', record.vin) + detailItem('请求号', record.requestId) + detailItem('积分交易号', record.transactionId) + detailItem('首次请求时间', record.created) + '</div><div class="notice info compact drawer-notice"><b>VIN 锁定规则</b><span>该 VIN 来自中奖/达标时的用户默认卡。结果查询、重试、人工补偿均沿用本记录 VIN，不再次查询默认卡。</span></div></section>' +
+      '<section class="drawer-section"><h3>积分配置快照</h3><div class="detail-grid">' + detailItem('积分配置', record.config) + detailItem('配置版本', record.version) + detailItem('预算号', record.budgetNo) + detailItem('业务主场景', record.mainScenario) + detailItem('业务子场景', record.subScenario) + detailItem('发放积分', formatNumber(record.points)) + '</div></section>' +
+      '<section class="drawer-section"><h3>处理轨迹</h3><div class="timeline"><div class="timeline-item"><i></i><div><b>中奖结果已固化</b><p>奖励类型、配置版本和默认卡 VIN 写入奖励记录。</p><small>' + record.created + '</small></div></div><div class="timeline-item"><i></i><div><b>调用积分发放接口</b><p>请求号：' + record.requestId + '</p><small>' + escapeHtml(record.reason) + '</small></div></div>' + attempts + '</div></section>' +
+      '<div class="drawer-actions"><button class="btn" id="queryReward" type="button">查询积分结果</button><button class="btn btn-primary" id="retryReward" type="button">发起人工补偿</button></div>';
+  }
+
+  function bindRewardDetails() {
+    Array.prototype.forEach.call(document.querySelectorAll('.reward-detail'), function (button) {
+      button.addEventListener('click', function () {
+        var record = recordById(this.getAttribute('data-id'));
+        openDrawer('积分发放详情', recordDrawerContent(record), '720px');
+        setTimeout(function () {
+          var query = document.getElementById('queryReward');
+          var retry = document.getElementById('retryReward');
+          if (query) query.addEventListener('click', function () { showToast('静态演示：已按原请求号查询积分系统结果。', 'success'); });
+          if (retry) retry.addEventListener('click', function () { showToast('静态演示：补偿仍使用锁定 VIN ' + record.vin + '。', 'success'); });
+        }, 0);
+      });
+    });
+  }
+
+  window.Pages['reward-records'] = {
+    render: function () {
+      var success = data.rewardRecords.filter(function (item) { return item.status === '成功'; }).length;
+      var exceptions = data.rewardRecords.filter(function (item) { return ['失败','待人工处理'].indexOf(item.status) >= 0; }).length;
+      return pageHeader('奖励发放记录', '按中奖/达标记录追踪积分发放、结果查询与人工补偿。', '<button class="btn" id="exportRewards" type="button">导出记录</button>') +
+        '<section class="metrics-grid compact-metrics">' + metric('今日发放记录', data.rewardRecords.length + ' 笔', '卡券记录沿用原页面', 'primary') + metric('发放成功', success + ' 笔', '积分系统已返回交易号', 'success') + metric('发放处理中', '1 笔', '将按请求号查询结果', 'warning') + metric('异常待处理', exceptions + ' 笔', '中奖结果保持不变', 'danger') + '</section>' +
+        '<section class="panel filter-panel"><div class="filter-grid reward-filters"><label>记录/活动/请求号<input class="form-input" id="rewardKeyword" placeholder="请输入关键字"></label><label>发放状态<select class="form-select" id="rewardStatus"><option value="">全部状态</option><option>成功</option><option>发放中</option><option>失败</option><option>待人工处理</option><option>已冲正</option></select></label><label>VIN<input class="form-input" id="rewardVin" placeholder="请输入完整 VIN"></label><div class="filter-actions"><button class="btn btn-primary" id="searchRewards" type="button">查询</button><button class="btn" id="resetRewards" type="button">重置</button></div></div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>积分发放流水</h2><span class="muted-text">共 <b id="rewardCount">' + data.rewardRecords.length + '</b> 条</span></div><div class="table-wrapper"><table class="data-table reward-table"><thead><tr><th>奖励记录号</th><th>活动/OneID</th><th>手机号</th><th>锁定 VIN</th><th>积分配置/版本</th><th>积分</th><th>预算号</th><th>业务场景</th><th>状态/原因</th><th>创建时间</th></tr></thead><tbody id="rewardTableBody">' + rewardRows(data.rewardRecords) + '</tbody></table></div></section>' +
+        '<section class="notice warning"><b>异常处理原则</b><span>积分失败不改变用户中奖结果；超时先查询，明确失败后才能重试。所有后续动作沿用首次锁定 VIN、积分配置版本和请求号。</span></section>';
+    },
+    init: function () {
+      function filter() {
+        var keyword = document.getElementById('rewardKeyword').value.trim().toLowerCase();
+        var status = document.getElementById('rewardStatus').value;
+        var vin = document.getElementById('rewardVin').value.trim().toLowerCase();
+        var items = data.rewardRecords.filter(function (record) {
+          var text = [record.id,record.activity,record.requestId,record.oneId,record.budgetNo].join(' ').toLowerCase();
+          return (!keyword || text.indexOf(keyword) >= 0) && (!status || record.status === status) && (!vin || record.vin.toLowerCase().indexOf(vin) >= 0);
+        });
+        document.getElementById('rewardTableBody').innerHTML = rewardRows(items);
+        document.getElementById('rewardCount').textContent = items.length;
+        bindRewardDetails();
+      }
+      document.getElementById('searchRewards').addEventListener('click', filter);
+      document.getElementById('resetRewards').addEventListener('click', function () { document.getElementById('rewardKeyword').value=''; document.getElementById('rewardStatus').value=''; document.getElementById('rewardVin').value=''; filter(); });
+      document.getElementById('exportRewards').addEventListener('click', function () { showToast('静态演示：导出任务已创建。', 'success'); });
+      bindRewardDetails();
+    }
+  };
+
+  function reconciliationRows(items) {
+    if (!items.length) return '<tr><td colspan="8"><div class="table-empty">未找到符合条件的对账任务</div></td></tr>';
+    return items.map(function (task) {
+      return '<tr><td><button class="link-button reconciliation-detail" data-id="' + task.id + '" type="button">' + task.id + '</button></td><td>' + task.date + '</td><td>' + escapeHtml(task.budgetNo) + '</td><td>' + escapeHtml(task.mainScenario) + '<small class="cell-sub">' + escapeHtml(task.subScenario) + '</small></td><td class="number-cell">' + formatNumber(task.localCount) + ' / ' + formatNumber(task.remoteCount) + '</td><td class="number-cell">' + formatNumber(task.localPoints) + ' / ' + formatNumber(task.remotePoints) + '</td><td class="number-cell ' + (task.diff ? 'danger-text' : '') + '">' + formatNumber(task.diff) + '</td><td>' + tag(task.status) + '</td></tr>';
+    }).join('');
+  }
+
+  function bindReconciliationDetails() {
+    Array.prototype.forEach.call(document.querySelectorAll('.reconciliation-detail'), function (button) {
+      button.addEventListener('click', function () {
+        var id = this.getAttribute('data-id');
+        var task = data.reconciliationTasks.filter(function (item) { return item.id === id; })[0];
+        openDrawer('对账任务详情', '<div class="drawer-status"><div><span>任务状态</span><div class="title-line"><strong>' + task.status + '</strong>' + tag(task.status) + '</div></div><div><span>积分差额</span><strong>' + formatNumber(task.diff) + '</strong></div></div><section class="drawer-section"><h3>核对维度</h3><div class="detail-grid">' + detailItem('预算号',task.budgetNo) + detailItem('业务主场景',task.mainScenario) + detailItem('业务子场景',task.subScenario) + detailItem('账期',task.date) + '</div></section><section class="drawer-section"><h3>差异明细</h3><div class="difference-card"><b>RW-20260721-0822</b><span>VIN：LGBH52E02NS005611</span><span>请求号：REQ-ACT0718-220431-01</span><span>活动中心：500积分 / 积分系统：0积分</span><em>建议：先查询原请求，确认无账后人工补偿</em></div></section><div class="drawer-actions"><button class="btn btn-primary" id="handleDiff" type="button">标记处理中</button></div>', '680px');
+        setTimeout(function () { var action=document.getElementById('handleDiff'); if(action) action.addEventListener('click',function(){ showToast('静态演示：差异已进入人工处理。','success'); }); },0);
+      });
+    });
+  }
+
+  window.Pages.reconciliation = {
+    render: function () {
+      return pageHeader('积分对账与异常', '按卡券同源业务主/子场景、VIN 和请求号核对活动中心与积分系统流水。', '<button class="btn btn-primary" id="startReconcile" type="button">立即执行对账</button>') +
+        '<section class="metrics-grid compact-metrics">' + metric('昨日积分流水', '5,180 笔', '活动中心已发放记录', 'primary') + metric('账实一致', '5,179 笔', '笔数与积分均一致', 'success') + metric('差异记录', '1 笔', '积分差额 500', 'danger') + metric('待处理任务', '1 个', '需核对原积分交易号', 'warning') + '</section>' +
+        '<section class="panel filter-panel"><div class="filter-grid reconciliation-filters"><label>对账日期<input class="form-input" type="date" value="2026-07-21"></label><label>预算号<input class="form-input" id="reconBudget" placeholder="请输入预算号"></label><label>业务主场景<select class="form-select" id="reconMainScenario"><option value="">全部主场景</option>' + plainOptions(Object.keys(COUPON_SCENARIOS)) + '</select></label><label>业务子场景<select class="form-select" id="reconSubScenario" disabled><option value="">全部子场景</option></select></label><div class="filter-actions"><button class="btn btn-primary" id="reconSearch" type="button">查询</button><button class="btn" id="reconReset" type="button">重置</button></div></div></section>' +
+        '<section class="panel"><div class="panel-title"><h2>对账任务</h2><span class="muted-text">金额单位：积分</span></div><div class="table-wrapper"><table><thead><tr><th>对账任务号</th><th>账期</th><th>预算号</th><th>业务场景</th><th>活动/积分系统笔数</th><th>活动/积分系统积分</th><th>差额</th><th>状态</th></tr></thead><tbody id="reconTableBody">' + reconciliationRows(data.reconciliationTasks) + '</tbody></table></div></section>' +
+        '<section class="content-grid two-columns"><article class="panel"><div class="panel-title"><h2>差异处理原则</h2></div><ul class="rule-list"><li>以请求号、原积分交易号、锁定 VIN 为最小核对单元。</li><li>积分系统有账、活动中心状态未知：查询后回写成功。</li><li>活动中心成功、积分系统无账：核实明确失败后人工补偿。</li><li>冲正只保留状态与原交易号，本期不启用自动冲正。</li></ul></article><article class="panel"><div class="panel-title"><h2>卡券同源业务场景</h2><span class="badge info">两级级联</span></div><p class="muted-text">积分配置严格复用卡券中心的业务主场景、业务子场景及父子关系；发放和对账记录保留配置快照。</p></article></section>';
+    },
+    init: function () {
+      document.getElementById('startReconcile').addEventListener('click', function () { showToast('静态演示：已创建当日对账任务。', 'success'); });
+      document.getElementById('reconMainScenario').addEventListener('change', function () {
+        var subSelect = document.getElementById('reconSubScenario');
+        subSelect.innerHTML = '<option value="">全部子场景</option>' + plainOptions(COUPON_SCENARIOS[this.value] || []);
+        subSelect.disabled = !this.value;
+      });
+      document.getElementById('reconSearch').addEventListener('click', function () {
+        var budget = document.getElementById('reconBudget').value.trim().toLowerCase();
+        var main = document.getElementById('reconMainScenario').value;
+        var sub = document.getElementById('reconSubScenario').value;
+        var items = data.reconciliationTasks.filter(function (task) {
+          return (!budget || task.budgetNo.toLowerCase().indexOf(budget) >= 0) && (!main || task.mainScenario === main) && (!sub || task.subScenario === sub);
+        });
+        document.getElementById('reconTableBody').innerHTML = reconciliationRows(items);
+        bindReconciliationDetails();
+        showToast('已按预算号和卡券同源业务场景刷新对账任务。', 'success');
+      });
+      document.getElementById('reconReset').addEventListener('click', function () {
+        var mainSelect = document.getElementById('reconMainScenario');
+        var subSelect = document.getElementById('reconSubScenario');
+        document.getElementById('reconBudget').value = '';
+        mainSelect.value = '';
+        subSelect.innerHTML = '<option value="">全部子场景</option>';
+        subSelect.disabled = true;
+        document.getElementById('reconTableBody').innerHTML = reconciliationRows(data.reconciliationTasks);
+        bindReconciliationDetails();
+      });
+      bindReconciliationDetails();
+    }
+  };
+
+})();
+
+</script>
+  <script data-inline-source="js/nav.js?v=20260814-2">
+(function () {
+  'use strict';
+
+  var config = null;
+  var currentPage = 'overview';
+
+  function loadConfig() {
+    return fetch('config/nav.json')
+      .then(function (res) {
+        if (!res.ok) throw new Error('nav.json ' + res.status);
+        return res.json();
+      })
+      .then(function (cfg) {
+        config = cfg;
+        render();
+        var hashPage = location.hash.replace('#/', '');
+        window.navigateTo(window.Pages[hashPage] ? hashPage : 'overview', false);
+      })
+      .catch(function (err) {
+        console.warn('Failed to load config/nav.json:', err);
+        document.getElementById('main-nav').innerHTML = '<p class="nav-error">导航加载失败，请通过 HTTP 服务打开。</p>';
+      });
+  }
+
+  function render() {
+    var nav = document.getElementById('main-nav');
+    if (!nav || !config) return;
+    nav.innerHTML = '<div class="nav-product"><span>活动中心</span><small>积分奖励专题</small></div>' + buildTree(config.menu, 0);
+    Array.prototype.forEach.call(nav.querySelectorAll('.nav-link[data-page]'), function (link) {
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        var page = this.getAttribute('data-page');
+        if (page) window.navigateTo(page);
+      });
+    });
+  }
+
+  function buildTree(items, depth) {
+    return '<ul class="nav-list ' + (depth ? 'nav-list--sub' : 'nav-list--root') + '">' + items.map(function (item) {
+      var hasChildren = item.children && item.children.length;
+      var icon = item.icon ? '<span class="nav-icon">' + item.icon + '</span>' : '';
+      return '<li class="nav-item ' + (hasChildren ? 'nav-item--group' : '') + '">' +
+        '<a href="#" class="nav-link ' + (hasChildren ? 'nav-link--group' : '') + '" data-page="' + (item.key || '') + '">' + icon + '<span class="nav-label">' + item.label + '</span></a>' +
+        (hasChildren ? buildTree(item.children, depth + 1) : '') + '</li>';
+    }).join('') + '</ul>';
+  }
+
+  function highlightCurrent() {
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-link.active'), function (el) { el.classList.remove('active'); });
+    var current = document.querySelector('.nav-link[data-page="' + currentPage + '"]');
+    if (current) current.classList.add('active');
+  }
+
+  window.navigateTo = function (pageKey, updateHash) {
+    var page = window.Pages && window.Pages[pageKey];
+    if (!page || typeof page.render !== 'function') return;
+    currentPage = pageKey;
+    if (updateHash !== false) location.hash = '#/' + pageKey;
+    document.getElementById('app').innerHTML = page.render();
+    if (typeof page.init === 'function') page.init();
+    highlightCurrent();
+    document.getElementById('app').focus({ preventScroll: true });
+  };
+
+  window.getCurrentPage = function () { return currentPage; };
+  window.getNavConfig = function () { return config; };
+
+  window.addEventListener('hashchange', function () {
+    var page = location.hash.replace('#/', '');
+    if (window.Pages[page] && page !== currentPage) window.navigateTo(page, false);
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadConfig();
+    document.getElementById('menuModeToggle').addEventListener('click', function () { document.body.classList.toggle('sidebar-collapsed'); });
+    document.getElementById('globalSpecButton').addEventListener('click', function () { window.open('docs/interaction.html', '_blank', 'noopener'); });
+  });
+})();
+
+</script>
+  <script>
+    window.AnnotationConfig = {
+      projectId: "prototype-a266004c",
+      dataVersion: "20260814-2",
+      page: function () { return window.getCurrentPage ? window.getCurrentPage() : "overview"; }
+    };
+  </script>
+  <script data-inline-source="annotations/annotations.js?v=20260814-2">
+window.AnnotationData = {};
+
+</script>
+  <script data-inline-source="annotations/annotation-runtime.js?v=20260814-2">
+(function () {
+  'use strict';
+
+  var visible = true;
+  var activePopup = null;
+  var currentAnno = null;
+  var dragState = null;
+  var observer = null;
+
+  var sectionFields = [
+    ['functionName', '功能名称'],
+    ['functionDesc', '功能说明'],
+    ['permissionScope', '权限范围'],
+    ['dataSource', '数据来源'],
+    ['valueLogic', '取值逻辑'],
+    ['fieldDesc', '字段说明'],
+    ['interactionDesc', '交互说明'],
+    ['judgeRule', '判断规则'],
+    ['exceptionRule', '异常规则'],
+    ['otherDesc', '其他说明']
+  ];
+
+  function getConfig() {
+    return window.AnnotationConfig || {};
+  }
+
+  function getPageKey() {
+    var cfg = getConfig();
+    if (typeof cfg.page === 'function') return cfg.page();
+    if (cfg.page) return cfg.page;
+    var active = document.querySelector('.nav-sub-item.active');
+    return active && active.id ? active.id : 'index';
+  }
+
+  function getRawAnnotations() {
+    var cfg = getConfig();
+    var page = getPageKey();
+    if (cfg.dataKey && Array.isArray(window[cfg.dataKey])) {
+      return window[cfg.dataKey].filter(function (item) { return item.page === page; });
+    }
+    if (window.AnnotationData && Array.isArray(window.AnnotationData[page])) {
+      return window.AnnotationData[page];
+    }
+    return [];
+  }
+
+  function storageKey() {
+    var cfg = getConfig();
+    var projectId = cfg.projectId || window.location.pathname || 'default-project';
+    var dataVersion = cfg.dataVersion || '1';
+    return ['prototype_annotations', projectId, dataVersion, getPageKey()].join('_');
+  }
+
+  function loadCached() {
+    try {
+      var raw = window.localStorage.getItem(storageKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveCached(items) {
+    try {
+      window.localStorage.setItem(storageKey(), JSON.stringify(items));
+    } catch (err) {
+      showToast('保存到浏览器缓存失败');
+    }
+  }
+
+  function getAnnotations() {
+    var source = getRawAnnotations();
+    if (!source.length) return [];
+    var cached = loadCached();
+    var cachedMap = {};
+    cached.forEach(function (item) {
+      if (item && item.id != null) cachedMap[item.id] = item;
+    });
+    return source.map(function (item) {
+      return clone(cachedMap[item.id] || item);
+    }).sort(function (a, b) {
+      return Number(a.id) - Number(b.id);
+    });
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function ensureToggle() {
+    var buttons = document.querySelectorAll('#anno-toggle-btn');
+    buttons.forEach(function (btn, index) {
+      if (index > 0) btn.remove();
+    });
+    var btn = document.getElementById('anno-toggle-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'anno-toggle-btn';
+      btn.type = 'button';
+      btn.title = '显示/隐藏标注';
+      btn.textContent = '●';
+      btn.addEventListener('click', function () {
+        visible = !visible;
+        btn.classList.toggle('anno-hidden', !visible);
+        closePopup();
+        render();
+      });
+      document.body.appendChild(btn);
+    }
+    placeToggle(btn);
+  }
+
+  function placeToggle(btn) {
+    var topBar = document.querySelector('.top-bar');
+    var sideMenu = document.querySelector('.side-menu, .sidebar, .nav-panel');
+    var top = topBar ? topBar.getBoundingClientRect().bottom + 12 : 16;
+    var left = sideMenu ? sideMenu.getBoundingClientRect().right + 16 : 16;
+    btn.style.top = Math.max(16, top) + 'px';
+    btn.style.left = Math.max(16, left) + 'px';
+  }
+
+  function ensureOverlay() {
+    var overlay = document.getElementById('anno-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'anno-overlay';
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  }
+
+  function render() {
+    ensureToggle();
+    var overlay = ensureOverlay();
+    overlay.innerHTML = '';
+    if (!visible) return;
+    getAnnotations().forEach(function (anno, index) {
+      var target = resolveTarget(anno.target);
+      if (!target) return;
+      var marker = document.createElement('button');
+      marker.type = 'button';
+      marker.className = 'anno-marker';
+      marker.textContent = anno.id || String(index + 1);
+      marker.title = anno.title || '';
+      marker.addEventListener('click', function (event) {
+        event.stopPropagation();
+        openPopup(anno, marker);
+      });
+      overlay.appendChild(marker);
+      positionMarker(marker, target, anno.position);
+    });
+  }
+
+  function resolveTarget(selector) {
+    if (!selector) return null;
+    try {
+      var nodes = document.querySelectorAll(selector);
+      return nodes.length === 1 ? nodes[0] : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function positionMarker(marker, target, position) {
+    var rect = target.getBoundingClientRect();
+    var pos = position || {};
+    var placement = pos.placement || 'top-right';
+    var x = rect.right;
+    var y = rect.top;
+    if (placement.indexOf('left') >= 0) x = rect.left;
+    if (placement.indexOf('bottom') >= 0) y = rect.bottom;
+    if (placement.indexOf('center') >= 0) y = rect.top + rect.height / 2;
+    marker.style.left = Math.round(x + Number(pos.offsetX || 0) - 10) + 'px';
+    marker.style.top = Math.round(y + Number(pos.offsetY || 0) - 10) + 'px';
+  }
+
+  function openPopup(anno, marker) {
+    closePopup();
+    currentAnno = clone(anno);
+    currentAnno.desc = currentAnno.desc || generateDesc(currentAnno.sections);
+    activePopup = document.createElement('div');
+    activePopup.className = 'anno-popup';
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    document.body.appendChild(activePopup);
+    positionPopup(activePopup, marker);
+    bindViewEvents();
+    bindDrag();
+  }
+
+  function positionPopup(popup, marker) {
+    var rect = marker.getBoundingClientRect();
+    var popupWidth = popup.offsetWidth;
+    var popupHeight = popup.offsetHeight;
+    var left = rect.right + 12;
+    var top = rect.top;
+    if (left + popupWidth > window.innerWidth - 16) {
+      left = rect.left - popupWidth - 12;
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - popupWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - popupHeight - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function fitPopupToViewport(popup) {
+    if (!popup) return;
+    var rect = popup.getBoundingClientRect();
+    var left = Math.max(16, Math.min(rect.left, window.innerWidth - rect.width - 16));
+    var top = Math.max(16, Math.min(rect.top, window.innerHeight - rect.height - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function buildViewHTML(anno) {
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">' + escapeHTML(anno.title || '未命名标注') + '</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body"><div class="anno-popup-desc">' + (anno.desc || generateDesc(anno.sections)) + '</div></div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-edit" type="button">编辑</button>'
+      + '</div>';
+  }
+
+  function buildEditHTML(anno) {
+    var sections = anno.sections || {};
+    var fields = sectionFields.map(function (field) {
+      return ''
+        + '<div class="anno-edit-field">'
+        + '  <label class="anno-edit-label">' + field[1] + '</label>'
+        + '  <textarea class="anno-edit-textarea" data-section="' + field[0] + '">' + escapeHTML(sections[field[0]] || '') + '</textarea>'
+        + '</div>';
+    }).join('');
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">编辑标注</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body">'
+      + '  <div class="anno-edit-field">'
+      + '    <label class="anno-edit-label">标注标题</label>'
+      + '    <input class="anno-edit-input" id="anno-edit-title" value="' + escapeHTML(anno.title || '') + '">'
+      + '  </div>'
+      + fields
+      + '</div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-cancel" type="button">取消</button>'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-save" type="button">保存</button>'
+      + '</div>';
+  }
+
+  function bindViewEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-edit').addEventListener('click', function () {
+      activePopup.innerHTML = buildEditHTML(currentAnno);
+      bindEditEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+  }
+
+  function bindEditEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-cancel').addEventListener('click', function () {
+      activePopup.innerHTML = buildViewHTML(currentAnno);
+      bindViewEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-save').addEventListener('click', saveEdit);
+  }
+
+  function saveEdit() {
+    currentAnno.title = activePopup.querySelector('#anno-edit-title').value.trim();
+    currentAnno.sections = {};
+    activePopup.querySelectorAll('[data-section]').forEach(function (field) {
+      currentAnno.sections[field.getAttribute('data-section')] = field.value.trim();
+    });
+    sectionFields.forEach(function (field) {
+      if (!(field[0] in currentAnno.sections)) currentAnno.sections[field[0]] = '';
+    });
+    currentAnno.desc = generateDesc(currentAnno.sections);
+    var items = getAnnotations();
+    var found = false;
+    items = items.map(function (item) {
+      if (item.id === currentAnno.id) {
+        found = true;
+        return clone(currentAnno);
+      }
+      return item;
+    });
+    if (!found) items.push(clone(currentAnno));
+    saveCached(items);
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    bindViewEvents();
+    bindDrag();
+    fitPopupToViewport(activePopup);
+    showToast('已保存到浏览器缓存');
+  }
+
+  function copyCurrent() {
+    if (!currentAnno) return;
+    copyText(JSON.stringify(currentAnno, null, 2));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showToast('数据已复制'); });
+      return;
+    }
+    var input = document.createElement('textarea');
+    input.value = text;
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    input.remove();
+    showToast('数据已复制');
+  }
+
+  function bindDrag() {
+    var header = activePopup.querySelector('.anno-popup-header');
+    header.addEventListener('mousedown', function (event) {
+      if (event.target.closest('button')) return;
+      var rect = activePopup.getBoundingClientRect();
+      dragState = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      event.preventDefault();
+    });
+  }
+
+  function closePopup() {
+    if (activePopup) activePopup.remove();
+    activePopup = null;
+    currentAnno = null;
+    dragState = null;
+  }
+
+  function generateDesc(sections) {
+    var data = sections || {};
+    return sectionFields.map(function (field, index) {
+      return (index + 1) + '. ' + field[1] + '：' + escapeHTML(data[field[0]] || '待确认');
+    }).join('<br>');
+  }
+
+  function escapeHTML(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showToast(text) {
+    var old = document.querySelector('.anno-toast');
+    if (old) old.remove();
+    var toast = document.createElement('div');
+    toast.className = 'anno-toast';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 1800);
+  }
+
+  document.addEventListener('mousemove', function (event) {
+    if (!dragState || !activePopup) return;
+    var x = Math.max(8, Math.min(event.clientX - dragState.x, window.innerWidth - activePopup.offsetWidth - 8));
+    var y = Math.max(8, Math.min(event.clientY - dragState.y, window.innerHeight - activePopup.offsetHeight - 8));
+    activePopup.style.left = x + 'px';
+    activePopup.style.top = y + 'px';
+  });
+
+  document.addEventListener('mouseup', function () {
+    dragState = null;
+    fitPopupToViewport(activePopup);
+  });
+
+  window.addEventListener('resize', function () {
+    render();
+    fitPopupToViewport(activePopup);
+  });
+  window.addEventListener('scroll', render, true);
+
+  function observeChanges() {
+    var root = document.getElementById('page-content') || document.body;
+    var _lastRender = 0;
+    var _rafPending = false;
+
+    function scheduleRender() {
+      var now = Date.now();
+      // Burst protection: skip if we rendered within the last 200 ms.
+      if (now - _lastRender < 200) return;
+      if (_rafPending) return;
+      _rafPending = true;
+      window.requestAnimationFrame(function () {
+        _rafPending = false;
+        _lastRender = Date.now();
+        render();
+      });
+    }
+
+    observer = new MutationObserver(function (mutations) {
+      // Skip entirely when annotations are hidden.
+      if (!visible) return;
+
+      var shouldRender = false;
+      for (var i = 0; i < mutations.length; i++) {
+        var target = mutations[i].target;
+        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, .anno-popup, .anno-toast')) {
+          continue;
+        }
+        shouldRender = true;
+        break;
+      }
+      if (!shouldRender) return;
+
+      window.clearTimeout(observer._debounceTimer);
+      observer._debounceTimer = window.setTimeout(scheduleRender, 300);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+  }
+
+  function init() {
+    try {
+      ensureToggle();
+      ensureOverlay();
+      render();
+      observeChanges();
+    } catch (err) {
+      console.warn('[AnnotationRuntime] init failed:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  window.AnnotationRuntime = {
+    refresh: render,
+    getPageKey: getPageKey,
+    getAnnotations: getAnnotations,
+    close: closePopup
+  };
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>活动中心与卡券中心 SIT 基线原型 · 交互与功能说明</title>
+  <style>
+    body{margin:0;background:#f4f7fb;color:#25374a;font:14px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1180px;margin:0 auto;padding:32px}h1{margin:0 0 6px}h2{margin:28px 0 10px;font-size:18px}p{color:#627386}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:10px 12px;border:1px solid #dce5ee;text-align:left;vertical-align:top}th{background:#eef5fb}.note{padding:12px 14px;background:#eaf5ff;border-left:4px solid #1689e5}.tag{display:inline-block;padding:1px 7px;border-radius:10px;background:#eaf5ff;color:#0e70c0;font-size:12px}
+  </style>
+</head>
+<body><main>
+  <h1>活动中心与卡券中心 SIT 基线原型</h1>
+  <p>交互与功能说明 · 2026-07-16</p>
+  <div class="note"><b>证据口径：</b>以 SIT 当前测试环境为准，Axure 原型为辅。表格行是演示 Mock，不代表测试环境真实记录。</div>
+
+  <h2>1. 全局交互</h2>
+  <table><thead><tr><th>区域</th><th>交互</th><th>结果</th><th>安全边界</th></tr></thead><tbody>
+    <tr><td>左侧导航 / 顶部页签</td><td>点击页面名称</td><td>切换主页面并更新 URL hash</td><td>不访问 SIT，不修改数据</td></tr>
+    <tr><td>查询区</td><td>输入条件、查询、重置</td><td>刷新演示列表或清空条件</td><td>不调用真实接口</td></tr>
+    <tr><td>列表</td><td>查看、编辑、新建</td><td>打开原型弹窗</td><td>保存只显示提示</td></tr>
+    <tr><td>标注与说明</td><td>点击顶部/页面按钮</td><td>打开当前页功能、证据、Axure 辅助、风险</td><td>只读说明</td></tr>
+    <tr><td>蓝色标注点</td><td>点击 1、2、3…</td><td>打开结构化标注，可复制或在浏览器缓存中临时编辑</td><td>不回写项目源文件</td></tr>
+  </tbody></table>
+
+  <h2>2. 下拉枚举与级联</h2>
+  <div class="note"><b>数据边界：</b>常用枚举来自 SIT 截图、SIT 列表可见值与页面分析记录；Axure 只补充业务场景分支。由于当前浏览器安全策略未允许读取 SIT 下拉展开 DOM，组织数据仅放入可验证的演示子集，不代表完整测试环境字典。</div>
+  <table><thead><tr><th>级联</th><th>交互结果</th><th>示例</th></tr></thead><tbody>
+    <tr><td>主场景 → 子场景</td><td>选择主场景后加载对应子场景；切换主场景会清空原子场景</td><td>售前营销 → 在线购车、节点营销、CAP活动、直播活动、区域活动、试驾、新车上市</td></tr>
+    <tr><td>品牌 → 大区 → 小区 → 专营店</td><td>逐级加载；未选上级时下级禁用</td><td>东风日产 → 华南大区 → 广东小区 → 广州/佛山东风南方（演示）</td></tr>
+    <tr><td>品牌 → 领券窗口 → 卡券栏目</td><td>领券中心配置和查询按品牌收敛窗口与栏目</td><td>东风日产 → 东风日产领券中心 → 购车优惠/维保优惠/车主专享</td></tr>
+    <tr><td>业务场景 → 卡券分类/适用范围</td><td>刷新可选券型，并切换车型、门店或商城商品字段</td><td>商城营销仅展示商城商品；售后营销展示车型和专营店</td></tr>
+  </tbody></table>
+
+  <h2>3. 活动中心</h2>
+  <table><thead><tr><th>页面</th><th>核心功能</th><th>关键交互/规则</th></tr></thead><tbody>
+    <tr><td>保客活动创建</td><td>查询、新建、查看、编辑、启停活动</td><td>新建进入四步活动详情；首次提交后多个关键字段锁定</td></tr>
+    <tr><td>活动新建/编辑</td><td>基本信息、关联卡券、活动对象、分享SEO、页面配置</td><td>步骤/页签切换；触发方式控制字段显隐；step3 空态提示前置条件</td></tr>
+    <tr><td>组合活动</td><td>列表直接展示组合活动名称与组合活动展示名称；创建/编辑配置展示名称、适用门店、卡券、渠道与 C 端素材</td><td>编辑页不设独立展示预览；展示名称为空由 SA 链路回退原组合活动名称；适用门店为空等同全部门店；活动链接创建后不可修改</td></tr>
+    <tr><td>专属福利</td><td>露出时间、倒计时、人群包和素材</td><td>露出时间受主活动周期约束</td></tr>
+    <tr><td>互斥关系</td><td>活动互斥、活动内卡券叠加/互斥</td><td>两个页签独立；不与售前卡券中心规则混写</td></tr>
+    <tr><td>一店一码</td><td>按活动和门店生成页面/二维码</td><td>查看、下载在原型中仅提示</td></tr>
+    <tr><td>活动汇总</td><td>PV、UV、参与人数和转化</td><td>统计时间按 Axure 说明不超过 3 个月</td></tr>
+    <tr><td>行为触发汇总</td><td>行为触发、卡券激活、卡券失效追踪</td><td>场景标识需同步中文解释和来源系统</td></tr>
+  </tbody></table>
+
+  <h2>4. 卡券中心</h2>
+  <p>左侧导航完整保留 13 个 SIT 一级功能页。每页包含 <span class="tag">查询</span> <span class="tag">列表</span> <span class="tag">功能说明</span> <span class="tag">结构化标注</span>。</p>
+  <table><thead><tr><th>链路</th><th>页面</th><th>现状说明</th></tr></thead><tbody>
+    <tr><td>建券</td><td>卡券列表</td><td>新建页按场景动态配置券型、车型、门店、商城商品和核销规则</td></tr>
+    <tr><td>发券</td><td>优惠券发放、卡券发放、发放记录、经销商任务</td><td>历史发券与任务式发券并存，主从关系待确认</td></tr>
+    <tr><td>领券</td><td>领券记录、领券管理</td><td>记录覆盖 oneID/VIN/活动/门店；窗口和栏目支持添加、移除、排序</td></tr>
+    <tr><td>核销</td><td>核销列表</td><td>覆盖核销、补贴、条件进度和门店一致性</td></tr>
+    <tr><td>规则与批量</td><td>卡券限额、卡券规则设置、批量操作优惠券</td><td>当前规则设置实际为结算规则；批量操作支持启用/禁用</td></tr>
+    <tr><td>报表</td><td>售后业务报表、业务报表</td><td>总部/门店层级和在线购车相关统计</td></tr>
+  </tbody></table>
+
+  <h2>5. 系统边界</h2>
+  <table><thead><tr><th>步骤</th><th>类型</th><th>发起方</th><th>接收/执行方</th><th>说明</th></tr></thead><tbody>
+    <tr><td>配置活动</td><td>本系统操作</td><td>活动中心</td><td>活动中心</td><td>维护活动基础、对象、页面与规则</td></tr>
+    <tr><td>选择卡券</td><td>系统交互</td><td>活动中心</td><td>卡券中心</td><td>查询卡券及适用范围</td></tr>
+    <tr><td>选择人群</td><td>系统交互</td><td>活动中心</td><td>CDP</td><td>获取人群包与版本</td></tr>
+    <tr><td>校验用户车辆</td><td>系统交互</td><td>活动中心/卡券中心</td><td>oneID/车辆数据</td><td>查询用户、VIN 和车型关系</td></tr>
+    <tr><td>发券与领券</td><td>系统交互</td><td>活动中心/商城/店端</td><td>卡券中心</td><td>创建券实例并记录结果</td></tr>
+    <tr><td>核销</td><td>系统交互</td><td>商城/店端</td><td>卡券中心</td><td>校验并更新券状态</td></tr>
+  </tbody></table>
+</main></body></html>

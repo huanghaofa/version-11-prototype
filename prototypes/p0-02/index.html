@@ -1,0 +1,4113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>组合折扣券商品组合配置原型</title>
+  <link rel="icon" href="data:,">
+  <style data-inline-source="assets/css/global.css?v=combo-discount-20260814-3">
+/* ========================================
+   Global B端 Design Tokens & Shared Components
+   ======================================== */
+
+:root {
+  /* ---- Color Palette ---- */
+  --color-primary: #3370ff;
+  --color-primary-hover: #2860e1;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-danger: #ff3b30;
+  --color-info: #5ac8fa;
+
+  --color-text-primary: #1f2329;
+  --color-text-secondary: #646a73;
+  --color-text-disabled: #c0c4cc;
+  --color-text-placeholder: #8f959e;
+
+  --color-bg-page: #f5f6f8;
+  --color-bg-white: #ffffff;
+  --color-bg-hover: #f2f3f5;
+
+  --color-border: #e5e6eb;
+  --color-border-light: #f0f1f5;
+  --color-divider: #ebecf0;
+
+  /* ---- Typography ---- */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  /* ---- Spacing ---- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+
+  /* ---- Border Radius ---- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ---- Shared Component: Button ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+  color: #fff;
+}
+
+/* ---- Shared Component: Table ---- */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+thead th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+tbody tr:hover {
+  background: var(--color-bg-hover);
+}
+
+/* ---- Shared Component: Form ---- */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 80px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  resize: vertical;
+}
+
+/* ---- Shared Component: Card ---- */
+.card {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Shared Component: Modal / Dialog ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-body {
+  padding: var(--spacing-xl);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Shared Component: Pagination ---- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-lg) 0;
+}
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-white);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-item:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-item.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ---- Shared Component: Advanced Search Bar ---- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-bar .form-input,
+.search-bar .form-select {
+  width: auto;
+  min-width: 160px;
+}
+
+/* ---- Utility ---- */
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-disabled);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+</style>
+  <style data-inline-source="assets/css/app.css?v=combo-discount-20260814-3">
+:root {
+  --nav-bg: #17283d;
+  --nav-bg-deep: #0f1d2d;
+  --nav-text: #d7e3ef;
+  --nav-muted: #93a6b9;
+  --blue: #1689e5;
+  --blue-dark: #0c6fbd;
+  --blue-soft: #eef7ff;
+  --canvas: #f4f7fa;
+  --line: #dfe6ee;
+  --muted: #66788a;
+  --green: #258458;
+  --green-soft: #edf8f2;
+  --orange: #a36500;
+  --orange-soft: #fff7e5;
+  --red: #c53e3e;
+  --red-soft: #fff0f0;
+}
+
+body {
+  min-width: 1100px;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.prototype-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 58px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  background: linear-gradient(90deg, var(--nav-bg-deep), #213a57);
+  box-shadow: 0 2px 10px rgba(10, 28, 46, .18);
+  position: relative;
+  z-index: 20;
+}
+
+.brand,
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.brand strong,
+.brand span {
+  display: block;
+}
+
+.brand strong {
+  font-size: 15px;
+}
+
+.brand div span {
+  color: #a9bdd1;
+  font-size: 11px;
+}
+
+.env-pill {
+  padding: 4px 10px;
+  color: #cce8ff;
+  border: 1px solid rgba(135, 202, 255, .32);
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.top-link {
+  height: 30px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  color: #e6f3ff;
+  background: rgba(22, 137, 229, .2);
+  border: 1px solid rgba(103, 188, 255, .35);
+  border-radius: 4px;
+}
+
+.top-link:hover {
+  color: #fff;
+  background: rgba(22, 137, 229, .38);
+}
+
+.admin {
+  font-size: 12px;
+}
+
+.app-layout {
+  height: calc(100vh - 58px);
+  display: flex;
+}
+
+.app-sidebar {
+  width: 236px;
+  flex: 0 0 236px;
+  overflow-y: auto;
+  color: var(--nav-text);
+  background: var(--nav-bg);
+  border-right: 1px solid #263d57;
+  padding: 14px 0 28px;
+}
+
+.app-main {
+  min-width: 0;
+  flex: 1;
+  overflow-y: auto;
+  background: var(--canvas);
+  outline: none;
+}
+
+.loading {
+  margin: 24px;
+  padding: 28px;
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list--sub {
+  padding: 3px 0 10px;
+  background: rgba(1, 12, 24, .16);
+}
+
+.nav-link {
+  min-height: 40px;
+  padding: 9px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--nav-text);
+  border-left: 3px solid transparent;
+  font-size: 13px;
+  transition: .15s ease;
+}
+
+.nav-list--sub .nav-link {
+  min-height: 36px;
+  padding-left: 42px;
+  color: #bac9d8;
+  font-size: 12px;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .06);
+}
+
+.nav-link.active {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(22, 137, 229, .36), rgba(22, 137, 229, .08));
+  border-left-color: #3ba9ff;
+}
+
+.nav-link--group {
+  font-weight: 650;
+}
+
+.nav-link--group::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--nav-muted);
+  font-size: 10px;
+}
+
+.nav-icon {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.workspace {
+  min-height: 100%;
+}
+
+.breadcrumb {
+  height: 37px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7b8998;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.breadcrumb span {
+  color: #b5c0ca;
+}
+
+.page-content {
+  padding: 18px 22px 42px;
+}
+
+.page-header {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.page-header h1 {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 650;
+}
+
+.page-header p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel {
+  margin-bottom: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(29, 53, 77, .04);
+}
+
+.panel-header {
+  min-height: 44px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.panel-title::before {
+  content: "";
+  width: 3px;
+  height: 16px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+.panel-body {
+  padding: 16px;
+}
+
+.grid-2,
+.grid-3,
+.grid-4 {
+  display: grid;
+  gap: 14px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.metric-card,
+.summary-card {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.metric-card {
+  border-top: 3px solid var(--blue);
+}
+
+.metric-card strong {
+  display: block;
+  color: #20364d;
+  font-size: 25px;
+}
+
+.metric-card span,
+.summary-card p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.summary-card h3 {
+  margin-bottom: 7px;
+  font-size: 15px;
+}
+
+.summary-card .number {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 10px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.callout {
+  padding: 12px 14px;
+  color: #36536e;
+  background: var(--blue-soft);
+  border: 1px solid #cce5f8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.callout.warning {
+  color: #6d5316;
+  background: var(--orange-soft);
+  border-color: #efdca7;
+}
+
+.callout.success {
+  color: #286444;
+  background: var(--green-soft);
+  border-color: #cbe8d8;
+}
+
+.flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.flow-node {
+  position: relative;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.flow-node:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  transform: translateY(-50%);
+  color: #8da1b4;
+}
+
+.flow-node strong,
+.flow-node span {
+  display: block;
+}
+
+.flow-node strong {
+  font-size: 13px;
+}
+
+.flow-node span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+.form-field.span-2 {
+  grid-column: span 2;
+}
+
+.form-field.span-3 {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  margin-bottom: 5px;
+  display: block;
+  color: #405469;
+  font-size: 12px;
+}
+
+.form-field label em {
+  margin-right: 4px;
+  color: #dc3d3d;
+  font-style: normal;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea,
+.fake-input {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 9px;
+  color: #33485d;
+  background: #fff;
+  border: 1px solid #d5dee8;
+  border-radius: 3px;
+  outline: none;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #5caae3;
+  box-shadow: 0 0 0 2px rgba(22, 137, 229, .08);
+}
+
+.form-field small {
+  margin-top: 5px;
+  display: block;
+  color: #8a6b22;
+  font-size: 11px;
+}
+
+.radio-row,
+.checkbox-row {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.radio-row label,
+.checkbox-row label {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-divider {
+  margin: 18px 0 14px;
+  padding-top: 15px;
+  border-top: 1px dashed #dfe6ee;
+}
+
+.section-divider strong {
+  font-size: 14px;
+}
+
+.table-shell {
+  overflow-x: auto;
+  border: 1px solid #e4eaf0;
+}
+
+.data-table {
+  min-width: 850px;
+}
+
+.data-table th {
+  padding: 10px 12px;
+  color: #465a6e;
+  background: #f5f8fb;
+  font-size: 12px;
+}
+
+.data-table td {
+  padding: 11px 12px;
+  color: #405469;
+  font-size: 12px;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.item-name strong,
+.item-name span {
+  display: block;
+}
+
+.item-name span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d6dfe8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.quantity-stepper button {
+  width: 28px;
+  height: 28px;
+  color: #4a6176;
+  background: #f7f9fb;
+  border: 0;
+  cursor: pointer;
+}
+
+.quantity-stepper span {
+  min-width: 34px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.link-button,
+.icon-button {
+  padding: 0;
+  color: var(--blue-dark);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-button.danger {
+  color: var(--red);
+}
+
+.icon-button {
+  color: #738395;
+  font-size: 22px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 11px;
+  font-size: 11px;
+}
+
+.status::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-success {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.status-warning {
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.status-danger {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.status-neutral {
+  color: #63788d;
+  background: #eef2f5;
+}
+
+.tag {
+  display: inline-flex;
+  padding: 2px 7px;
+  color: #305c80;
+  background: #eef7ff;
+  border: 1px solid #cae4f7;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.inline-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.rule-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #4d6276;
+  font-size: 12px;
+  line-height: 2;
+}
+
+.table-actions,
+.search-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.table-actions {
+  justify-content: flex-start;
+}
+
+.input-prefix {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d5dee8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.input-prefix span {
+  height: 32px;
+  padding: 0 9px;
+  display: grid;
+  place-items: center;
+  color: #64778a;
+  background: #f5f7f9;
+  border-right: 1px solid #d5dee8;
+}
+
+.input-prefix input {
+  border: 0;
+  border-radius: 0;
+}
+
+.empty-row,
+.empty-calc {
+  padding: 30px 20px;
+  color: #7c8d9d;
+  text-align: center;
+}
+
+.empty-calc-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 9px;
+  display: grid;
+  place-items: center;
+  color: #7795af;
+  background: #eef4f8;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.empty-calc h3 {
+  margin-bottom: 4px;
+  color: #52687c;
+  font-size: 14px;
+}
+
+.empty-calc p {
+  font-size: 12px;
+}
+
+.modal-table,
+.calc-table {
+  margin-top: 12px;
+}
+
+.records-table {
+  min-width: 1280px;
+}
+
+.pagination {
+  padding-top: 12px;
+  color: var(--muted);
+  text-align: right;
+  font-size: 12px;
+}
+
+.page-active {
+  margin-left: 8px;
+  padding: 4px 9px;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+.detail-grid {
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detail-grid div {
+  padding: 10px 12px;
+  background: #f7f9fb;
+  border: 1px solid #e5ebf0;
+}
+
+.detail-grid span,
+.detail-grid strong {
+  display: block;
+}
+
+.detail-grid span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.detail-grid strong {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.detail-summary {
+  margin-bottom: 12px;
+}
+
+.amount-primary {
+  color: #d85d18;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.calc-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid #dce6ef;
+  background: #fbfdff;
+}
+
+.calc-summary div {
+  padding: 14px 16px;
+  border-right: 1px solid #e5ebf1;
+}
+
+.calc-summary div:last-child {
+  border-right: 0;
+}
+
+.calc-summary span,
+.calc-summary strong {
+  display: block;
+}
+
+.calc-summary span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.calc-summary strong {
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.success-result {
+  padding: 24px;
+  text-align: center;
+  background: var(--green-soft);
+  border: 1px solid #c9e7d6;
+}
+
+.success-result .check {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 10px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--green);
+  border-radius: 50%;
+  font-size: 25px;
+}
+
+.success-result h3 {
+  margin-bottom: 6px;
+  color: #265e42;
+}
+
+.success-result p {
+  color: #557464;
+  font-size: 12px;
+}
+
+.btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 3px;
+}
+
+.btn-small {
+  height: 27px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+
+.btn-ghost {
+  color: var(--blue-dark);
+  background: #f5fbff;
+  border-color: #b8d9f2;
+}
+
+.modal-overlay {
+  background: rgba(18, 35, 53, .42);
+}
+
+.modal-content {
+  min-width: 520px;
+  max-width: 760px;
+  border-radius: 3px;
+}
+
+.modal-content.modal-wide {
+  width: min(960px, 90vw);
+  max-width: none;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 14px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e4e9ef;
+}
+
+.modal-body {
+  padding: 18px;
+}
+
+.modal-footer {
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #e4e9ef;
+  border-bottom: 0;
+}
+
+.toast {
+  position: fixed;
+  z-index: 1500;
+  top: 72px;
+  left: 50%;
+  padding: 9px 15px;
+  color: #fff;
+  background: rgba(20, 38, 55, .94);
+  border-radius: 4px;
+  transform: translate(-50%, -12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+  font-size: 12px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 1280px) {
+  body {
+    min-width: 980px;
+  }
+
+  .app-sidebar {
+    width: 210px;
+    flex-basis: 210px;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-field.span-3 {
+    grid-column: 1 / -1;
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    min-width: 0;
+    overflow: auto;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .brand div span,
+  .env-pill,
+  .admin {
+    display: none;
+  }
+
+  .app-layout {
+    height: auto;
+    min-height: calc(100vh - 58px);
+  }
+
+  .app-sidebar {
+    width: 64px;
+    flex-basis: 64px;
+  }
+
+  .nav-label,
+  .nav-link--group::after {
+    display: none;
+  }
+
+  .nav-link,
+  .nav-list--sub .nav-link {
+    justify-content: center;
+    padding: 9px;
+  }
+
+  .page-content {
+    padding: 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4,
+  .form-grid,
+  .flow,
+  .calc-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field.span-2,
+  .form-field.span-3 {
+    grid-column: auto;
+  }
+
+  .flow-node:not(:last-child)::after {
+    content: "↓";
+    top: auto;
+    right: 50%;
+    bottom: -18px;
+  }
+
+  .calc-summary div {
+    border-right: 0;
+    border-bottom: 1px solid #e5ebf1;
+  }
+}
+
+/* =========================================================
+   SIT 卡券中心基线
+   视觉与页面骨架参照“卡券中心_E3S权益编码关联原型_20260722”
+   ========================================================= */
+:root {
+  --sit-blue: #1593e6;
+  --sit-blue-dark: #087bc7;
+  --sit-tab: #dcecff;
+  --sit-rail: #162638;
+  --sit-line: #e4e8ed;
+  --sit-muted: #7b8794;
+  --sit-text: #2c3742;
+}
+
+html,
+body {
+  min-width: 1180px;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  color: var(--sit-text);
+  background: #fff;
+  font-size: 12px;
+  font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+}
+
+.sit-shell {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.icon-rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 90;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 44px 0 30px;
+  background: var(--sit-rail);
+}
+
+.brand-disc {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #d8e4ef;
+  border: 1px solid #8ea0b1;
+  border-radius: 50%;
+  font-size: 7px;
+  letter-spacing: -.3px;
+}
+
+.rail-icon {
+  width: 30px;
+  height: 30px;
+  color: #8fa1b3;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  cursor: default;
+}
+
+.rail-icon.active,
+.rail-icon:hover {
+  color: #fff;
+  background: #22384e;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 44px;
+  right: 0;
+  z-index: 80;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  color: #1d2730;
+  background: #fff;
+  border-bottom: 1px solid #e7eaee;
+}
+
+.top-left,
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.menu-toggle {
+  font-size: 17px;
+}
+
+.top-search {
+  width: 190px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: #b7bec6;
+  border: 1px solid #edf0f3;
+  border-radius: 14px;
+}
+
+.top-right strong,
+.top-left strong {
+  color: #313b44;
+  font-weight: 500;
+}
+
+.workspace {
+  position: fixed;
+  top: 36px;
+  left: 44px;
+  right: 0;
+  bottom: 26px;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.crumb-bar {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: #8c96a0;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.module-tabs {
+  height: 40px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  padding-left: 10px;
+  background: var(--sit-tab);
+  border-bottom: 1px solid #c9def2;
+  white-space: nowrap;
+}
+
+.module-tabs span {
+  display: flex;
+  align-items: center;
+  padding: 0 17px;
+  color: #34475a;
+  cursor: default;
+}
+
+.module-tabs span[data-page] {
+  cursor: pointer;
+}
+
+.module-tabs span.active {
+  color: var(--sit-blue-dark);
+  background: #fff;
+  font-weight: 600;
+}
+
+.app-main {
+  height: calc(100% - 66px);
+  min-width: 0;
+  overflow: auto;
+  padding: 14px 18px 82px;
+  background: #f7f8fa;
+  outline: none;
+}
+
+.workspace-tabs {
+  position: fixed;
+  left: 44px;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  height: 26px;
+  display: flex;
+  align-items: stretch;
+  color: #cfd6de;
+  background: #303841;
+}
+
+.workspace-tabs span {
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
+  border-right: 1px solid #4a535d;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.workspace-tabs span.active {
+  color: #fff;
+  background: var(--sit-blue);
+}
+
+.workspace-tabs button {
+  margin-left: auto;
+  width: 34px;
+  color: #fff;
+  background: #303841;
+  border: 0;
+}
+
+.coupon-page {
+  max-width: 1540px;
+  margin: 0 auto;
+}
+
+.page-heading {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 15px;
+  background: #fff;
+  border: 1px solid var(--sit-line);
+  border-bottom: 0;
+}
+
+.page-heading strong {
+  display: block;
+  color: #2c3742;
+  font-size: 14px;
+}
+
+.page-heading small {
+  display: block;
+  margin-top: 2px;
+  color: #8b96a0;
+  font-size: 11px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-body {
+  padding-top: 10px;
+}
+
+.form-panel {
+  background: #fff;
+  border: 1px solid var(--sit-line);
+}
+
+.coupon-form-section + .coupon-form-section {
+  border-top: 10px solid #f7f8fa;
+}
+
+.coupon-form-section > h2 {
+  height: 39px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 16px;
+  color: #394b5d;
+  border-bottom: 1px solid #edf0f3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.coupon-form-section > h2::before {
+  content: "";
+  width: 3px;
+  height: 15px;
+  margin-right: 8px;
+  background: var(--sit-blue);
+}
+
+.sit-form-row {
+  min-height: 54px;
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 24px;
+  border-bottom: 1px solid #f0f2f4;
+}
+
+.sit-label {
+  width: 190px;
+  flex: 0 0 190px;
+  padding: 7px 18px 0 0;
+  color: #44515e;
+  text-align: right;
+}
+
+.sit-label.required::before,
+.required-text {
+  content: "*";
+  margin-right: 4px;
+  color: #e44646;
+}
+
+.sit-control {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sit-control > small {
+  width: 100%;
+  margin-top: 1px;
+  color: #98a1aa;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  height: 32px;
+  padding: 0 9px;
+  color: #34475c;
+  background: #fff;
+  border: 1px solid #d6dfe8;
+  border-radius: 1px;
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: #65ace2;
+  box-shadow: 0 0 0 2px rgba(22, 137, 229, .07);
+}
+
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+  color: #8c97a2;
+  background: #f5f7f9;
+}
+
+.form-textarea {
+  min-height: 72px;
+  padding: 7px 9px;
+  resize: vertical;
+}
+
+.compact-control {
+  width: 250px;
+}
+
+.long-control {
+  width: min(620px, 78vw);
+}
+
+.short-input {
+  width: 74px;
+  text-align: center;
+}
+
+.readonly-field {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  color: #78838e;
+  background: #f5f7f9;
+  border: 1px solid #e1e6eb;
+}
+
+.cascade-control,
+.inline-picker,
+.check-line,
+.control-stack {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.control-stack {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.sit-radio,
+.check-line label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 8px;
+  color: #465767;
+}
+
+.sit-radio input,
+.check-line input,
+.scope-checkbox {
+  accent-color: var(--sit-blue);
+}
+
+.inline-note,
+.selection-state {
+  color: #7f8d99;
+}
+
+.selection-state {
+  padding-left: 3px;
+}
+
+.input-suffix {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #d6dfe8;
+}
+
+.input-suffix .form-input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+}
+
+.input-suffix span {
+  padding: 0 9px;
+  color: #79848f;
+  border-left: 1px solid #e1e5e9;
+}
+
+.btn {
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  color: #34475c;
+  background: #fff;
+  border: 1px solid #d6dee7;
+  border-radius: 1px;
+  font-size: 12px;
+  font-weight: 400;
+  box-shadow: none;
+}
+
+.btn:hover {
+  color: var(--sit-blue);
+  border-color: #82bff0;
+}
+
+.btn-primary {
+  color: #fff;
+  background: var(--sit-blue);
+  border-color: var(--sit-blue);
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background: var(--sit-blue-dark);
+}
+
+.sticky-actions {
+  position: sticky;
+  bottom: -82px;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid var(--sit-line);
+  box-shadow: 0 -3px 8px rgba(37, 55, 73, .06);
+}
+
+.sticky-actions .btn {
+  min-width: 82px;
+}
+
+.scope-form-row {
+  background: #fbfdff;
+}
+
+.scope-choice-list {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+}
+
+.scope-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: opacity .15s ease;
+}
+
+.scope-option.is-locked {
+  opacity: .28;
+}
+
+.scope-option.is-locked .scope-checkbox {
+  visibility: hidden;
+}
+
+.scope-option.is-selected .scope-button {
+  background: #078bdc;
+  box-shadow: 0 0 0 2px rgba(21, 147, 230, .16);
+}
+
+.scope-checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+.scope-button {
+  min-width: 94px;
+  height: 32px;
+  padding: 0 14px;
+  color: #fff;
+  background: #1599ea;
+  border: 1px solid #0b8cd9;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.scope-button:disabled {
+  cursor: not-allowed;
+}
+
+.scope-tools {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.scope-placeholder {
+  width: min(920px, 96%);
+  margin-top: 7px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #cee0ed;
+}
+
+.batch-inline-config {
+  width: min(1080px, 98%);
+  margin-top: 8px;
+  background: #fff;
+  border: 1px solid #cee0ed;
+}
+
+.combination-config {
+  width: min(1120px, 99%);
+  margin-top: 9px;
+  background: #f7fafc;
+  border: 1px solid #c8dce9;
+}
+
+.combination-config-heading {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 12px;
+  background: #eaf6fd;
+  border-bottom: 1px solid #cfe2ef;
+}
+
+.combination-config-heading strong,
+.combination-config-heading span {
+  display: block;
+}
+
+.combination-config-heading strong {
+  color: #244b6d;
+  font-size: 13px;
+}
+
+.combination-config-heading span {
+  margin-top: 3px;
+  color: #6d8192;
+  font-size: 11px;
+}
+
+.combination-heading-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.combination-heading-actions .btn {
+  text-decoration: none;
+}
+
+.combination-mode-selector {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid #e2e9ef;
+}
+
+.combination-mode-option {
+  min-height: 58px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  color: #53687a;
+  background: #f8fafc;
+  border: 1px solid #dce5ec;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.combination-mode-option.is-active {
+  background: #eef8ff;
+  border-color: #6fb8e9;
+  box-shadow: 0 0 0 2px rgba(21, 153, 234, .08);
+}
+
+.combination-mode-option input {
+  margin-top: 3px;
+}
+
+.combination-mode-option strong,
+.combination-mode-option small {
+  display: block;
+}
+
+.combination-mode-option strong {
+  color: #284b68;
+  font-size: 13px;
+}
+
+.combination-mode-option small {
+  margin-top: 3px;
+  color: #738594;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.combination-shared-rule {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 12px;
+  color: #445a6e;
+  background: #fff;
+  border-bottom: 1px solid #e2e9ef;
+}
+
+.combination-shared-rule > div {
+  min-width: 150px;
+  padding-right: 18px;
+  border-right: 1px solid #dfe7ed;
+}
+
+.combination-shared-rule span,
+.combination-shared-rule strong {
+  display: block;
+}
+
+.combination-shared-rule span {
+  color: #7a8b99;
+  font-size: 11px;
+}
+
+.combination-shared-rule strong {
+  margin-top: 2px;
+  color: #d96a1b;
+  font-size: 18px;
+}
+
+.combination-shared-rule p {
+  margin: 0;
+  color: #667988;
+  font-size: 11px;
+}
+
+.combination-list {
+  padding: 10px;
+}
+
+.fixed-equivalent-note {
+  margin: 10px 10px 0;
+  padding: 8px 10px;
+  color: #6b5317;
+  background: #fff8e8;
+  border: 1px solid #eddbac;
+  font-size: 11px;
+}
+
+.free-combination-panel {
+  margin: 10px;
+  background: #fff;
+  border: 1px solid #d7e1e9;
+}
+
+.free-combination-heading {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 10px;
+  background: #f6f9fb;
+  border-bottom: 1px solid #e0e7ed;
+}
+
+.free-combination-heading strong,
+.free-combination-heading span {
+  display: block;
+}
+
+.free-combination-heading strong {
+  color: #2f516d;
+  font-size: 13px;
+}
+
+.free-combination-heading span {
+  margin-top: 2px;
+  color: #738594;
+  font-size: 11px;
+}
+
+.combination-card {
+  margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #d7e1e9;
+}
+
+.combination-card:last-child {
+  margin-bottom: 0;
+}
+
+.combination-card-header {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 7px 10px;
+  background: #f6f9fb;
+  border-bottom: 1px solid #e0e7ed;
+}
+
+.combination-card-header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.combination-card-header strong {
+  color: #2f516d;
+  font-size: 13px;
+}
+
+.combination-card-header code {
+  padding: 2px 5px;
+  color: #647a8c;
+  background: #edf2f6;
+}
+
+.combination-card-header span {
+  color: #738594;
+  font-size: 11px;
+}
+
+.combination-card-actions {
+  margin-left: auto;
+}
+
+.combination-card-actions .shared-discount-tag {
+  padding: 3px 8px;
+  color: #b75c19;
+  background: #fff4e8;
+  border: 1px solid #f1d1b2;
+  border-radius: 10px;
+}
+
+.combination-card-actions .link-button[disabled] {
+  color: #aab4bc;
+  cursor: not-allowed;
+}
+
+.combination-item-table {
+  max-height: 270px;
+  border: 0;
+}
+
+.combination-item-table .data-table {
+  min-width: 920px;
+}
+
+.combination-item-table th {
+  padding: 8px 10px;
+  background: #fbfcfd;
+}
+
+.discount-scope,
+.cell-help {
+  display: block;
+}
+
+.discount-scope {
+  color: #c4621c;
+  font-weight: 600;
+}
+
+.cell-help {
+  margin-top: 2px;
+  color: #8b99a5;
+  font-size: 10px;
+}
+
+.cross-combination-use {
+  display: inline-block;
+  padding: 2px 6px;
+  color: #526f88;
+  background: #eef6fc;
+  border: 1px solid #d2e6f4;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.excel-upload-tip {
+  margin-bottom: 12px;
+  padding: 9px 11px;
+  color: #486279;
+  background: #eef7ff;
+  border: 1px solid #cce5f8;
+}
+
+.excel-upload-tip strong,
+.excel-upload-tip span {
+  display: block;
+}
+
+.excel-upload-tip span {
+  margin-top: 3px;
+  color: #6e8192;
+  font-size: 11px;
+}
+
+.excel-upload-box {
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #4a647b;
+  background: #fbfdff;
+  border: 1px dashed #91bad7;
+  cursor: pointer;
+}
+
+.excel-upload-box:hover {
+  background: #f3f9fd;
+  border-color: #1599ea;
+}
+
+.excel-upload-box input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.excel-upload-box small {
+  color: #8393a0;
+  font-size: 11px;
+}
+
+.excel-upload-icon {
+  padding: 3px 8px;
+  color: #23734d;
+  background: #eaf7f0;
+  border: 1px solid #bfe2cf;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.excel-preview-empty {
+  margin-top: 12px;
+  padding: 22px;
+  color: #8393a0;
+  text-align: center;
+  background: #f7f9fb;
+  border: 1px solid #e3e9ee;
+}
+
+.excel-validation-summary {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.excel-validation-summary > div {
+  padding: 8px 12px;
+  color: #536b80;
+  background: #f7f9fb;
+  border: 1px solid #e0e7ed;
+}
+
+.excel-validation-summary strong,
+.excel-validation-summary span {
+  display: block;
+}
+
+.excel-validation-summary strong {
+  font-size: 18px;
+}
+
+.excel-validation-summary span {
+  font-size: 10px;
+}
+
+.excel-validation-summary .is-success strong {
+  color: var(--green);
+}
+
+.excel-validation-summary .is-error strong {
+  color: var(--red);
+}
+
+.excel-preview-table {
+  max-height: 220px;
+  margin-top: 8px;
+}
+
+.excel-preview-table .data-table {
+  min-width: 760px;
+}
+
+.excel-error-row td {
+  background: #fff7f7;
+}
+
+.excel-import-options {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 9px 11px;
+  color: #53687a;
+  background: #f7f9fb;
+  border: 1px solid #e0e7ed;
+  font-size: 12px;
+}
+
+.excel-import-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.excel-import-options small {
+  width: 100%;
+  color: #7f8f9c;
+  font-size: 10px;
+}
+
+.batch-config-heading {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 11px;
+  background: #edf7fd;
+  border-bottom: 1px solid #d8e7f1;
+}
+
+.batch-config-heading strong,
+.batch-config-heading span {
+  display: block;
+}
+
+.batch-config-heading span {
+  margin-top: 2px;
+  color: #778795;
+  font-size: 11px;
+}
+
+.batch-rule-row {
+  display: grid;
+  grid-template-columns: 116px minmax(210px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.batch-rule-row > label {
+  color: #5b6875;
+  text-align: right;
+}
+
+.batch-item-table {
+  max-height: 310px;
+  border: 0;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.batch-item-table .data-table {
+  min-width: 860px;
+}
+
+.batch-item-table th,
+.benefit-table-wrap th {
+  padding: 9px 11px;
+  color: #45586c;
+  background: #f5f8fb;
+  border-bottom: 1px solid #dfe6ee;
+}
+
+.batch-item-table td,
+.benefit-table-wrap td {
+  padding: 10px 11px;
+  color: #435468;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.batch-rule-note {
+  padding: 9px 12px;
+  color: #6d5316;
+  background: #fff9e9;
+}
+
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d6dee7;
+}
+
+.quantity-stepper button,
+.quantity-stepper span {
+  width: 28px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 0;
+}
+
+.quantity-stepper button:first-child {
+  border-right: 1px solid #e4e8ed;
+}
+
+.quantity-stepper button:last-child {
+  border-left: 1px solid #e4e8ed;
+}
+
+.item-name strong,
+.item-name span {
+  display: block;
+}
+
+.item-name span {
+  margin-top: 2px;
+  color: #87939e;
+  font-size: 11px;
+}
+
+.link-button {
+  color: var(--sit-blue-dark);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-button.danger {
+  color: #c53e3e;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: rgba(19, 37, 55, .42);
+}
+
+.modal-content {
+  width: min(760px, calc(100vw - 70px));
+  max-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: 0 12px 34px rgba(18, 39, 57, .22);
+}
+
+.modal-content.modal-wide {
+  width: min(980px, calc(100vw - 70px));
+}
+
+.modal-header {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 17px;
+  border-bottom: 1px solid #e4e9ef;
+}
+
+.modal-header strong {
+  color: #34475a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 15px 17px;
+}
+
+.modal-footer {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 17px;
+  border-top: 1px solid #e4e9ef;
+}
+
+.modal-tip {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  color: #47667d;
+  background: #edf7fd;
+  border-left: 3px solid var(--sit-blue);
+}
+
+.benefit-table-wrap {
+  max-height: 360px;
+  border: 1px solid #e2e7ec;
+}
+
+.benefit-code {
+  color: #2075ae;
+}
+
+.check-cell {
+  width: 62px;
+  text-align: center;
+}
+
+.table-meta {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 2px 0;
+  color: #778592;
+}
+
+.toast {
+  position: fixed;
+  top: 46px;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  z-index: 1300;
+  min-width: 0;
+  padding: 8px 14px;
+  transform: translate(-50%, -8px);
+  color: #fff;
+  background: rgba(22, 39, 56, .92);
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 4px 12px rgba(18, 39, 56, .18);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.panel {
+  margin-bottom: 10px;
+  border: 1px solid var(--sit-line);
+  box-shadow: none;
+}
+
+.panel-header {
+  min-height: 39px;
+  padding: 8px 13px;
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.panel-body {
+  padding: 13px;
+}
+
+.metric-card,
+.summary-card {
+  padding: 13px;
+  box-shadow: none;
+}
+
+.metric-card strong {
+  font-size: 20px;
+}
+
+.callout {
+  padding: 8px 10px;
+}
+
+.form-grid {
+  gap: 12px 16px;
+}
+
+.data-table th,
+.data-table td {
+  font-size: 12px;
+}
+
+@media (max-width: 1280px) {
+  .module-tabs span {
+    padding: 0 12px;
+  }
+
+  .sit-label {
+    width: 168px;
+    flex-basis: 168px;
+  }
+
+  .batch-rule-row {
+    grid-template-columns: 105px minmax(190px, 1fr);
+  }
+}
+
+</style>
+  <style data-inline-source="annotations/annotation.css?v=combo-discount-20260814-3">
+/* Prototype annotation runtime. All selectors are scoped with anno-. */
+#anno-toggle-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 99990;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #ff4d4f;
+  border-radius: 50%;
+  background: #fff;
+  color: #ff4d4f;
+  box-shadow: 0 4px 14px rgba(255, 77, 79, 0.25);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#anno-toggle-btn:hover {
+  background: #fff1f0;
+}
+
+#anno-toggle-btn.anno-hidden {
+  border-color: #d9d9d9;
+  color: #8c8c8c;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+#anno-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99980;
+  pointer-events: none;
+}
+
+.anno-marker {
+  position: fixed;
+  z-index: 99981;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #ff4d4f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.anno-marker:hover {
+  transform: scale(1.12);
+}
+
+.anno-popup {
+  position: fixed;
+  z-index: 99992;
+  width: 560px;
+  min-width: min(420px, calc(100vw - 32px));
+  min-height: 300px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  resize: both;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  color: #262626;
+}
+
+.anno-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.anno-popup-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.anno-popup-close {
+  border: 0;
+  background: transparent;
+  color: #8c8c8c;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.anno-popup-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.anno-popup-desc {
+  white-space: normal;
+}
+
+.anno-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.anno-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #262626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.anno-btn:hover {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.anno-btn-primary {
+  border-color: #ff4d4f;
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.anno-btn-primary:hover {
+  border-color: #ff7875;
+  background: #ff7875;
+  color: #fff;
+}
+
+.anno-edit-field {
+  margin-bottom: 12px;
+}
+
+.anno-edit-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #595959;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anno-edit-input,
+.anno-edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #262626;
+  font: inherit;
+}
+
+.anno-edit-textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.anno-edit-input:focus,
+.anno-edit-textarea:focus {
+  outline: none;
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.12);
+}
+
+.anno-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 100000;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 13px;
+}
+
+</style>
+</head>
+<body>
+  <div class="sit-shell">
+    <aside class="icon-rail" aria-label="系统主导航">
+      <div class="brand-disc">NISSAN</div>
+      <button class="rail-icon active" type="button" title="工作台">⌂</button>
+      <button class="rail-icon" type="button" title="活动管理">▤</button>
+      <button class="rail-icon" type="button" title="用户管理">♙</button>
+      <button class="rail-icon" type="button" title="车辆管理">▱</button>
+      <button class="rail-icon" type="button" title="卡券中心">券</button>
+      <button class="rail-icon" type="button" title="系统设置">⚙</button>
+    </aside>
+    <header class="top-bar">
+      <div class="top-left"><span class="menu-toggle">☷</span><strong>菜单模式切换</strong></div>
+      <div class="top-right"><span class="top-search">⌕&nbsp; 菜单查询</span><span>⇩</span><span>♟</span><span>★</span><span>♟</span><span>✉</span><strong>超级管理员</strong></div>
+    </header>
+    <div class="workspace">
+      <div id="crumb-bar" class="crumb-bar">工作台&nbsp;&nbsp;&gt;&nbsp;&nbsp;卡券中心&nbsp;&nbsp;&gt;&nbsp;&nbsp;新建/编辑代金券</div>
+      <nav class="module-tabs" aria-label="卡券中心功能页签">
+        <span>优惠券发放</span><span>领券记录</span><span class="active" data-module="card-list">卡券列表</span><span>卡券限额</span><span>售后业务报表</span><span>业务报表</span><span>核销列表</span><span>卡券发放</span><span>发放记录</span><span>卡券规则设置</span><span>经销商券任务记录</span><span>批量操作优惠券</span><span>领券管理(领券中心)</span>
+      </nav>
+      <main id="app" class="app-main" tabindex="-1">
+        <div class="loading">正在加载原型…</div>
+      </main>
+    </div>
+    <footer class="workspace-tabs" aria-label="已打开页面">
+      <span data-page="overview">组合折扣券说明&nbsp;×</span>
+      <span class="active" data-page="coupon-create">新建/编辑卡券&nbsp;×</span>
+      <button type="button">▦</button>
+    </footer>
+  </div>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script data-inline-source="mock/data.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  window.PrototypeData = {
+    couponTemplate: {
+      templateId: 'TPL-240724-001',
+      name: 'BIMC 组合保养备件折扣券',
+      scene: 'BIMC（新）',
+      couponType: '组合折扣券',
+      applicableType: '备件',
+      faceValue: 100,
+      discountRate: 8,
+      discountMode: '组合商品共用折扣',
+      redemptionMode: '一次性批量核销',
+      status: '草稿',
+      combinationMode: 'grouped',
+      nextCombinationSeq: 3,
+      combinations: [
+        {
+          combinationId: 'COMB-01',
+          name: '组合一',
+          items: [
+            { code: 'BP-10021', name: '机油滤芯', spec: 'DFN 原厂标准型', minQty: 2, unitPrice: 200 },
+            { code: 'BP-10035', name: '空气滤芯', spec: 'DFN 原厂标准型', minQty: 1, unitPrice: 150 }
+          ]
+        },
+        {
+          combinationId: 'COMB-02',
+          name: '组合二',
+          items: [
+            { code: 'BP-10049', name: '空调滤芯', spec: '活性炭型', minQty: 1, unitPrice: 180 }
+          ]
+        }
+      ],
+      freeItems: [
+        { code: 'BP-10021', name: '机油滤芯', spec: 'DFN 原厂标准型', maxQty: 2, unitPrice: 200 },
+        { code: 'BP-10035', name: '空气滤芯', spec: 'DFN 原厂标准型', maxQty: 1, unitPrice: 150 },
+        { code: 'BP-10049', name: '空调滤芯', spec: '活性炭型', maxQty: 1, unitPrice: 180 }
+      ]
+    },
+    itemCatalog: [
+      { code: 'BP-10021', name: '机油滤芯', spec: 'DFN 原厂标准型', unitPrice: 200 },
+      { code: 'BP-10035', name: '空气滤芯', spec: 'DFN 原厂标准型', unitPrice: 150 },
+      { code: 'BP-10049', name: '空调滤芯', spec: '活性炭型', unitPrice: 180 },
+      { code: 'BP-10063', name: '发动机空气滤清器', spec: '2.0L 适用', unitPrice: 210 },
+      { code: 'BP-10077', name: '雨刮片套装', spec: '前挡套装', unitPrice: 260 }
+    ],
+    excelImportPreview: {
+      grouped: [
+        { row: 2, groupName: '组合三', code: 'BP-10063', qty: 1, valid: true, reason: '校验通过' },
+        { row: 3, groupName: '组合三', code: 'BP-10077', qty: 2, valid: true, reason: '校验通过' },
+        { row: 4, groupName: '组合四', code: 'BP-10035', qty: 1, valid: true, reason: '校验通过' },
+        { row: 5, groupName: '组合四', code: 'BP-99999', qty: 1, valid: false, reason: '商品编码不存在' }
+      ],
+      free: [
+        { row: 2, code: 'BP-10021', qty: 2, valid: true, reason: '校验通过' },
+        { row: 3, code: 'BP-10035', qty: 1, valid: true, reason: '校验通过' },
+        { row: 4, code: 'BP-10077', qty: 1, valid: true, reason: '校验通过' },
+        { row: 5, code: 'BP-99999', qty: 0, valid: false, reason: '商品编码不存在；数量必须大于 0' }
+      ]
+    }
+  };
+})();
+
+</script>
+  <script data-inline-source="js/common.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  function escapeHTML(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function money(value) {
+    return '¥' + Number(value || 0).toFixed(2);
+  }
+
+  window.showToast = function (message) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    window.clearTimeout(window.__prototypeToastTimer);
+    window.__prototypeToastTimer = window.setTimeout(function () {
+      toast.classList.remove('show');
+    }, 2200);
+  };
+
+  window.escapeHTML = escapeHTML;
+  window.money = money;
+
+  window.openPrototypeModal = function (options) {
+    var existing = document.querySelector('.modal-overlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML =
+      '<section class="modal-content ' + (options.wide ? 'modal-wide' : '') + '" role="dialog" aria-modal="true">' +
+        '<header class="modal-header"><strong>' + escapeHTML(options.title || '') + '</strong><button class="icon-button" data-close-modal aria-label="关闭">×</button></header>' +
+        '<div class="modal-body">' + (options.body || '') + '</div>' +
+        '<footer class="modal-footer">' +
+          '<button class="btn" data-close-modal>关闭</button>' +
+          (options.confirmText ? '<button class="btn btn-primary" data-confirm-modal>' + escapeHTML(options.confirmText) + '</button>' : '') +
+        '</footer>' +
+      '</section>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay || event.target.closest('[data-close-modal]')) overlay.remove();
+      if (event.target.closest('[data-confirm-modal]') && options.onConfirm) options.onConfirm(overlay);
+    });
+    return overlay;
+  };
+})();
+
+</script>
+  <script data-inline-source="js/components/ui.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  function pageShell(title, subtitle, body, actions) {
+    return '<section class="coupon-page">' +
+      '<div class="page-heading"><div><strong>' + window.escapeHTML(title) + '</strong>' + (subtitle ? '<small>' + window.escapeHTML(subtitle) + '</small>' : '') + '</div>' +
+      '<div class="page-actions">' + (actions || '') + '</div></div>' +
+      '<div class="page-body">' + body + '</div></section>';
+  }
+
+  function panel(title, body, extraClass, action) {
+    return '<section class="panel ' + (extraClass || '') + '">' +
+      '<header class="panel-header"><div class="panel-title">' + title + '</div>' + (action || '') + '</header>' +
+      '<div class="panel-body">' + body + '</div>' +
+    '</section>';
+  }
+
+  function status(label, type) {
+    return '<span class="status status-' + (type || 'neutral') + '">' + window.escapeHTML(label) + '</span>';
+  }
+
+  function field(label, control, required, help, className) {
+    return '<div class="form-field ' + (className || '') + '"><label>' +
+      (required ? '<em>*</em>' : '') + window.escapeHTML(label) + '</label>' +
+      control + (help ? '<small>' + window.escapeHTML(help) + '</small>' : '') +
+    '</div>';
+  }
+
+  window.UI = {
+    pageShell: pageShell,
+    panel: panel,
+    status: status,
+    field: field
+  };
+})();
+
+</script>
+  <script data-inline-source="js/app.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  window.Pages = window.Pages || {};
+  window.PrototypeState = {
+    template: JSON.parse(JSON.stringify(window.PrototypeData.couponTemplate))
+  };
+})();
+
+</script>
+  <script data-inline-source="js/pages/overview.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  function render() {
+    var body =
+      '<div class="grid-4">' +
+        '<div class="metric-card"><strong>新增</strong><span>特殊券类型：组合折扣券</span></div>' +
+        '<div class="metric-card"><strong>2</strong><span>适用场景：维修保养（新）、BIMC（新）</span></div>' +
+        '<div class="metric-card"><strong>2种</strong><span>自由组合、分组组合</span></div>' +
+        '<div class="metric-card"><strong>Excel</strong><span>支持批量上传商品</span></div>' +
+      '</div>' +
+      window.UI.panel('组合折扣券模型', '<div class="grid-3">' +
+        '<article class="summary-card"><span class="number">1</span><h3>自由组合保留</h3><p>商品池内可任选一个或多个商品，每项不超过独立配置的最大核销数量。</p></article>' +
+        '<article class="summary-card"><span class="number">2</span><h3>分组覆盖固定组合</h3><p>多组任选一、组内全部满足；仅配置一个分组时即等同原固定组合。</p></article>' +
+        '<article class="summary-card"><span class="number">3</span><h3>手工与 Excel 并行</h3><p>两种组合方式均可手工选品，也可下载模板后批量上传并查看校验结果。</p></article>' +
+      '</div>') +
+      '<div class="grid-2">' +
+        window.UI.panel('卡券中心配置', '<ul class="rule-list"><li>只有组合折扣券开放多备件</li><li>自由组合配置商品最大核销数量</li><li>分组组合配置商品最低核销数量</li><li>Excel 支持追加或清空后覆盖</li></ul>') +
+        window.UI.panel('E3S 联动改造', '<ul class="rule-list"><li>自由组合：提交实际选择的商品</li><li>分组组合：提交命中的单个组合</li><li>卡券中心按组合方式校验编码和数量</li><li>同一请求整体成功或整体失败</li></ul>') +
+      '</div>' +
+      window.UI.panel('边界与待确认', '<div class="callout warning"><strong>历史券及原核销列表保持不变：</strong>其他券类型继续使用原单对象规则；正式组合标识字段和同商品多价格工单行的优惠匹配顺序仍待接口评审。</div>');
+
+    return window.UI.pageShell(
+      '组合折扣券与多核销组合改造总览',
+      '覆盖组合折扣券的自由组合、分组组合、Excel 商品导入，以及 E3S 一次核销多个备件的联动改造。',
+      body,
+      '<button class="btn btn-primary" id="goCreate">进入建券配置</button>'
+    );
+  }
+
+  function init() {
+    document.getElementById('goCreate').addEventListener('click', function () {
+      window.navigateTo('coupon-create');
+    });
+  }
+
+  window.Pages.overview = { render: render, init: init };
+})();
+
+</script>
+  <script data-inline-source="js/pages/coupon-create.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  var scopeTypes = ['备件', '工时', '精品', '套餐'];
+  var couponTypes = ['代金券', '满减券', '折扣券', '组合折扣券', '权益券'];
+  var targetScenes = ['BIMC（新）', '维修保养（新）'];
+  var chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+
+  function row(label, control, required, help, extraClass) {
+    return '<div class="sit-form-row' + (extraClass ? ' ' + extraClass : '') + '">' +
+      '<span class="sit-label' + (required ? ' required' : '') + '">' + window.escapeHTML(label) + '：</span>' +
+      '<div class="sit-control">' + control + (help ? '<small>' + help + '</small>' : '') + '</div></div>';
+  }
+
+  function option(value, selected) {
+    return '<option' + (value === selected ? ' selected' : '') + '>' + window.escapeHTML(value) + '</option>';
+  }
+
+  function isCombinationCoupon(template) {
+    return template.couponType === '组合折扣券';
+  }
+
+  function canConfigureCombinations(template) {
+    return isCombinationCoupon(template) && targetScenes.indexOf(template.scene) >= 0 && template.applicableType === '备件';
+  }
+
+  function combinationMode(template) {
+    return template.combinationMode === 'free' ? 'free' : 'grouped';
+  }
+
+  function isFreeMode(template) {
+    return combinationMode(template) === 'free';
+  }
+
+  function itemFromCatalog(code, quantityKey, quantity) {
+    var catalog = window.PrototypeData.itemCatalog.find(function (item) { return item.code === code; });
+    if (!catalog) return null;
+    var result = { code: catalog.code, name: catalog.name, spec: catalog.spec, unitPrice: catalog.unitPrice };
+    result[quantityKey] = quantity;
+    return result;
+  }
+
+  function formatDiscount(rate) {
+    var value = Number(rate || 0);
+    return (Math.round(value * 10) / 10).toString() + '折';
+  }
+
+  function combinationName(sequence) {
+    return '组合' + (chineseNumbers[sequence] || sequence);
+  }
+
+  function canonicalItemSet(items) {
+    return items.map(function (item) { return item.code; }).sort().join('|');
+  }
+
+  function duplicateCombination(template, combinationId, items) {
+    var candidate = canonicalItemSet(items);
+    if (!candidate) return null;
+    return template.combinations.find(function (combination) {
+      return combination.combinationId !== combinationId && canonicalItemSet(combination.items) === candidate;
+    });
+  }
+
+  function findCombination(template, combinationId) {
+    return template.combinations.find(function (combination) { return combination.combinationId === combinationId; });
+  }
+
+  function renderScopeOptions(template) {
+    return scopeTypes.map(function (type) {
+      var selected = template.applicableType === type;
+      var locked = template.applicableType && !selected;
+      return '<div class="scope-option' + (selected ? ' is-selected' : '') + (locked ? ' is-locked' : '') + '">' +
+        '<input class="scope-checkbox" type="checkbox" data-scope="' + type + '"' + (selected ? ' checked' : '') + (locked ? ' disabled' : '') + '>' +
+        '<button class="scope-button" type="button" data-choose-scope="' + type + '"' + (locked ? ' disabled' : '') + '>选择' + type + '</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function combinationItemRows(template, combination) {
+    if (!combination.items.length) {
+      return '<tr><td colspan="7" class="empty-cell">当前组合暂无商品，请点击“选择商品”添加</td></tr>';
+    }
+    return combination.items.map(function (item) {
+      return '<tr>' +
+        '<td><div class="item-name"><strong>' + window.escapeHTML(item.name) + '</strong><span>' + window.escapeHTML(item.spec) + '</span></div></td>' +
+        '<td><code>' + window.escapeHTML(item.code) + '</code></td>' +
+        '<td>' + window.money(item.unitPrice) + '</td>' +
+        '<td><div class="quantity-stepper"><button type="button" data-min-minus data-combination-id="' + window.escapeHTML(combination.combinationId) + '" data-item-code="' + window.escapeHTML(item.code) + '">−</button><span>' + item.minQty + '</span><button type="button" data-min-plus data-combination-id="' + window.escapeHTML(combination.combinationId) + '" data-item-code="' + window.escapeHTML(item.code) + '">＋</button></div></td>' +
+        '<td><strong class="discount-scope">前 ' + item.minQty + ' 件享 ' + formatDiscount(template.discountRate) + '</strong><span class="cell-help">超出部分原价</span></td>' +
+        '<td>' + window.UI.status('必须同时核销', 'warning') + '</td>' +
+        '<td><button class="link-button danger" type="button" data-remove-combination-item data-combination-id="' + window.escapeHTML(combination.combinationId) + '" data-item-code="' + window.escapeHTML(item.code) + '">删除</button></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function renderCombinationCard(template, combination, index) {
+    return '<section class="combination-card" data-combination-card="' + window.escapeHTML(combination.combinationId) + '">' +
+      '<div class="combination-card-header">' +
+        '<div><strong>' + window.escapeHTML(combination.name) + '</strong><code>' + window.escapeHTML(combination.combinationId) + '</code><span>组内商品必须全部满足</span></div>' +
+        '<div class="combination-card-actions"><span class="shared-discount-tag">共用 ' + formatDiscount(template.discountRate) + '</span><button class="link-button" type="button" data-select-combination-items="' + window.escapeHTML(combination.combinationId) + '">选择商品</button><button class="link-button danger" type="button" data-remove-combination="' + window.escapeHTML(combination.combinationId) + '"' + (template.combinations.length <= 1 ? ' disabled' : '') + '>删除组合</button></div>' +
+      '</div>' +
+      '<div class="table-wrapper combination-item-table"><table class="data-table"><thead><tr><th>商品名称</th><th>商品编码</th><th>参考单价</th><th>最低核销数量</th><th>优惠范围</th><th>组合要求</th><th>操作</th></tr></thead><tbody>' + combinationItemRows(template, combination) + '</tbody></table></div>' +
+    '</section>';
+  }
+
+  function renderModeSelector(template) {
+    var mode = combinationMode(template);
+    return '<div class="combination-mode-selector">' +
+      '<label class="combination-mode-option' + (mode === 'free' ? ' is-active' : '') + '"><input type="radio" name="combination-mode" value="free"' + (mode === 'free' ? ' checked' : '') + '><span><strong>自由组合</strong><small>商品池内任选一个或多个，每项不超过最大核销数量</small></span></label>' +
+      '<label class="combination-mode-option' + (mode === 'grouped' ? ' is-active' : '') + '"><input type="radio" name="combination-mode" value="grouped"' + (mode === 'grouped' ? ' checked' : '') + '><span><strong>分组组合</strong><small>多个组合任选一，组内商品必须全部核销；只建一组即固定组合</small></span></label>' +
+    '</div>';
+  }
+
+  function freeItemRows(template) {
+    if (!template.freeItems.length) {
+      return '<tr><td colspan="7" class="empty-cell">暂无自由组合商品，请点击“选择商品”或使用 Excel 上传</td></tr>';
+    }
+    return template.freeItems.map(function (item) {
+      return '<tr>' +
+        '<td><div class="item-name"><strong>' + window.escapeHTML(item.name) + '</strong><span>' + window.escapeHTML(item.spec) + '</span></div></td>' +
+        '<td><code>' + window.escapeHTML(item.code) + '</code></td>' +
+        '<td>' + window.money(item.unitPrice) + '</td>' +
+        '<td><div class="quantity-stepper"><button type="button" data-free-minus data-item-code="' + window.escapeHTML(item.code) + '">−</button><span>' + item.maxQty + '</span><button type="button" data-free-plus data-item-code="' + window.escapeHTML(item.code) + '">＋</button></div></td>' +
+        '<td><strong class="discount-scope">实际选中数量享 ' + formatDiscount(template.discountRate) + '</strong><span class="cell-help">最多 ' + item.maxQty + ' 件</span></td>' +
+        '<td>' + window.UI.status('任选一项或多项', 'success') + '</td>' +
+        '<td><button class="link-button danger" type="button" data-remove-free-item="' + window.escapeHTML(item.code) + '">删除</button></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function renderFreeConfig(template) {
+    return '<div class="free-combination-panel">' +
+      '<div class="free-combination-heading"><div><strong>自由组合商品池</strong><span>已配置 ' + template.freeItems.length + ' 个商品；核销时可任选一个或多个</span></div><button class="link-button" id="selectFreeItems" type="button">选择商品</button></div>' +
+      '<div class="table-wrapper combination-item-table"><table class="data-table"><thead><tr><th>商品名称</th><th>商品编码</th><th>参考单价</th><th>最大核销数量</th><th>优惠范围</th><th>核销要求</th><th>操作</th></tr></thead><tbody>' + freeItemRows(template) + '</tbody></table></div>' +
+    '</div>';
+  }
+
+  function renderCombinationConfig(template) {
+    if (!canConfigureCombinations(template)) return '';
+    var mode = combinationMode(template);
+    var itemCount = mode === 'free' ? template.freeItems.length : template.combinations.reduce(function (sum, combination) { return sum + combination.items.length; }, 0);
+    var templateHref = mode === 'free' ? 'assets/templates/组合折扣券_自由组合商品导入模板.xlsx' : 'assets/templates/组合折扣券_分组组合商品导入模板.xlsx';
+    var headingText = mode === 'free' ? '已配置 ' + itemCount + ' 个商品；可任选一项或多项' : '已配置 ' + template.combinations.length + ' 个组合、' + itemCount + ' 条商品规则；多组任选一';
+    var body = mode === 'free' ? renderFreeConfig(template) : '<div class="combination-list">' + template.combinations.map(function (combination, index) { return renderCombinationCard(template, combination, index); }).join('') + '</div>';
+    var groupedFixedNote = mode === 'grouped' && template.combinations.length === 1 ? '<div class="fixed-equivalent-note"><strong>当前仅配置 1 个分组：</strong>业务效果等同原“固定组合”，组内商品必须全部核销。</div>' : '';
+    var ruleNote = mode === 'free' ? '<strong>自由组合规则：</strong>核销时可从商品池任选一个或多个商品，每项数量不得超过配置上限；卡券仍一次核销，未使用的商品或数量不保留。' : '<strong>分组组合规则：</strong>一次只能选择一个核销组合；实际商品编码集合必须与该组合一致，组内数量可以多但不能少，不得混入组合外商品。';
+    return '<div class="combination-config">' +
+      '<div class="combination-config-heading"><div><strong>商品组合配置</strong><span>' + headingText + '</span></div><div class="combination-heading-actions"><a class="btn btn-small" href="' + templateHref + '" download>⇩ 下载Excel模板</a><button class="btn btn-small" id="openExcelImport" type="button">⇧ Excel上传商品</button>' + (mode === 'grouped' ? '<button class="btn btn-primary btn-small" id="addCombination" type="button">＋ 新增核销组合</button>' : '') + '</div></div>' +
+      renderModeSelector(template) +
+      '<div class="combination-shared-rule"><div><span>券级共用折扣</span><strong>' + formatDiscount(template.discountRate) + '</strong></div><p>' + (mode === 'free' ? '自由组合内实际选中的商品共用此折扣，每项最多优惠至配置的最大核销数量。' : '所有分组共用此折扣；每个商品只优惠最低核销数量，超出的同商品数量按原价结算。') + '</p></div>' +
+      groupedFixedNote + body +
+      '<div class="batch-rule-note">' + ruleNote + '</div>' +
+    '</div>';
+  }
+
+  function scopeStatusNote(template) {
+    if (canConfigureCombinations(template)) return '';
+    if (isCombinationCoupon(template)) {
+      return '<div class="selected-empty scope-placeholder">组合折扣券仅在 BIMC（新）或维修保养（新）场景、且适用范围选择“备件”时支持自由组合、分组组合和 Excel 商品导入。</div>';
+    }
+    if (template.applicableType) {
+      return '<div class="selected-empty scope-placeholder">当前券类型沿用原单对象规则，不支持配置多个备件；只有“组合折扣券”开放多备件组合方式。</div>';
+    }
+    return '';
+  }
+
+  function scopeRow(template) {
+    return '<div class="sit-form-row scope-form-row"><span class="sit-label">选择适用范围：</span><div class="sit-control">' +
+      '<div class="scope-choice-list">' + renderScopeOptions(template) + '</div>' +
+      '<div class="scope-tools"><button class="btn" type="button" data-demo>查看关联详情</button></div>' +
+      '<small>适用类型仍为单选。只有组合折扣券在目标场景选择备件后，才允许配置自由组合、分组组合及 Excel 商品导入。</small>' +
+      renderCombinationConfig(template) + scopeStatusNote(template) +
+    '</div></div>';
+  }
+
+  function discountField(template) {
+    if (template.couponType === '折扣券' || isCombinationCoupon(template)) {
+      return row('折扣比例', '<div class="input-suffix compact-control"><input id="discountRate" class="form-input" type="number" min="0.1" max="9.9" step="0.1" value="' + template.discountRate + '"><span>折</span></div>', true, isCombinationCoupon(template) ? '券级共用折扣，所有核销组合保持一致' : '按现有折扣券规则配置');
+    }
+    return row('卡券面值', '<div class="input-suffix compact-control"><input id="faceValue" class="form-input" type="number" min="1" value="' + template.faceValue + '"><span>元</span></div>', true, '整张券只有一个优惠总额');
+  }
+
+  function render() {
+    var template = window.PrototypeState.template;
+    var useFreeText = canConfigureCombinations(template) && isFreeMode(template);
+    return '<section class="coupon-page">' +
+      '<div class="page-heading"><strong>新建/编辑卡券</strong><button class="btn" type="button" data-page-jump="overview">返 回</button></div>' +
+      '<div class="form-panel">' +
+        '<section class="coupon-form-section"><h2>基本信息</h2>' +
+          row('品牌', '<select class="form-select compact-control" disabled><option>日产</option></select>', true, '首次提交后不可再编辑') +
+          row('创券来源', '<div class="readonly-field compact-control">卡券中心</div>', false) +
+          row('业务场景', '<div class="cascade-control"><select class="form-select compact-control" disabled><option>售后营销</option></select><span>/</span><select id="sceneSelect" class="form-select compact-control">' + ['BIMC（新）', '维修保养（新）', '上门取送车', '续保（新）'].map(function (value) { return option(value, template.scene); }).join('') + '</select></div>', true, '组合折扣券只适用于 BIMC（新）、维修保养（新）') +
+          row('卡券分类', '<select id="couponTypeSelect" class="form-select compact-control">' + couponTypes.map(function (value) { return option(value, template.couponType); }).join('') + '</select>', true, '新增“组合折扣券”；只有该类型允许配置多备件核销组合') +
+          row('卡券名称', '<input id="couponName" class="form-input long-control" value="' + window.escapeHTML(template.name) + '" placeholder="请输入卡券标题">', true, '卡券主标题，最多 30 个字符') +
+          row('卡券描述', '<input class="form-input long-control" value="' + (useFreeText ? '商品池内任选一项或多项，按商品最大数量核销' : '多个核销组合任选一，组合内备件必须同时满足') + '" placeholder="请输入卡券描述">', false, '用于补充说明卡券适用范围') +
+          row('卡券图片', '<button class="btn" type="button" data-demo>上传图片</button><span class="inline-note">建议尺寸 750 × 360px</span>', true) +
+          discountField(template) +
+          row('发放数量', '<div class="input-suffix compact-control"><input class="form-input" value="9999"><span>张</span></div>', true, '数量范围 1-9999999，仅支持整数') +
+          row('使用须知', '<textarea class="form-textarea long-control">' + (useFreeText ? '核销时可从商品池任选一个或多个商品；每项不得超过最大核销数量；一次核销后未使用额度作废。' : '一次只能选择一个核销组合；组合内商品必须全部满足最低核销数量；超出最低数量的部分不享受折扣。') + '</textarea>', true) +
+          row('适用车系/车型', '<button class="btn" type="button" data-demo>选择车系/车型</button><span class="selection-state">已选择 0 个车系、0 个车型</span>', false, '指卡券支持在哪些车系/车型领取或核销') +
+          row('适用专营店', '<button class="btn" type="button" data-demo>选择专营店</button><button class="btn" type="button" data-demo>上传文件</button><button class="btn" type="button" data-demo>下载模板</button><span class="selection-state">已选择 0 家专营店</span>', false, '指卡券支持哪些门店领取或核销') +
+          scopeRow(template) +
+          row('是否通用券', '<label class="sit-radio"><input type="radio" name="universal" checked>是</label><label class="sit-radio"><input type="radio" name="universal">否</label>', false) +
+        '</section>' +
+        '<section class="coupon-form-section"><h2>领取规则</h2>' +
+          row('领取数量', '<div class="inline-picker"><span>每个用户最多可领</span><input class="form-input short-input" value="1"><span>张；每个VIN最多可领</span><input class="form-input short-input" value="1"><span>张</span></div>', true, '此处定义领券上限；首次提交后不可再编辑') +
+          row('领券时间', '<div class="inline-picker"><input type="date" class="form-input compact-control" value="2026-07-24"><span>至</span><input type="date" class="form-input compact-control" value="2026-08-31"></div>', true, '卡券可以领取的时间') +
+        '</section>' +
+        '<section class="coupon-form-section"><h2>核销规则</h2>' +
+          row('核销时间', '<div class="control-stack"><div><label class="sit-radio"><input type="radio" name="redeem-time" checked>固定日期</label><label class="sit-radio"><input type="radio" name="redeem-time">领取后生效，有效天数</label></div><div class="inline-picker"><input type="date" class="form-input compact-control" value="2026-07-24"><span>至</span><input type="date" class="form-input compact-control" value="2026-09-30"></div></div>', true, '卡券可以使用/核销的时间') +
+          row('核销方式', '<label class="sit-radio"><input type="radio" name="redeem-method" checked>线上核销</label><label class="sit-radio"><input type="radio" name="redeem-method">线下核销</label><label class="sit-radio"><input type="radio" name="redeem-method">线下+线上核销</label>', true, useFreeText ? 'E3S 一次提交自由组合内实际选择的商品明细' : 'E3S 一次提交一个核销组合及全部商品明细') +
+          row('核销门店与意向门店一致', '<label class="sit-radio"><input type="radio" name="same-store">是</label><label class="sit-radio"><input type="radio" name="same-store" checked>否</label>', false) +
+          row('核销渠道', '<div class="check-line"><label><input type="checkbox" checked>日产APP</label><label><input type="checkbox">微信小程序</label><label><input type="checkbox">微信公众号</label><label><input type="checkbox">官网</label><label><input type="checkbox">车机</label></div>', true) +
+          row('核销结束时间增加', '<div class="inline-picker"><input class="form-input short-input" value="0"><span>天内允许核销</span></div>', false, '核销时间已过期后，在配置天数内允许继续核销') +
+        '</section>' +
+        '<section class="coupon-form-section"><h2>关联设置</h2>' +
+          row('结算规则', '<div class="control-stack"><div><label class="sit-radio"><input type="radio" name="settlement" checked>无结算规则快速创建</label><label class="sit-radio"><input type="radio" name="settlement">已存在结算规则</label></div><select class="form-select long-control" disabled><option>请选择结算规则</option></select></div>', false) +
+          row('短信通知', '<div class="control-stack"><div><label class="sit-radio"><input type="radio" name="sms" checked>默认</label><label class="sit-radio"><input type="radio" name="sms">自定义</label><label class="sit-radio"><input type="radio" name="sms">无</label></div><textarea class="form-textarea long-control" disabled>【东风日产】恭喜您已成功领取卡券，请在有效期内核销使用。</textarea></div>', true) +
+          row('领取/下发卡券提醒', '<label class="sit-radio"><input type="radio" name="push" checked>无</label><label class="sit-radio"><input type="radio" name="push">App Push 消息提醒</label>', false) +
+          row('核销后提醒', '<div class="inline-picker"><span>站内信提醒</span><select class="form-select compact-control"><option>无</option><option>选择站内信模板</option></select></div>', false) +
+          row('到期提醒', '<div class="inline-picker"><span>到期前</span><input class="form-input short-input" value="3"><span>天提醒</span><select class="form-select compact-control"><option>无</option><option>选择站内信模板</option></select></div>', false) +
+        '</section>' +
+      '</div>' +
+      '<div class="sticky-actions"><button class="btn" id="resetTemplate" type="button">取 消</button><button class="btn btn-primary" id="saveDraft" type="button">提 交</button></div>' +
+    '</section>';
+  }
+
+  function rerender() {
+    document.getElementById('app').innerHTML = render();
+    init();
+  }
+
+  function chooseScope(type) {
+    var template = window.PrototypeState.template;
+    template.applicableType = type;
+    rerender();
+    window.showToast('已选择“' + type + '”适用范围');
+  }
+
+  function usedInOtherCombinations(template, currentId, code) {
+    return template.combinations.filter(function (combination) {
+      return combination.combinationId !== currentId && combination.items.some(function (item) { return item.code === code; });
+    }).map(function (combination) { return combination.name; });
+  }
+
+  function openItemPicker(combinationId) {
+    var template = window.PrototypeState.template;
+    var combination = findCombination(template, combinationId);
+    if (!combination) return;
+    var selectedCodes = combination.items.map(function (item) { return item.code; });
+    var draftCodes = selectedCodes.slice();
+    var rows = window.PrototypeData.itemCatalog.map(function (item) {
+      var usedBy = usedInOtherCombinations(template, combinationId, item.code);
+      return '<tr><td class="check-cell"><input type="checkbox" data-catalog-code="' + window.escapeHTML(item.code) + '"' + (selectedCodes.indexOf(item.code) >= 0 ? ' checked' : '') + '></td>' +
+        '<td><code class="benefit-code">' + window.escapeHTML(item.code) + '</code></td><td><strong>' + window.escapeHTML(item.name) + '</strong></td><td>' + window.escapeHTML(item.spec) + '</td><td>' + window.money(item.unitPrice) + '</td><td>' + (usedBy.length ? '<span class="cross-combination-use">已用于' + window.escapeHTML(usedBy.join('、')) + '</span>' : '—') + '</td></tr>';
+    }).join('');
+    var overlay = window.openPrototypeModal({
+      title: '为' + combination.name + '选择商品',
+      wide: true,
+      confirmText: '确认选择',
+      body: '<div class="modal-tip">同一商品在当前组合内只能选择一次；允许在其他组合中重复使用。</div><div class="table-wrapper benefit-table-wrap"><table class="data-table"><thead><tr><th>选择</th><th>备件编码</th><th>备件名称</th><th>规格</th><th>参考单价</th><th>其他组合</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="table-meta"><span>共 ' + window.PrototypeData.itemCatalog.length + ' 条</span><strong id="part-selected-count">已勾选 ' + draftCodes.length + ' 项</strong></div>',
+      onConfirm: function (modal) {
+        var codes = Array.prototype.map.call(modal.querySelectorAll('[data-catalog-code]:checked'), function (checkbox) { return checkbox.getAttribute('data-catalog-code'); });
+        if (!codes.length) return window.showToast('每个核销组合至少选择一个商品');
+        var nextItems = codes.map(function (code) {
+          var existing = combination.items.find(function (item) { return item.code === code; });
+          if (existing) return existing;
+          var catalog = window.PrototypeData.itemCatalog.find(function (item) { return item.code === code; });
+          return { code: catalog.code, name: catalog.name, spec: catalog.spec, minQty: 1, unitPrice: catalog.unitPrice };
+        });
+        var duplicate = duplicateCombination(template, combinationId, nextItems);
+        if (duplicate) return window.showToast('商品集合与“' + duplicate.name + '”完全相同，请调整后再保存');
+        combination.items = nextItems;
+        modal.remove();
+        rerender();
+        window.showToast(combination.name + '已选择 ' + combination.items.length + ' 个商品');
+      }
+    });
+    Array.prototype.forEach.call(overlay.querySelectorAll('[data-catalog-code]'), function (checkbox) {
+      checkbox.addEventListener('change', function () {
+        draftCodes = Array.prototype.map.call(overlay.querySelectorAll('[data-catalog-code]:checked'), function (input) { return input.getAttribute('data-catalog-code'); });
+        overlay.querySelector('#part-selected-count').textContent = '已勾选 ' + draftCodes.length + ' 项';
+      });
+    });
+  }
+
+  function openFreeItemPicker() {
+    var template = window.PrototypeState.template;
+    var selectedCodes = template.freeItems.map(function (item) { return item.code; });
+    var rows = window.PrototypeData.itemCatalog.map(function (item) {
+      return '<tr><td class="check-cell"><input type="checkbox" data-free-catalog-code="' + window.escapeHTML(item.code) + '"' + (selectedCodes.indexOf(item.code) >= 0 ? ' checked' : '') + '></td>' +
+        '<td><code class="benefit-code">' + window.escapeHTML(item.code) + '</code></td><td><strong>' + window.escapeHTML(item.name) + '</strong></td><td>' + window.escapeHTML(item.spec) + '</td><td>' + window.money(item.unitPrice) + '</td></tr>';
+    }).join('');
+    var overlay = window.openPrototypeModal({
+      title: '选择自由组合商品',
+      wide: true,
+      confirmText: '确认选择',
+      body: '<div class="modal-tip">核销时可从商品池任选一个或多个商品；同一商品只能配置一次。</div><div class="table-wrapper benefit-table-wrap"><table class="data-table"><thead><tr><th>选择</th><th>备件编码</th><th>备件名称</th><th>规格</th><th>参考单价</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="table-meta"><span>共 ' + window.PrototypeData.itemCatalog.length + ' 条</span><strong id="free-selected-count">已勾选 ' + selectedCodes.length + ' 项</strong></div>',
+      onConfirm: function (modal) {
+        var codes = Array.prototype.map.call(modal.querySelectorAll('[data-free-catalog-code]:checked'), function (checkbox) { return checkbox.getAttribute('data-free-catalog-code'); });
+        if (!codes.length) return window.showToast('自由组合至少选择一个商品');
+        template.freeItems = codes.map(function (code) {
+          var existing = template.freeItems.find(function (item) { return item.code === code; });
+          return existing || itemFromCatalog(code, 'maxQty', 1);
+        });
+        modal.remove();
+        rerender();
+        window.showToast('自由组合已选择 ' + template.freeItems.length + ' 个商品');
+      }
+    });
+    Array.prototype.forEach.call(overlay.querySelectorAll('[data-free-catalog-code]'), function (checkbox) {
+      checkbox.addEventListener('change', function () {
+        overlay.querySelector('#free-selected-count').textContent = '已勾选 ' + overlay.querySelectorAll('[data-free-catalog-code]:checked').length + ' 项';
+      });
+    });
+  }
+
+  function excelPreviewTable(mode, rows) {
+    var validCount = rows.filter(function (row) { return row.valid; }).length;
+    var cells = rows.map(function (row) {
+      return '<tr class="' + (row.valid ? '' : 'excel-error-row') + '"><td>' + row.row + '</td>' +
+        (mode === 'grouped' ? '<td>' + window.escapeHTML(row.groupName) + '</td>' : '') +
+        '<td><code>' + window.escapeHTML(row.code) + '</code></td><td>' + row.qty + '</td><td>' + window.UI.status(row.valid ? '可导入' : '失败', row.valid ? 'success' : 'danger') + '</td><td>' + window.escapeHTML(row.reason) + '</td></tr>';
+    }).join('');
+    return '<div class="excel-validation-summary"><div><strong>' + rows.length + '</strong><span>数据行</span></div><div class="is-success"><strong>' + validCount + '</strong><span>可导入</span></div><div class="is-error"><strong>' + (rows.length - validCount) + '</strong><span>错误行</span></div></div>' +
+      '<div class="table-wrapper excel-preview-table"><table class="data-table"><thead><tr><th>行号</th>' + (mode === 'grouped' ? '<th>组合名称</th>' : '') + '<th>商品编码</th><th>' + (mode === 'grouped' ? '最低核销数量' : '最大核销数量') + '</th><th>校验</th><th>说明</th></tr></thead><tbody>' + cells + '</tbody></table></div>' +
+      '<div class="excel-import-options"><span>导入方式：</span><label><input type="radio" name="excel-import-mode" value="append" checked>追加到现有配置</label><label><input type="radio" name="excel-import-mode" value="replace">清空后覆盖</label><small>错误行不会导入；正式环境可下载错误明细，本原型仅展示校验结果。</small></div>';
+  }
+
+  function applyGroupedImport(template, rows, replace) {
+    var groupedRows = {};
+    rows.filter(function (row) { return row.valid; }).forEach(function (row) {
+      if (!groupedRows[row.groupName]) groupedRows[row.groupName] = [];
+      groupedRows[row.groupName].push(row);
+    });
+    if (replace) template.combinations = [];
+    Object.keys(groupedRows).forEach(function (groupName) {
+      var combination = !replace && template.combinations.find(function (item) { return item.name === groupName; });
+      if (!combination) {
+        var sequence = template.nextCombinationSeq || (template.combinations.length + 1);
+        combination = { combinationId: 'COMB-' + String(sequence).padStart(2, '0'), name: groupName, items: [] };
+        template.nextCombinationSeq = sequence + 1;
+        template.combinations.push(combination);
+      }
+      groupedRows[groupName].forEach(function (row) {
+        var existing = combination.items.find(function (item) { return item.code === row.code; });
+        if (existing) existing.minQty = row.qty;
+        else combination.items.push(itemFromCatalog(row.code, 'minQty', row.qty));
+      });
+    });
+  }
+
+  function applyFreeImport(template, rows, replace) {
+    if (replace) template.freeItems = [];
+    rows.filter(function (row) { return row.valid; }).forEach(function (row) {
+      var existing = template.freeItems.find(function (item) { return item.code === row.code; });
+      if (existing) existing.maxQty = row.qty;
+      else template.freeItems.push(itemFromCatalog(row.code, 'maxQty', row.qty));
+    });
+  }
+
+  function openExcelImportModal() {
+    var template = window.PrototypeState.template;
+    var mode = combinationMode(template);
+    var modeLabel = mode === 'free' ? '自由组合' : '分组组合';
+    var selectedFileName = '';
+    var previewRows = window.PrototypeData.excelImportPreview[mode];
+    var overlay = window.openPrototypeModal({
+      title: 'Excel上传商品｜' + modeLabel,
+      wide: true,
+      confirmText: '导入校验通过数据',
+      body: '<div class="excel-upload-tip"><strong>请使用当前“' + modeLabel + '”模板</strong><span>' + (mode === 'free' ? '必填列：商品编码、最大核销数量' : '必填列：组合名称、商品编码、最低核销数量；同一文件可包含多个组合') + '</span></div>' +
+        '<label class="excel-upload-box" for="excelFileInput"><input id="excelFileInput" type="file" accept=".xlsx,.xls"><span class="excel-upload-icon">XLSX</span><strong id="excelFileName">点击选择 Excel 文件</strong><small>支持 .xlsx、.xls；原型选中文件后使用 Mock 数据演示解析和校验</small></label>' +
+        '<div id="excelPreviewState" class="excel-preview-empty">选择文件后显示校验结果</div>',
+      onConfirm: function (modal) {
+        if (!selectedFileName) return window.showToast('请先选择 Excel 文件');
+        var importModeInput = modal.querySelector('input[name="excel-import-mode"]:checked');
+        var replace = importModeInput && importModeInput.value === 'replace';
+        if (mode === 'free') applyFreeImport(template, previewRows, replace);
+        else applyGroupedImport(template, previewRows, replace);
+        var count = previewRows.filter(function (row) { return row.valid; }).length;
+        modal.remove();
+        rerender();
+        window.showToast('Excel 导入完成：成功 ' + count + ' 条，失败 ' + (previewRows.length - count) + ' 条');
+      }
+    });
+    overlay.querySelector('#excelFileInput').addEventListener('change', function () {
+      selectedFileName = this.files && this.files[0] ? this.files[0].name : '';
+      if (!selectedFileName) return;
+      overlay.querySelector('#excelFileName').textContent = selectedFileName;
+      overlay.querySelector('#excelPreviewState').className = '';
+      overlay.querySelector('#excelPreviewState').innerHTML = excelPreviewTable(mode, previewRows);
+    });
+  }
+
+  function validateCombinations(template) {
+    if (isFreeMode(template)) {
+      if (!template.freeItems.length) return '自由组合至少需要选择一个商品';
+      return '';
+    }
+    if (!template.combinations.length) return '请至少配置一个核销组合';
+    var empty = template.combinations.find(function (combination) { return !combination.items.length; });
+    if (empty) return empty.name + '至少需要选择一个商品';
+    var seen = {};
+    for (var i = 0; i < template.combinations.length; i += 1) {
+      var key = canonicalItemSet(template.combinations[i].items);
+      if (seen[key]) return template.combinations[i].name + '与' + seen[key] + '的商品集合完全相同';
+      seen[key] = template.combinations[i].name;
+    }
+    return '';
+  }
+
+  function init() {
+    var template = window.PrototypeState.template;
+    document.querySelector('[data-page-jump]').addEventListener('click', function () { window.navigateTo('overview'); });
+    document.getElementById('sceneSelect').addEventListener('change', function () {
+      template.scene = this.value;
+      rerender();
+    });
+    document.getElementById('couponTypeSelect').addEventListener('change', function () {
+      template.couponType = this.value;
+      rerender();
+    });
+    document.getElementById('couponName').addEventListener('input', function () { template.name = this.value; });
+    var discountRate = document.getElementById('discountRate');
+    if (discountRate) {
+      discountRate.addEventListener('input', function () {
+        var nextRate = Math.max(0.1, Math.min(9.9, Math.round(Number(this.value || 0.1) * 10) / 10));
+        template.discountRate = nextRate;
+        Array.prototype.forEach.call(document.querySelectorAll('.shared-discount-tag'), function (tag) { tag.textContent = '共用 ' + formatDiscount(nextRate); });
+        Array.prototype.forEach.call(document.querySelectorAll('.combination-shared-rule strong'), function (value) { value.textContent = formatDiscount(nextRate); });
+        Array.prototype.forEach.call(document.querySelectorAll('.combination-card'), function (card) {
+          var combination = findCombination(template, card.getAttribute('data-combination-card'));
+          Array.prototype.forEach.call(card.querySelectorAll('.discount-scope'), function (scope, index) {
+            if (combination && combination.items[index]) scope.textContent = '前 ' + combination.items[index].minQty + ' 件享 ' + formatDiscount(nextRate);
+          });
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('.free-combination-panel .discount-scope'), function (scope) {
+          scope.textContent = '实际选中数量享 ' + formatDiscount(nextRate);
+        });
+      });
+      discountRate.addEventListener('change', function () {
+        this.value = template.discountRate;
+      });
+    }
+    var faceValue = document.getElementById('faceValue');
+    if (faceValue) faceValue.addEventListener('change', function () {
+      template.faceValue = Math.max(1, Number(this.value || 1));
+      rerender();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.scope-checkbox'), function (checkbox) {
+      checkbox.addEventListener('change', function () {
+        if (checkbox.checked) chooseScope(checkbox.getAttribute('data-scope'));
+        else {
+          template.applicableType = '';
+          rerender();
+        }
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-choose-scope]'), function (button) {
+      button.addEventListener('click', function () { chooseScope(button.getAttribute('data-choose-scope')); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="combination-mode"]'), function (radio) {
+      radio.addEventListener('change', function () {
+        template.combinationMode = this.value;
+        rerender();
+        window.showToast('已切换为' + (this.value === 'free' ? '自由组合' : '分组组合'));
+      });
+    });
+    var addCombination = document.getElementById('addCombination');
+    if (addCombination) addCombination.addEventListener('click', function () {
+      var sequence = template.nextCombinationSeq || (template.combinations.length + 1);
+      template.combinations.push({
+        combinationId: 'COMB-' + String(sequence).padStart(2, '0'),
+        name: combinationName(sequence),
+        items: []
+      });
+      template.nextCombinationSeq = sequence + 1;
+      rerender();
+      window.showToast('已新增' + combinationName(sequence) + '，请继续选择商品');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-remove-combination]'), function (button) {
+      button.addEventListener('click', function () {
+        if (template.combinations.length <= 1) return window.showToast('至少保留一个核销组合');
+        template.combinations = template.combinations.filter(function (combination) { return combination.combinationId !== button.getAttribute('data-remove-combination'); });
+        rerender();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-select-combination-items]'), function (button) {
+      button.addEventListener('click', function () { openItemPicker(button.getAttribute('data-select-combination-items')); });
+    });
+    var selectFreeItems = document.getElementById('selectFreeItems');
+    if (selectFreeItems) selectFreeItems.addEventListener('click', openFreeItemPicker);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-min-minus], [data-min-plus]'), function (button) {
+      button.addEventListener('click', function () {
+        var combination = findCombination(template, button.getAttribute('data-combination-id'));
+        var item = combination && combination.items.find(function (row) { return row.code === button.getAttribute('data-item-code'); });
+        if (item) item.minQty = button.hasAttribute('data-min-plus') ? item.minQty + 1 : Math.max(1, item.minQty - 1);
+        rerender();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-remove-combination-item]'), function (button) {
+      button.addEventListener('click', function () {
+        var combination = findCombination(template, button.getAttribute('data-combination-id'));
+        if (combination) combination.items = combination.items.filter(function (item) { return item.code !== button.getAttribute('data-item-code'); });
+        rerender();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-free-minus], [data-free-plus]'), function (button) {
+      button.addEventListener('click', function () {
+        var item = template.freeItems.find(function (row) { return row.code === button.getAttribute('data-item-code'); });
+        if (item) item.maxQty = button.hasAttribute('data-free-plus') ? item.maxQty + 1 : Math.max(1, item.maxQty - 1);
+        rerender();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-remove-free-item]'), function (button) {
+      button.addEventListener('click', function () {
+        template.freeItems = template.freeItems.filter(function (item) { return item.code !== button.getAttribute('data-remove-free-item'); });
+        rerender();
+      });
+    });
+    var openExcelImport = document.getElementById('openExcelImport');
+    if (openExcelImport) openExcelImport.addEventListener('click', openExcelImportModal);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-demo]'), function (button) {
+      button.addEventListener('click', function () { window.showToast('原型演示：未提交真实后台操作'); });
+    });
+    document.getElementById('saveDraft').addEventListener('click', function () {
+      if (isCombinationCoupon(template) && !canConfigureCombinations(template)) return window.showToast('组合折扣券仅支持 BIMC/维修保养场景下的备件适用范围');
+      if (canConfigureCombinations(template)) {
+        var error = validateCombinations(template);
+        if (error) return window.showToast(error);
+        if (isFreeMode(template)) return window.showToast('组合折扣券配置已提交：自由组合 ' + template.freeItems.length + ' 个商品，共用 ' + formatDiscount(template.discountRate));
+        return window.showToast('组合折扣券配置已提交：分组组合 ' + template.combinations.length + ' 组，共用 ' + formatDiscount(template.discountRate));
+      }
+      window.showToast('原型演示：卡券配置已提交');
+    });
+    document.getElementById('resetTemplate').addEventListener('click', function () {
+      window.PrototypeState.template = JSON.parse(JSON.stringify(window.PrototypeData.couponTemplate));
+      rerender();
+      window.showToast('已恢复演示数据');
+    });
+  }
+
+  window.Pages['coupon-create'] = { render: render, init: init };
+})();
+
+</script>
+  <script data-inline-source="js/nav.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  var currentPage = 'coupon-create';
+  var titles = {
+    overview: '组合折扣券说明',
+    'coupon-create': '新建/编辑卡券'
+  };
+
+  function updateChrome() {
+    document.querySelectorAll('[data-page]').forEach(function (node) {
+      node.classList.toggle('active', node.getAttribute('data-page') === currentPage);
+    });
+    var cardListTab = document.querySelector('[data-module="card-list"]');
+    if (cardListTab) cardListTab.classList.add('active');
+    var crumb = document.getElementById('crumb-bar');
+    if (crumb) crumb.innerHTML = '工作台&nbsp;&nbsp;&gt;&nbsp;&nbsp;卡券中心&nbsp;&nbsp;&gt;&nbsp;&nbsp;' + window.escapeHTML(titles[currentPage] || '');
+  }
+
+  window.navigateTo = function (pageKey) {
+    var page = window.Pages && window.Pages[pageKey];
+    if (!page || typeof page.render !== 'function') return;
+    currentPage = pageKey;
+    document.getElementById('app').innerHTML = page.render();
+    if (typeof page.init === 'function') page.init();
+    document.getElementById('app').scrollTop = 0;
+    document.getElementById('app').focus();
+    updateChrome();
+  };
+
+  window.getCurrentPage = function () {
+    return currentPage;
+  };
+
+  function init() {
+    document.querySelectorAll('[data-page]').forEach(function (node) {
+      node.addEventListener('click', function () {
+        window.navigateTo(node.getAttribute('data-page'));
+      });
+    });
+    window.navigateTo(currentPage);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+  <script>
+    window.AnnotationConfig = {
+      projectId: "prototype-a9fc3ce2",
+      dataVersion: "1",
+      page: function () {
+        return window.getCurrentPage ? window.getCurrentPage() : "coupon-create";
+      }
+    };
+  </script>
+  <script data-inline-source="annotations/annotations.js?v=combo-discount-20260814-3">
+window.AnnotationData = {};
+
+</script>
+  <script data-inline-source="annotations/annotation-runtime.js?v=combo-discount-20260814-3">
+(function () {
+  'use strict';
+
+  var visible = true;
+  var activePopup = null;
+  var currentAnno = null;
+  var dragState = null;
+  var observer = null;
+
+  var sectionFields = [
+    ['functionName', '功能名称'],
+    ['functionDesc', '功能说明'],
+    ['permissionScope', '权限范围'],
+    ['dataSource', '数据来源'],
+    ['valueLogic', '取值逻辑'],
+    ['fieldDesc', '字段说明'],
+    ['interactionDesc', '交互说明'],
+    ['judgeRule', '判断规则'],
+    ['exceptionRule', '异常规则'],
+    ['otherDesc', '其他说明']
+  ];
+
+  function getConfig() {
+    return window.AnnotationConfig || {};
+  }
+
+  function getPageKey() {
+    var cfg = getConfig();
+    if (typeof cfg.page === 'function') return cfg.page();
+    if (cfg.page) return cfg.page;
+    var active = document.querySelector('.nav-sub-item.active');
+    return active && active.id ? active.id : 'index';
+  }
+
+  function getRawAnnotations() {
+    var cfg = getConfig();
+    var page = getPageKey();
+    if (cfg.dataKey && Array.isArray(window[cfg.dataKey])) {
+      return window[cfg.dataKey].filter(function (item) { return item.page === page; });
+    }
+    if (window.AnnotationData && Array.isArray(window.AnnotationData[page])) {
+      return window.AnnotationData[page];
+    }
+    return [];
+  }
+
+  function storageKey() {
+    var cfg = getConfig();
+    var projectId = cfg.projectId || window.location.pathname || 'default-project';
+    var dataVersion = cfg.dataVersion || '1';
+    return ['prototype_annotations', projectId, dataVersion, getPageKey()].join('_');
+  }
+
+  function loadCached() {
+    try {
+      var raw = window.localStorage.getItem(storageKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveCached(items) {
+    try {
+      window.localStorage.setItem(storageKey(), JSON.stringify(items));
+    } catch (err) {
+      showToast('保存到浏览器缓存失败');
+    }
+  }
+
+  function getAnnotations() {
+    var source = getRawAnnotations();
+    if (!source.length) return [];
+    var cached = loadCached();
+    var cachedMap = {};
+    cached.forEach(function (item) {
+      if (item && item.id != null) cachedMap[item.id] = item;
+    });
+    return source.map(function (item) {
+      return clone(cachedMap[item.id] || item);
+    }).sort(function (a, b) {
+      return Number(a.id) - Number(b.id);
+    });
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function ensureToggle() {
+    var buttons = document.querySelectorAll('#anno-toggle-btn');
+    buttons.forEach(function (btn, index) {
+      if (index > 0) btn.remove();
+    });
+    var btn = document.getElementById('anno-toggle-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'anno-toggle-btn';
+      btn.type = 'button';
+      btn.title = '显示/隐藏标注';
+      btn.textContent = '●';
+      btn.addEventListener('click', function () {
+        visible = !visible;
+        btn.classList.toggle('anno-hidden', !visible);
+        closePopup();
+        render();
+      });
+      document.body.appendChild(btn);
+    }
+    placeToggle(btn);
+  }
+
+  function placeToggle(btn) {
+    var topBar = document.querySelector('.top-bar, .topbar');
+    var sideMenu = document.querySelector('.side-menu, .sidebar, .nav-panel, .app-sidebar');
+    var top = topBar ? Math.max(topBar.offsetHeight + 12, topBar.getBoundingClientRect().bottom + 12) : 16;
+    var left = sideMenu ? sideMenu.getBoundingClientRect().right + 16 : 16;
+    btn.style.top = Math.max(16, top) + 'px';
+    btn.style.left = Math.max(16, left) + 'px';
+  }
+
+  function ensureOverlay() {
+    var overlay = document.getElementById('anno-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'anno-overlay';
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  }
+
+  function render() {
+    ensureToggle();
+    var overlay = ensureOverlay();
+    overlay.innerHTML = '';
+    if (!visible) return;
+    getAnnotations().forEach(function (anno, index) {
+      var target = resolveTarget(anno.target);
+      if (!target) return;
+      var marker = document.createElement('button');
+      marker.type = 'button';
+      marker.className = 'anno-marker';
+      marker.textContent = anno.id || String(index + 1);
+      marker.title = anno.title || '';
+      marker.addEventListener('click', function (event) {
+        event.stopPropagation();
+        openPopup(anno, marker);
+      });
+      overlay.appendChild(marker);
+      positionMarker(marker, target, anno.position);
+    });
+  }
+
+  function resolveTarget(selector) {
+    if (!selector) return null;
+    try {
+      var nodes = document.querySelectorAll(selector);
+      return nodes.length === 1 ? nodes[0] : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function positionMarker(marker, target, position) {
+    var rect = target.getBoundingClientRect();
+    var pos = position || {};
+    var placement = pos.placement || 'top-right';
+    var x = rect.right;
+    var y = rect.top;
+    if (placement.indexOf('left') >= 0) x = rect.left;
+    if (placement.indexOf('bottom') >= 0) y = rect.bottom;
+    if (placement.indexOf('center') >= 0) y = rect.top + rect.height / 2;
+    marker.style.left = Math.round(x + Number(pos.offsetX || 0) - 10) + 'px';
+    marker.style.top = Math.round(y + Number(pos.offsetY || 0) - 10) + 'px';
+  }
+
+  function openPopup(anno, marker) {
+    closePopup();
+    currentAnno = clone(anno);
+    currentAnno.desc = currentAnno.desc || generateDesc(currentAnno.sections);
+    activePopup = document.createElement('div');
+    activePopup.className = 'anno-popup';
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    document.body.appendChild(activePopup);
+    positionPopup(activePopup, marker);
+    bindViewEvents();
+    bindDrag();
+  }
+
+  function positionPopup(popup, marker) {
+    var rect = marker.getBoundingClientRect();
+    var popupWidth = popup.offsetWidth;
+    var popupHeight = popup.offsetHeight;
+    var left = rect.right + 12;
+    var top = rect.top;
+    if (left + popupWidth > window.innerWidth - 16) {
+      left = rect.left - popupWidth - 12;
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - popupWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - popupHeight - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function fitPopupToViewport(popup) {
+    if (!popup) return;
+    var rect = popup.getBoundingClientRect();
+    var left = Math.max(16, Math.min(rect.left, window.innerWidth - rect.width - 16));
+    var top = Math.max(16, Math.min(rect.top, window.innerHeight - rect.height - 16));
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+  }
+
+  function buildViewHTML(anno) {
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">' + escapeHTML(anno.title || '未命名标注') + '</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body"><div class="anno-popup-desc">' + (anno.desc || generateDesc(anno.sections)) + '</div></div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-edit" type="button">编辑</button>'
+      + '</div>';
+  }
+
+  function buildEditHTML(anno) {
+    var sections = anno.sections || {};
+    var fields = sectionFields.map(function (field) {
+      return ''
+        + '<div class="anno-edit-field">'
+        + '  <label class="anno-edit-label">' + field[1] + '</label>'
+        + '  <textarea class="anno-edit-textarea" data-section="' + field[0] + '">' + escapeHTML(sections[field[0]] || '') + '</textarea>'
+        + '</div>';
+    }).join('');
+    return ''
+      + '<div class="anno-popup-header">'
+      + '  <div class="anno-popup-title">编辑标注</div>'
+      + '  <button class="anno-popup-close" type="button" title="关闭">&times;</button>'
+      + '</div>'
+      + '<div class="anno-popup-body">'
+      + '  <div class="anno-edit-field">'
+      + '    <label class="anno-edit-label">标注标题</label>'
+      + '    <input class="anno-edit-input" id="anno-edit-title" value="' + escapeHTML(anno.title || '') + '">'
+      + '  </div>'
+      + fields
+      + '</div>'
+      + '<div class="anno-popup-footer">'
+      + '  <button class="anno-btn anno-cancel" type="button">取消</button>'
+      + '  <button class="anno-btn anno-copy" type="button">复制数据</button>'
+      + '  <button class="anno-btn anno-btn-primary anno-save" type="button">保存</button>'
+      + '</div>';
+  }
+
+  function bindViewEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-edit').addEventListener('click', function () {
+      activePopup.innerHTML = buildEditHTML(currentAnno);
+      bindEditEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+  }
+
+  function bindEditEvents() {
+    activePopup.querySelector('.anno-popup-close').addEventListener('click', closePopup);
+    activePopup.querySelector('.anno-cancel').addEventListener('click', function () {
+      activePopup.innerHTML = buildViewHTML(currentAnno);
+      bindViewEvents();
+      bindDrag();
+      fitPopupToViewport(activePopup);
+    });
+    activePopup.querySelector('.anno-copy').addEventListener('click', copyCurrent);
+    activePopup.querySelector('.anno-save').addEventListener('click', saveEdit);
+  }
+
+  function saveEdit() {
+    currentAnno.title = activePopup.querySelector('#anno-edit-title').value.trim();
+    currentAnno.sections = {};
+    activePopup.querySelectorAll('[data-section]').forEach(function (field) {
+      currentAnno.sections[field.getAttribute('data-section')] = field.value.trim();
+    });
+    sectionFields.forEach(function (field) {
+      if (!(field[0] in currentAnno.sections)) currentAnno.sections[field[0]] = '';
+    });
+    currentAnno.desc = generateDesc(currentAnno.sections);
+    var items = getAnnotations();
+    var found = false;
+    items = items.map(function (item) {
+      if (item.id === currentAnno.id) {
+        found = true;
+        return clone(currentAnno);
+      }
+      return item;
+    });
+    if (!found) items.push(clone(currentAnno));
+    saveCached(items);
+    activePopup.innerHTML = buildViewHTML(currentAnno);
+    bindViewEvents();
+    bindDrag();
+    fitPopupToViewport(activePopup);
+    showToast('已保存到浏览器缓存');
+  }
+
+  function copyCurrent() {
+    if (!currentAnno) return;
+    copyText(JSON.stringify(currentAnno, null, 2));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showToast('数据已复制'); });
+      return;
+    }
+    var input = document.createElement('textarea');
+    input.value = text;
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    input.remove();
+    showToast('数据已复制');
+  }
+
+  function bindDrag() {
+    var header = activePopup.querySelector('.anno-popup-header');
+    header.addEventListener('mousedown', function (event) {
+      if (event.target.closest('button')) return;
+      var rect = activePopup.getBoundingClientRect();
+      dragState = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      event.preventDefault();
+    });
+  }
+
+  function closePopup() {
+    if (activePopup) activePopup.remove();
+    activePopup = null;
+    currentAnno = null;
+    dragState = null;
+  }
+
+  function generateDesc(sections) {
+    var data = sections || {};
+    return sectionFields.map(function (field, index) {
+      return (index + 1) + '. ' + field[1] + '：' + escapeHTML(data[field[0]] || '待确认');
+    }).join('<br>');
+  }
+
+  function escapeHTML(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showToast(text) {
+    var old = document.querySelector('.anno-toast');
+    if (old) old.remove();
+    var toast = document.createElement('div');
+    toast.className = 'anno-toast';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 1800);
+  }
+
+  document.addEventListener('mousemove', function (event) {
+    if (!dragState || !activePopup) return;
+    var x = Math.max(8, Math.min(event.clientX - dragState.x, window.innerWidth - activePopup.offsetWidth - 8));
+    var y = Math.max(8, Math.min(event.clientY - dragState.y, window.innerHeight - activePopup.offsetHeight - 8));
+    activePopup.style.left = x + 'px';
+    activePopup.style.top = y + 'px';
+  });
+
+  document.addEventListener('mouseup', function () {
+    dragState = null;
+    fitPopupToViewport(activePopup);
+  });
+
+  window.addEventListener('resize', function () {
+    render();
+    fitPopupToViewport(activePopup);
+  });
+  window.addEventListener('scroll', render, true);
+
+  function observeChanges() {
+    var root = document.getElementById('page-content') || document.body;
+    var _lastRender = 0;
+    var _rafPending = false;
+
+    function scheduleRender() {
+      var now = Date.now();
+      // Burst protection: skip if we rendered within the last 200 ms.
+      if (now - _lastRender < 200) return;
+      if (_rafPending) return;
+      _rafPending = true;
+      window.requestAnimationFrame(function () {
+        _rafPending = false;
+        _lastRender = Date.now();
+        render();
+      });
+    }
+
+    observer = new MutationObserver(function (mutations) {
+      // Skip entirely when annotations are hidden.
+      if (!visible) return;
+
+      var shouldRender = false;
+      for (var i = 0; i < mutations.length; i++) {
+        var target = mutations[i].target;
+        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, .anno-popup, .anno-toast')) {
+          continue;
+        }
+        shouldRender = true;
+        break;
+      }
+      if (!shouldRender) return;
+
+      window.clearTimeout(observer._debounceTimer);
+      observer._debounceTimer = window.setTimeout(scheduleRender, 300);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+  }
+
+  function init() {
+    try {
+      ensureToggle();
+      ensureOverlay();
+      render();
+      observeChanges();
+    } catch (err) {
+      console.warn('[AnnotationRuntime] init failed:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  window.AnnotationRuntime = {
+    refresh: render,
+    getPageKey: getPageKey,
+    getAnnotations: getAnnotations,
+    close: closePopup
+  };
+})();
+
+</script>
+</body>
+</html>

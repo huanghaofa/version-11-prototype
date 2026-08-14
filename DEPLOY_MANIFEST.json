@@ -1,0 +1,153 @@
+{
+  "generatedOn": "2026-08-14",
+  "tasks": [
+    {
+      "title": "P0-兑换券卡券中心方案",
+      "summary": "兑换券卡券中心、商品下钻至 SKU/规格、跨页选择与商品履约",
+      "prototypes": [
+        {
+          "label": "通用兑换券原型",
+          "source": "outputs/原型/通用兑换券原型_20260720/index.html",
+          "deployPath": "./prototypes/p0-01/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-设计多备件券核销方案",
+      "summary": "组合折扣券支持自由组合、分组组合、Excel 导入与整单核销",
+      "prototypes": [
+        {
+          "label": "卡券多明细批量核销原型",
+          "source": "outputs/原型/卡券多明细批量核销原型_20260724/index.html",
+          "deployPath": "./prototypes/p0-02/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-卡券结算补贴",
+      "summary": "卡券规则、结算报表，以及商城线上与 E3S 线下结算",
+      "prototypes": [
+        {
+          "label": "商城卡券结算原型",
+          "source": "outputs/原型/商城卡券结算原型_20260722/index.html",
+          "deployPath": "./prototypes/p0-03/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-增加权益编码关联选择",
+      "summary": "卡券适用范围关联 E3S 权益产品编码与基础信息",
+      "prototypes": [
+        {
+          "label": "E3S 权益编码关联原型",
+          "source": "outputs/原型/卡券中心_E3S权益编码关联原型_20260722/index.html",
+          "deployPath": "./prototypes/p0-04/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-设计活动中心积分发放方案",
+      "summary": "积分配置与预算、活动引用、后台发放、补偿和对账",
+      "prototypes": [
+        {
+          "label": "活动中心积分奖励原型",
+          "source": "outputs/原型/活动中心积分奖励原型_20260722/index.html",
+          "deployPath": "./prototypes/p0-05/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-梳理SA动态二维码流程",
+      "summary": "SA 动态二维码、海报模板与上传、长期有效及用户聚合页",
+      "prototypes": [
+        {
+          "label": "后台管理原型",
+          "source": "outputs/原型/SA动态二维码与来源报表后台原型_20260717/index.html",
+          "deployPath": "./prototypes/p0-06-01/index.html"
+        },
+        {
+          "label": "用户端聚合页原型",
+          "source": "outputs/原型/SA动态二维码用户端聚合页原型_20260717/index.html",
+          "deployPath": "./prototypes/p0-06-02/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-共用券需求",
+      "summary": "卡包手机号通用券、VIN 共用券与默认车辆提示",
+      "prototypes": [
+        {
+          "label": "卡包 VIN 共用券前端原型",
+          "source": "outputs/原型/卡包VIN共用券前端原型_20260724/index.html",
+          "deployPath": "./prototypes/p0-07/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-玩法拓展",
+      "summary": "活动中心创建活动时关联兑换券与积分奖励",
+      "prototypes": [
+        {
+          "label": "活动中心关联兑换券原型",
+          "source": "outputs/原型/活动中心关联兑换券原型_20260728/index.html",
+          "deployPath": "./prototypes/p0-08/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-一店一码一键领取",
+      "summary": "门店二维码一键领取、异常流程与批量领取交互",
+      "prototypes": [
+        {
+          "label": "一店一码一键领取原型",
+          "source": "outputs/原型/一店一码一键领取原型_20260728/index.html",
+          "deployPath": "./prototypes/p0-09/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-行为上报需求",
+      "summary": "商城订单消费金额达 N 元行为事件后台配置",
+      "prototypes": [
+        {
+          "label": "商城订单消费金额达 N 元行为事件后台原型",
+          "source": "outputs/原型/商城订单金额达N元抽奖原型_20260729/index.html",
+          "deployPath": "./prototypes/p0-10/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-设计卡券互斥叠加配置原型",
+      "summary": "叠加与互斥统一关系表，展示主券、目标券及来源活动",
+      "prototypes": [
+        {
+          "label": "卡券互斥叠加并行配置原型",
+          "source": "outputs/原型/活动中心卡券互斥叠加并行配置原型_20260729/index.html",
+          "deployPath": "./prototypes/p0-11/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-扩展活动适用门店配置",
+      "summary": "所有活动适用门店配置，以及 SA 按所属门店查看和分享活动",
+      "prototypes": [
+        {
+          "label": "活动适用门店与 SA 分享范围原型",
+          "source": "outputs/原型/活动适用门店与SA分享范围原型_20260810/index.html",
+          "deployPath": "./prototypes/p0-12/index.html"
+        }
+      ]
+    },
+    {
+      "title": "P0-组合活动",
+      "summary": "组合活动展示名称、适用门店及 SA 动态二维码展示与权限规则",
+      "prototypes": [
+        {
+          "label": "活动中心组合活动原型",
+          "source": "outputs/原型/SIT现状基线原型_20260716/index.html",
+          "deployPath": "./prototypes/p0-13/index.html"
+        }
+      ]
+    }
+  ]
+}

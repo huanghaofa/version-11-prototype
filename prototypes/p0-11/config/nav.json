@@ -1,0 +1,19 @@
+{
+  "menu": [
+    {
+      "key": "retention",
+      "label": "保客活动",
+      "icon": "◆",
+      "children": [
+        {
+          "key": "activity-edit",
+          "label": "活动创建"
+        },
+        {
+          "key": "relation-preview",
+          "label": "保客活动互斥关系"
+        }
+      ]
+    }
+  ]
+}

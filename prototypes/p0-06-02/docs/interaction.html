@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SA动态二维码移动端闭环 - 功能说明</title>
+  <style>*{box-sizing:border-box}body{margin:0;color:#343b43;background:#f4f5f7;font:14px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.top{height:50px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;color:#fff;background:#c90732}.top a{color:#fff;text-decoration:none}.wrap{max-width:980px;margin:24px auto;padding:0 18px 50px}.hero,.card{background:#fff;border:1px solid #e5e6e8}.hero{padding:24px;border-top:3px solid #c90732}.hero h1{margin:0 0 6px;font-size:23px}.hero p{margin:0;color:#7e858d}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}.card{padding:20px}.card.full{grid-column:1/-1}.card h2{margin:0 0 12px;padding-left:9px;border-left:3px solid #c90732;font-size:17px}.card ul,.card ol{margin:0;padding-left:21px}.note{padding:10px 12px;color:#765e25;background:#fff7e6;border:1px solid #f0ddb0}table{width:100%;border-collapse:collapse}th,td{padding:10px;border:1px solid #e5e6e8;text-align:left;vertical-align:top}th{background:#f7f8f9}@media(max-width:760px){.grid{grid-template-columns:1fr}.card.full{grid-column:auto}}</style>
+</head>
+<body>
+  <header class="top"><strong>SA动态二维码移动端闭环</strong><a href="../index.html#sa-select">返回原型</a></header>
+  <main class="wrap">
+    <section class="hero"><h1>功能说明</h1><p>覆盖SA选择活动、动态二维码、本人移动报表、客户一键参与及二维码生命周期逆向状态的完整移动端闭环。</p></section>
+    <div class="grid">
+      <section class="card"><h2>SA选择活动</h2><ol><li>自动读取当前SA姓名、工号和标准门店，不允许切换来源身份。</li><li>仅展示独立SA投放有效、组合活动启用、当前SA门店命中且非后台统一推券的活动。</li><li>组合活动优先展示“组合活动展示名称”，未配置时回退原组合活动名称。</li><li>按号码级、绑车级、认证级分区，支持全选或逐项选择。</li><li>点击活动正文进入详情，查看基本信息、规则、关联卡券、关联权益与互斥关系；基本信息不展示主办方，动作字段显示“领券方式”。</li><li>底部实时显示选择数量；未选择活动时不可生成。</li></ol></section>
+      <section class="card"><h2>生成二维码</h2><ol><li>生成或重新生成前先打开有效期抽屉，后台默认值预选。</li><li>SA可选择5分钟至1天固定时长，或“长期有效（至活动有效期）”；取消不生成。</li><li>长期有效截止到冻结活动中最晚结束时间，各活动仍按自身状态实时过滤。</li><li>每次生成唯一sceneId，并冻结活动ID集合、有效期模式、生成/失效时间和配置版本。</li><li>后台后续修改参数不影响既有二维码；新码生效后旧码不再接受新的扫码。</li></ol></section>
+      <section class="card"><h2>SA活动分享海报</h2><ol><li>二维码生成后可进入海报编辑页。</li><li>可使用系统模板，或上传JPG/PNG自定义海报底图（不超过10MB，建议3:4）。</li><li>两种来源均固定叠加当前二维码、SA姓名/工号、来源门店和二维码有效期。</li><li>SA可编辑标题、副标题和扫码引导语，输入后实时预览。</li><li>二维码、sceneId和来源信息不可编辑；最终海报可继续编辑，并模拟保存或分享。</li></ol></section>
+      <section class="card"><h2>我的SA数据</h2><ol><li>从选择活动页右上角进入，采用“概览 / 活动 / 卡券”三页签。</li><li>概览展示本人扫码、参与、发券、核销、转化率、核销率和近7日趋势。</li><li>活动列表可进入活动详情，再下钻脱敏参与记录详情。</li><li>卡券列表可进入卡券详情，查看核销情况和最近生命周期。</li><li>仅展示当前SA本人数据，不提供导出。</li></ol></section>
+      <section class="card"><h2>视觉与数据安全</h2><ul><li>SA选择、二维码和本人数据页面统一使用蓝色主视觉；用户扫码聚合页继续使用红色主视觉。</li><li>手机号码和VIN按规则脱敏。</li><li>页面不展示用户统一标识。</li><li>参与记录保留来源SA、来源门店、准入校验和关联卡券，便于本人追踪。</li><li>移动端统计口径与后台SA活动报表、SA卡券报表一致。</li></ul></section>
+      <section class="card"><h2>进入页面</h2><ol><li>识别oneID和二维码冻结的活动ID范围。</li><li>读取默认VIN；多VIN用户始终加载默认车辆。</li><li>分别执行每个活动配置的准入校验节点。</li><li>展示全部活动并计算默认勾选、已参与、互斥已参与或等级不足状态。</li><li>同一互斥组即使都满足准入，也只默认勾选其中第一项。</li></ol></section>
+      <section class="card"><h2>准入与参与主体</h2><ul><li>客户页面不展示号码级、绑车级、认证级分区标题或等级标签，活动使用连续列表呈现。</li><li>号码级仍按oneID判断，状态不随VIN变化。</li><li>绑车级仍按当前VIN判断，切换VIN后重新计算。</li><li>认证级仍按当前oneID与VIN的一对一认证关系判断。</li><li>组合活动：始终只展示一张卡片；名称沿用展示名称优先/原名回退；绑车前卡券区域整体不展示，绑车后在原卡片汇总展示当前VIN命中的全部券。</li><li>组合活动适用门店只控制SA查看与分享，不改变子活动参与和卡券核销门店。</li><li>同一VIN命中多个子活动时全部执行，不设优先级和顺序。</li><li>组合活动参与唯一键为组合活动ID + VIN。</li><li>已参与活动继续展示，但不可再次选择。</li></ul></section>
+      <section class="card full"><h2>核心交互</h2><table><thead><tr><th>动作</th><th>页面反馈</th><th>业务规则</th></tr></thead><tbody><tr><td>SA选择活动</td><td>普通与组合活动均作为一个可选对象，底部实时显示选择数。</td><td>不可选活动在后台SA活动配置阶段排除。</td></tr><tr><td>生成二维码</td><td>先选择固定时长或长期有效，再展示二维码、sceneId和冻结快照。</td><td>默认值预选，取消不生成；长期有效截止到冻结活动最晚结束时间。</td></tr><tr><td>制作分享海报</td><td>选择系统模板或上传自定义底图，并实时修改三段文案。</td><td>上传限JPG/PNG、10MB；二维码、来源SA/门店及有效期统一叠加且不可改。</td></tr><tr><td>保存/分享海报</td><td>最终海报可保存到相册或调起系统分享。</td><td>海报绑定当前sceneId，旧码失效后旧海报不能继续新扫码。</td></tr><tr><td>重新生成</td><td>再次打开时长抽屉，确认后展示新sceneId。</td><td>新码生效即阻断旧码新的扫码。</td></tr><tr><td>组合活动未绑车</td><td>一张大卡片可见，卡券区域不渲染、复选框置灰并提供去绑车。</td><td>没有VIN时不判断人群包，不展示具体券或待解锁占位框。</td></tr><tr><td>组合活动已绑车</td><td>原卡片内汇总显示当前VIN命中的全部专属卡券。</td><td>不展示人群标签；多子活动命中时全部执行；组合整体按VIN只参与一次。</td></tr><tr><td>切换VIN</td><td>刷新活动状态、默认勾选和组合活动卡券内容。</td><td>每次仅执行一个VIN；一定存在默认VIN。</td></tr><tr><td>客户选择活动</td><td>可参与活动默认勾选，用户可取消。</td><td>已参与、互斥已参与、需绑车、需认证活动不可勾选。</td></tr><tr><td>一键参与</td><td>一次执行全部勾选活动，不逐张卡片确认。</td><td>各活动独立校验；组合活动按组合活动ID + VIN去重，同时执行全部命中子活动。</td></tr><tr><td>领券 / 抽奖</td><td>统一结果弹层直接反馈领券或中奖结果。</td><td>不演示发券失败。</td></tr><tr><td>绑车/认证</td><td>提示即将离开活动页。</td><td>完成后不回跳，用户需重新扫码进入。</td></tr></tbody></table></section>
+      <section class="card"><h2>来源规则</h2><ul><li>来源在活动成功执行时确认。</li><li>不管此前扫描过多少SA二维码，按最终执行触点记录。</li><li>页面对用户展示“服务顾问推荐”，不展示后台归属术语。</li><li>后台统一推券活动不允许SA选择，不进入本页。</li></ul></section>
+      <section class="card"><h2>演示状态</h2><ul><li>默认VIN：轩逸·粤A·8D23，未完成认证。</li><li>第二辆VIN：天籁·粤B·3K58，已完成认证。</li><li>默认VIN下3项满足准入，其中号码级互斥组只默认勾选1项；另有1项已参与、1项需认证。</li><li>切换VIN后4项满足准入，其中号码级互斥组只默认勾选1项；另有1项已参与。</li><li>参与互斥组其中一项后，另一项变为“互斥已参与”并置灰。</li><li>另提供无可投活动、旧码失效/过期及活动下线状态。</li></ul><p class="note">所有用户、车辆、活动和卡券数据均为脱敏演示数据，不连接真实业务接口。</p></section>
+    </div>
+  </main>
+</body>
+</html>
