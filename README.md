@@ -1,4 +1,4 @@
-# P0 原型中心 GitHub Pages 部署包
+# P0 11月版本需求原型中心 GitHub Pages 部署包
 
 本目录已可直接作为 GitHub Pages 仓库根目录。
 
