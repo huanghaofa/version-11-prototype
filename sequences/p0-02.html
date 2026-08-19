@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="P0-设计多备件券核销方案 最新业务时序图">
+  <link rel="icon" href="data:,">
+  <title>P0-设计多备件券核销方案｜最新时序图</title>
+  <style>
+    :root { color-scheme:light; --blue:#1769d2; --ink:#162033; --muted:#667085; --line:#dce4ef; --soft:#f4f7fb; --warn:#9a6700; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    a { color:#1559aa; }
+    .hero { padding:34px 24px 42px; color:white; background:linear-gradient(135deg,#102a56,#1769d2 72%,#59a5ff); }
+    .wrap { width:min(1280px,calc(100% - 36px)); margin:auto; }
+    .back { display:inline-flex; margin-bottom:20px; color:#fff; text-decoration:none; opacity:.88; }
+    .eyebrow { font-size:12px; letter-spacing:.09em; opacity:.74; }
+    h1 { margin:8px 0 9px; font-size:30px; line-height:1.35; }
+    .summary { margin:0; max-width:900px; line-height:1.7; opacity:.88; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .meta span { padding:6px 10px; border:1px solid #ffffff40; border-radius:999px; background:#ffffff12; font-size:12px; }
+    main { padding:22px 0 54px; }
+    .panel { margin-bottom:16px; padding:20px; border:1px solid var(--line); border-radius:14px; background:white; box-shadow:0 8px 26px #263d6410; }
+    .panel-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .panel h2 { margin:0; font-size:18px; }
+    .panel-head p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .status { white-space:nowrap; padding:5px 9px; border-radius:999px; color:#0f6b3d; background:#ecfdf3; font-size:12px; }
+    .change-note { margin:0 0 14px; padding:12px 14px; border:1px solid #ffd591; border-radius:10px; background:#fff7e6; }
+    .change-note strong { color:#9a5b00; font-size:13px; }
+    .change-note p { margin:4px 0 0; color:#805d08; font-size:13px; line-height:1.65; }
+    .diagram-scroll { overflow:auto; border:1px solid #e8edf5; border-radius:12px; background:linear-gradient(#fff,#fbfcfe); }
+    .sequence-svg { display:block; min-width:1040px; width:100%; height:auto; }
+    .lifeline { stroke:#b7c4d6; stroke-width:1.5; stroke-dasharray:5 5; }
+    .actor rect { fill:#fff; stroke:#8fb5e7; stroke-width:1.5; filter:drop-shadow(0 3px 5px #244a7a12); }
+    .actor-label { fill:#17375f; font-size:15px; font-weight:700; }
+    .actor-role { fill:#667085; font-size:11px; }
+    .phase rect { fill:#eef5ff; stroke:#c5dcfa; }
+    .phase text { fill:#1559aa; font-size:14px; font-weight:700; }
+    .message-line { fill:none; stroke:#2f6fcb; stroke-width:2; }
+    .message-label-bg { fill:#fff; stroke:#dbe6f5; }
+    .message circle { fill:#1769d2; }
+    .message-label { fill:#27364a; font-size:13px; }
+    .step-number { fill:#fff; font-size:9px; font-weight:700; }
+    .note rect { fill:#f6f8fb; stroke:#9aaabd; stroke-dasharray:5 4; }
+    .note.boundary rect { fill:#fff8e6; stroke:#e4b34d; }
+    .note text { fill:#526174; font-size:13px; }
+    .note.boundary text { fill:#805d08; }
+    .columns { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:16px; }
+    .timeline-phase { margin:18px 0 9px; padding:8px 11px; border-radius:9px; color:#1559aa; background:#eef5ff; font-size:14px; }
+    .timeline-phase:first-child { margin-top:0; }
+    .timeline-step { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid #edf0f5; }
+    .timeline-step > span { flex:0 0 30px; width:30px; height:30px; display:grid; place-items:center; color:white; background:#1769d2; border-radius:50%; font-size:11px; }
+    .timeline-step strong { font-size:13px; }
+    .timeline-step p, .timeline-note p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.65; }
+    .timeline-note { margin:10px 0; padding:12px; border-left:3px solid #d69b20; background:#fff8e6; }
+    .side-card + .side-card { margin-top:16px; }
+    .side-card h3 { margin:0 0 9px; font-size:15px; }
+    ul { margin:0; padding-left:20px; }
+    li { margin:7px 0; color:#475467; font-size:13px; line-height:1.6; }
+    .sources li { display:grid; gap:4px; }
+    code { overflow-wrap:anywhere; color:#667085; font-size:11px; }
+    .footer-note { color:var(--muted); text-align:center; font-size:12px; }
+    @media (max-width:800px) { .wrap{width:calc(100% - 22px)} .hero{padding:26px 12px 34px} h1{font-size:24px} .panel{padding:14px} .columns{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <a class="back" href="../index.html">← 返回 P0 原型中心</a>
+      <div class="eyebrow">P0 · LATEST SEQUENCE · 2026-08-19</div>
+      <h1>P0-设计多备件券核销方案</h1>
+      <p class="summary">组合折扣券支持自由组合、分组组合、Excel 导入与整单核销</p>
+      <div class="meta"><span>4 个参与者</span><span>12 次交互</span><span>来源：当前最新独立原型</span></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="panel">
+      <div class="panel-head"><div><h2>业务时序图</h2><p>横向滚动可查看完整参与者与交互。</p></div><span class="status">静态离线版</span></div>
+      <div class="change-note"><strong>最新补充确认</strong><p>2026-08-19 最新口径：券类型为组合折扣券，支持自由组合、分组组合及 Excel 导入；E3S 一次提交多个备件与数量，整单原子核销。</p></div>
+      <div class="diagram-scroll"><svg class="sequence-svg" viewBox="0 0 1040 1250" role="img" aria-label="P0-设计多备件券核销方案 时序图"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill="#2f6fcb"/></marker></defs><line class="lifeline" x1="80.0" y1="92" x2="80.0" y2="1164"/><line class="lifeline" x1="373.3" y1="92" x2="373.3" y2="1164"/><line class="lifeline" x1="666.7" y1="92" x2="666.7" y2="1164"/><line class="lifeline" x1="960.0" y1="92" x2="960.0" y2="1164"/><g class="actor"><rect x="-6.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="80.0" y="43.0" text-anchor="middle">运营人员</text><text class="actor-role" x="80.0" y="64.0" text-anchor="middle">多明细券配置</text></g><g class="actor"><rect x="287.3" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="373.3" y="43.0" text-anchor="middle">卡券中心</text><text class="actor-role" x="373.3" y="64.0" text-anchor="middle">多明细规则与券状态</text></g><g class="actor"><rect x="580.7" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="666.7" y="43.0" text-anchor="middle">E3S 核销端</text><text class="actor-role" x="666.7" y="64.0" text-anchor="middle">多备件选择与核销提交</text></g><g class="actor"><rect x="874.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="960.0" y="43.0" text-anchor="middle">门店服务人员</text><text class="actor-role" x="960.0" y="64.0" text-anchor="middle">维修工单与结果确认</text></g><g class="phase"><rect x="44" y="132" width="952" height="36" rx="18"/><text x="66" y="156">多明细券配置</text></g><g class="message"><rect class="message-label-bg" x="54.7" y="183.0" width="344.0" height="48" rx="8"/><circle cx="67.7" cy="196.0" r="11"/><text class="step-number" x="67.7" y="200.0" text-anchor="middle">1</text><text class="message-label" x="226.7" y="203.0" text-anchor="middle">选择 BIMC（新）或维修保养（新）、组合折</text><text class="message-label" x="226.7" y="221.0" text-anchor="middle">扣券和备件范围</text><line class="message-line" x1="88.0" y1="237.0" x2="363.3" y2="237.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="75.7" y="261.0" width="302.0" height="30" rx="8"/><circle cx="88.7" cy="274.0" r="11"/><text class="step-number" x="88.7" y="278.0" text-anchor="middle">2</text><text class="message-label" x="226.7" y="281.0" text-anchor="middle">展示自由组合或分组组合配置区与券级折扣</text><line class="message-line" x1="365.3" y1="299.0" x2="90.0" y2="299.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="54.7" y="323.0" width="344.0" height="48" rx="8"/><circle cx="67.7" cy="336.0" r="11"/><text class="step-number" x="67.7" y="340.0" text-anchor="middle">3</text><text class="message-label" x="226.7" y="343.0" text-anchor="middle">手工选择备件，或下载并上传对应 Excel </text><text class="message-label" x="226.7" y="361.0" text-anchor="middle">模板</text><line class="message-line" x1="88.0" y1="377.0" x2="363.3" y2="377.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="54.7" y="401.0" width="344.0" height="48" rx="8"/><circle cx="67.7" cy="414.0" r="11"/><text class="step-number" x="67.7" y="418.0" text-anchor="middle">4</text><text class="message-label" x="226.7" y="421.0" text-anchor="middle">校验商品编码、重复项、重复分组和逐项数量并展</text><text class="message-label" x="226.7" y="439.0" text-anchor="middle">示导入结果</text><line class="message-line" x1="365.3" y1="455.0" x2="90.0" y2="455.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="138.7" y="479.0" width="176.0" height="30" rx="8"/><circle cx="151.7" cy="492.0" r="11"/><text class="step-number" x="151.7" y="496.0" text-anchor="middle">5</text><text class="message-label" x="226.7" y="499.0" text-anchor="middle">保存草稿或发布券规则</text><line class="message-line" x1="88.0" y1="517.0" x2="363.3" y2="517.0" marker-end="url(#arrow)"/></g><g class="phase"><rect x="44" y="540" width="952" height="36" rx="18"/><text x="66" y="564">E3S 一次核销多个备件</text></g><g class="message"><rect class="message-label-bg" x="669.3" y="591.0" width="288.0" height="30" rx="8"/><circle cx="682.3" cy="604.0" r="11"/><text class="step-number" x="682.3" y="608.0" text-anchor="middle">6</text><text class="message-label" x="813.3" y="611.0" text-anchor="middle">打开维修工单并选择本次核销的多个备件</text><line class="message-line" x1="952.0" y1="629.0" x2="676.7" y2="629.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="571.7" y="653.0" width="190.0" height="30" rx="8"/><circle cx="584.7" cy="666.0" r="11"/><text class="step-number" x="584.7" y="670.0" text-anchor="middle">7</text><text class="message-label" x="666.7" y="673.0" text-anchor="middle">汇总备件编码与每项数量</text><path class="message-line" d="M 666.7 677.0 h 58 v 28 h -58" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="348.0" y="715.0" width="344.0" height="48" rx="8"/><circle cx="361.0" cy="728.0" r="11"/><text class="step-number" x="361.0" y="732.0" text-anchor="middle">8</text><text class="message-label" x="520.0" y="735.0" text-anchor="middle">一次提交券实例、命中组合标识、多个备件编码和</text><text class="message-label" x="520.0" y="753.0" text-anchor="middle">数量</text><line class="message-line" x1="658.7" y1="769.0" x2="383.3" y2="769.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="201.3" y="793.0" width="344.0" height="48" rx="8"/><circle cx="214.3" cy="806.0" r="11"/><text class="step-number" x="214.3" y="810.0" text-anchor="middle">9</text><text class="message-label" x="373.3" y="813.0" text-anchor="middle">读取发券规则快照，按自由组合／分组组合逐项校</text><text class="message-label" x="373.3" y="831.0" text-anchor="middle">验</text><path class="message-line" d="M 373.3 833.0 h 58 v 28 h -58" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="201.3" y="871.0" width="344.0" height="48" rx="8"/><circle cx="214.3" cy="884.0" r="11"/><text class="step-number" x="214.3" y="888.0" text-anchor="middle">10</text><text class="message-label" x="373.3" y="891.0" text-anchor="middle">自由组合校验商品池与最大数量；分组组合校验完</text><text class="message-label" x="373.3" y="909.0" text-anchor="middle">整集合与最低数量</text><path class="message-line" d="M 373.3 911.0 h 58 v 28 h -58" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="397.0" y="949.0" width="246.0" height="30" rx="8"/><circle cx="410.0" cy="962.0" r="11"/><text class="step-number" x="410.0" y="966.0" text-anchor="middle">11</text><text class="message-label" x="520.0" y="969.0" text-anchor="middle">返回整体核销结果与逐项失败原因</text><line class="message-line" x1="381.3" y1="987.0" x2="656.7" y2="987.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="683.3" y="1011.0" width="260.0" height="30" rx="8"/><circle cx="696.3" cy="1024.0" r="11"/><text class="step-number" x="696.3" y="1028.0" text-anchor="middle">12</text><text class="message-label" x="813.3" y="1031.0" text-anchor="middle">展示成功结果或需要修正的备件明细</text><line class="message-line" x1="674.7" y1="1049.0" x2="950.0" y2="1049.0" marker-end="url(#arrow)"/></g><g class="note boundary"><rect x="273.3" y="1074" width="493.3" height="64" rx="10"/><text x="289.3" y="1100.0">E3S 多明细请求模型、卡券中心校验规则和结果返回均需同步改</text><text x="289.3" y="1119.0">造。</text></g><g class="actor"><rect x="-6.0" y="1164.0" width="172" height="52" rx="12"/><text class="actor-label" x="80.0" y="1191.0" text-anchor="middle">运营人员</text></g><g class="actor"><rect x="287.3" y="1164.0" width="172" height="52" rx="12"/><text class="actor-label" x="373.3" y="1191.0" text-anchor="middle">卡券中心</text></g><g class="actor"><rect x="580.7" y="1164.0" width="172" height="52" rx="12"/><text class="actor-label" x="666.7" y="1191.0" text-anchor="middle">E3S 核销端</text></g><g class="actor"><rect x="874.0" y="1164.0" width="172" height="52" rx="12"/><text class="actor-label" x="960.0" y="1191.0" text-anchor="middle">门店服务人员</text></g></svg></div>
+    </section>
+    <div class="columns">
+      <section class="panel"><div class="panel-head"><div><h2>步骤清单</h2><p>与上方时序图逐项对应。</p></div></div><h3 class="timeline-phase">多明细券配置</h3><article class="timeline-step"><span>01</span><div><strong>运营人员 → 卡券中心</strong><p>选择 BIMC（新）或维修保养（新）、组合折扣券和备件范围</p></div></article><article class="timeline-step"><span>02</span><div><strong>卡券中心 → 运营人员</strong><p>展示自由组合或分组组合配置区与券级折扣</p></div></article><article class="timeline-step"><span>03</span><div><strong>运营人员 → 卡券中心</strong><p>手工选择备件，或下载并上传对应 Excel 模板</p></div></article><article class="timeline-step"><span>04</span><div><strong>卡券中心 → 运营人员</strong><p>校验商品编码、重复项、重复分组和逐项数量并展示导入结果</p></div></article><article class="timeline-step"><span>05</span><div><strong>运营人员 → 卡券中心</strong><p>保存草稿或发布券规则</p></div></article><h3 class="timeline-phase">E3S 一次核销多个备件</h3><article class="timeline-step"><span>06</span><div><strong>门店服务人员 → E3S 核销端</strong><p>打开维修工单并选择本次核销的多个备件</p></div></article><article class="timeline-step"><span>07</span><div><strong>E3S 核销端 → E3S 核销端</strong><p>汇总备件编码与每项数量</p></div></article><article class="timeline-step"><span>08</span><div><strong>E3S 核销端 → 卡券中心</strong><p>一次提交券实例、命中组合标识、多个备件编码和数量</p></div></article><article class="timeline-step"><span>09</span><div><strong>卡券中心 → 卡券中心</strong><p>读取发券规则快照，按自由组合／分组组合逐项校验</p></div></article><article class="timeline-step"><span>10</span><div><strong>卡券中心 → 卡券中心</strong><p>自由组合校验商品池与最大数量；分组组合校验完整集合与最低数量</p></div></article><article class="timeline-step"><span>11</span><div><strong>卡券中心 → E3S 核销端</strong><p>返回整体核销结果与逐项失败原因</p></div></article><article class="timeline-step"><span>12</span><div><strong>E3S 核销端 → 门店服务人员</strong><p>展示成功结果或需要修正的备件明细</p></div></article><aside class="timeline-note"><strong>范围说明</strong><p>E3S 多明细请求模型、卡券中心校验规则和结果返回均需同步改造。</p></aside></section>
+      <aside>
+        <section class="panel side-card"><h3>关键规则与边界</h3><ul><li>自由组合：可选一个或多个商品，每项不超过最大核销数量；未用额度一次后作废。</li><li>分组组合：多组任选一，命中组内商品必须齐全且不低于最低数量；仅一组等同旧固定组合。</li><li>E3S 必须一次提交多个备件编码及各自数量，由卡券中心逐项校验。</li><li>同一多备件核销请求整体成功或整体失败，不允许部分成功。</li><li>Excel 导入与手工配置共用相同校验；其他券类型和场景继续沿用单对象规则。</li></ul></section>
+        <section class="panel side-card"><h3>待确认</h3><ul><li>E3S 多备件请求正式字段、组合标识和优惠分摊返回方式仍待接口评审。</li><li>本期不改卡券中心核销列表，也不新增 E3S 操作演示页。</li></ul></section>
+        <section class="panel side-card sources"><h3>当前依据</h3><ul><li><a href="../prototypes/p0-02/index.html">卡券多明细批量核销原型</a><code>outputs/原型/卡券多明细批量核销原型_20260724/index.html</code></li><li><span>补充依据</span><code>outputs/原型/卡券多明细批量核销原型_20260724/docs/requirements.md</code></li></ul></section>
+      </aside>
+    </div>
+    <p class="footer-note">本图根据当前静态原型和交互说明整理；范围外内容不会替代研发接口评审。</p>
+  </main>
+</body>
+</html>

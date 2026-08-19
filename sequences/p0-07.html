@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="P0-共用券需求 最新业务时序图">
+  <link rel="icon" href="data:,">
+  <title>P0-共用券需求｜最新时序图</title>
+  <style>
+    :root { color-scheme:light; --blue:#1769d2; --ink:#162033; --muted:#667085; --line:#dce4ef; --soft:#f4f7fb; --warn:#9a6700; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    a { color:#1559aa; }
+    .hero { padding:34px 24px 42px; color:white; background:linear-gradient(135deg,#102a56,#1769d2 72%,#59a5ff); }
+    .wrap { width:min(1280px,calc(100% - 36px)); margin:auto; }
+    .back { display:inline-flex; margin-bottom:20px; color:#fff; text-decoration:none; opacity:.88; }
+    .eyebrow { font-size:12px; letter-spacing:.09em; opacity:.74; }
+    h1 { margin:8px 0 9px; font-size:30px; line-height:1.35; }
+    .summary { margin:0; max-width:900px; line-height:1.7; opacity:.88; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .meta span { padding:6px 10px; border:1px solid #ffffff40; border-radius:999px; background:#ffffff12; font-size:12px; }
+    main { padding:22px 0 54px; }
+    .panel { margin-bottom:16px; padding:20px; border:1px solid var(--line); border-radius:14px; background:white; box-shadow:0 8px 26px #263d6410; }
+    .panel-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .panel h2 { margin:0; font-size:18px; }
+    .panel-head p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .status { white-space:nowrap; padding:5px 9px; border-radius:999px; color:#0f6b3d; background:#ecfdf3; font-size:12px; }
+    .change-note { margin:0 0 14px; padding:12px 14px; border:1px solid #ffd591; border-radius:10px; background:#fff7e6; }
+    .change-note strong { color:#9a5b00; font-size:13px; }
+    .change-note p { margin:4px 0 0; color:#805d08; font-size:13px; line-height:1.65; }
+    .diagram-scroll { overflow:auto; border:1px solid #e8edf5; border-radius:12px; background:linear-gradient(#fff,#fbfcfe); }
+    .sequence-svg { display:block; min-width:1040px; width:100%; height:auto; }
+    .lifeline { stroke:#b7c4d6; stroke-width:1.5; stroke-dasharray:5 5; }
+    .actor rect { fill:#fff; stroke:#8fb5e7; stroke-width:1.5; filter:drop-shadow(0 3px 5px #244a7a12); }
+    .actor-label { fill:#17375f; font-size:15px; font-weight:700; }
+    .actor-role { fill:#667085; font-size:11px; }
+    .phase rect { fill:#eef5ff; stroke:#c5dcfa; }
+    .phase text { fill:#1559aa; font-size:14px; font-weight:700; }
+    .message-line { fill:none; stroke:#2f6fcb; stroke-width:2; }
+    .message-label-bg { fill:#fff; stroke:#dbe6f5; }
+    .message circle { fill:#1769d2; }
+    .message-label { fill:#27364a; font-size:13px; }
+    .step-number { fill:#fff; font-size:9px; font-weight:700; }
+    .note rect { fill:#f6f8fb; stroke:#9aaabd; stroke-dasharray:5 4; }
+    .note.boundary rect { fill:#fff8e6; stroke:#e4b34d; }
+    .note text { fill:#526174; font-size:13px; }
+    .note.boundary text { fill:#805d08; }
+    .columns { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:16px; }
+    .timeline-phase { margin:18px 0 9px; padding:8px 11px; border-radius:9px; color:#1559aa; background:#eef5ff; font-size:14px; }
+    .timeline-phase:first-child { margin-top:0; }
+    .timeline-step { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid #edf0f5; }
+    .timeline-step > span { flex:0 0 30px; width:30px; height:30px; display:grid; place-items:center; color:white; background:#1769d2; border-radius:50%; font-size:11px; }
+    .timeline-step strong { font-size:13px; }
+    .timeline-step p, .timeline-note p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.65; }
+    .timeline-note { margin:10px 0; padding:12px; border-left:3px solid #d69b20; background:#fff8e6; }
+    .side-card + .side-card { margin-top:16px; }
+    .side-card h3 { margin:0 0 9px; font-size:15px; }
+    ul { margin:0; padding-left:20px; }
+    li { margin:7px 0; color:#475467; font-size:13px; line-height:1.6; }
+    .sources li { display:grid; gap:4px; }
+    code { overflow-wrap:anywhere; color:#667085; font-size:11px; }
+    .footer-note { color:var(--muted); text-align:center; font-size:12px; }
+    @media (max-width:800px) { .wrap{width:calc(100% - 22px)} .hero{padding:26px 12px 34px} h1{font-size:24px} .panel{padding:14px} .columns{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <a class="back" href="../index.html">← 返回 P0 原型中心</a>
+      <div class="eyebrow">P0 · LATEST SEQUENCE · 2026-08-19</div>
+      <h1>P0-共用券需求</h1>
+      <p class="summary">卡包手机号通用券、VIN 共用券与默认车辆提示</p>
+      <div class="meta"><span>5 个参与者</span><span>11 次交互</span><span>来源：当前最新独立原型</span></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="panel">
+      <div class="panel-head"><div><h2>业务时序图</h2><p>横向滚动可查看完整参与者与交互。</p></div><span class="status">静态离线版</span></div>
+      
+      <div class="diagram-scroll"><svg class="sequence-svg" viewBox="0 0 1200 1028" role="img" aria-label="P0-共用券需求 时序图"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill="#2f6fcb"/></marker></defs><line class="lifeline" x1="80.0" y1="92" x2="80.0" y2="942"/><line class="lifeline" x1="340.0" y1="92" x2="340.0" y2="942"/><line class="lifeline" x1="600.0" y1="92" x2="600.0" y2="942"/><line class="lifeline" x1="860.0" y1="92" x2="860.0" y2="942"/><line class="lifeline" x1="1120.0" y1="92" x2="1120.0" y2="942"/><g class="actor"><rect x="-6.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="80.0" y="43.0" text-anchor="middle">卡券中心</text><text class="actor-role" x="80.0" y="64.0" text-anchor="middle">单实例与归属关系</text></g><g class="actor"><rect x="254.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="340.0" y="43.0" text-anchor="middle">卡包 H5</text><text class="actor-role" x="340.0" y="64.0" text-anchor="middle">筛选、分组和状态</text></g><g class="actor"><rect x="514.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="600.0" y="43.0" text-anchor="middle">有效关联人 A</text><text class="actor-role" x="600.0" y="64.0" text-anchor="middle">查看与使用</text></g><g class="actor"><rect x="774.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="860.0" y="43.0" text-anchor="middle">有效关联人 B</text><text class="actor-role" x="860.0" y="64.0" text-anchor="middle">共享可见</text></g><g class="actor"><rect x="1034.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="1120.0" y="43.0" text-anchor="middle">商城／门店／第三方</text><text class="actor-role" x="1120.0" y="64.0" text-anchor="middle">兑换或核销</text></g><g class="phase"><rect x="44" y="132" width="1112" height="36" rx="18"/><text x="66" y="156">单实例共享可见</text></g><g class="message"><rect class="message-label-bg" x="-64.0" y="183.0" width="288.0" height="30" rx="8"/><circle cx="-51.0" cy="196.0" r="11"/><text class="step-number" x="-51.0" y="200.0" text-anchor="middle">1</text><text class="message-label" x="80.0" y="203.0" text-anchor="middle">创建单张券实例并绑定手机号或 VIN</text><path class="message-line" d="M 80.0 207.0 h 58 v 28 h -58" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="347.0" y="245.0" width="246.0" height="30" rx="8"/><circle cx="360.0" cy="258.0" r="11"/><text class="step-number" x="360.0" y="262.0" text-anchor="middle">2</text><text class="message-label" x="470.0" y="265.0" text-anchor="middle">打开卡包并按业务分类、状态筛选</text><line class="message-line" x1="592.0" y1="283.0" x2="350.0" y2="283.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="66.0" y="307.0" width="288.0" height="30" rx="8"/><circle cx="79.0" cy="320.0" r="11"/><text class="step-number" x="79.0" y="324.0" text-anchor="middle">3</text><text class="message-label" x="210.0" y="327.0" text-anchor="middle">查询个人券和当前有效关联 VIN 券</text><line class="message-line" x1="332.0" y1="345.0" x2="90.0" y2="345.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="59.0" y="369.0" width="302.0" height="30" rx="8"/><circle cx="72.0" cy="382.0" r="11"/><text class="step-number" x="72.0" y="386.0" text-anchor="middle">4</text><text class="message-label" x="210.0" y="389.0" text-anchor="middle">按个人／VIN 分组返回，不生成空分组</text><line class="message-line" x1="88.0" y1="407.0" x2="330.0" y2="407.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="333.0" y="431.0" width="274.0" height="30" rx="8"/><circle cx="346.0" cy="444.0" r="11"/><text class="step-number" x="346.0" y="448.0" text-anchor="middle">5</text><text class="message-label" x="470.0" y="451.0" text-anchor="middle">展示默认车辆标识、券种与可执行操作</text><line class="message-line" x1="348.0" y1="469.0" x2="590.0" y2="469.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="456.0" y="493.0" width="288.0" height="30" rx="8"/><circle cx="469.0" cy="506.0" r="11"/><text class="step-number" x="469.0" y="510.0" text-anchor="middle">6</text><text class="message-label" x="600.0" y="513.0" text-anchor="middle">以同一 VIN 的有效关联人身份查询</text><line class="message-line" x1="852.0" y1="531.0" x2="350.0" y2="531.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="498.0" y="555.0" width="204.0" height="30" rx="8"/><circle cx="511.0" cy="568.0" r="11"/><text class="step-number" x="511.0" y="572.0" text-anchor="middle">7</text><text class="message-label" x="600.0" y="575.0" text-anchor="middle">返回同一券实例的最新状态</text><line class="message-line" x1="348.0" y1="593.0" x2="850.0" y2="593.0" marker-end="url(#arrow)"/></g><g class="phase"><rect x="44" y="616" width="1112" height="36" rx="18"/><text x="66" y="640">激活、兑换或核销</text></g><g class="message"><rect class="message-label-bg" x="203.0" y="667.0" width="274.0" height="30" rx="8"/><circle cx="216.0" cy="680.0" r="11"/><text class="step-number" x="216.0" y="684.0" text-anchor="middle">8</text><text class="message-label" x="340.0" y="687.0" text-anchor="middle">激活权益、请求核销码或进入兑换流程</text><line class="message-line" x1="592.0" y1="705.0" x2="90.0" y2="705.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="428.0" y="729.0" width="344.0" height="48" rx="8"/><circle cx="441.0" cy="742.0" r="11"/><text class="step-number" x="441.0" y="746.0" text-anchor="middle">9</text><text class="message-label" x="600.0" y="749.0" text-anchor="middle">携带 VIN、核销码与 requestId </text><text class="message-label" x="600.0" y="767.0" text-anchor="middle">发起履约</text><line class="message-line" x1="88.0" y1="783.0" x2="1110.0" y2="783.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="519.0" y="807.0" width="162.0" height="30" rx="8"/><circle cx="532.0" cy="820.0" r="11"/><text class="step-number" x="532.0" y="824.0" text-anchor="middle">10</text><text class="message-label" x="600.0" y="827.0" text-anchor="middle">返回兑换／核销结果</text><line class="message-line" x1="1112.0" y1="845.0" x2="90.0" y2="845.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="52.0" y="869.0" width="316.0" height="30" rx="8"/><circle cx="65.0" cy="882.0" r="11"/><text class="step-number" x="65.0" y="886.0" text-anchor="middle">11</text><text class="message-label" x="210.0" y="889.0" text-anchor="middle">更新同一实例状态，所有关联人读取一致结果</text><line class="message-line" x1="88.0" y1="907.0" x2="330.0" y2="907.0" marker-end="url(#arrow)"/></g><g class="actor"><rect x="-6.0" y="942.0" width="172" height="52" rx="12"/><text class="actor-label" x="80.0" y="969.0" text-anchor="middle">卡券中心</text></g><g class="actor"><rect x="254.0" y="942.0" width="172" height="52" rx="12"/><text class="actor-label" x="340.0" y="969.0" text-anchor="middle">卡包 H5</text></g><g class="actor"><rect x="514.0" y="942.0" width="172" height="52" rx="12"/><text class="actor-label" x="600.0" y="969.0" text-anchor="middle">有效关联人 A</text></g><g class="actor"><rect x="774.0" y="942.0" width="172" height="52" rx="12"/><text class="actor-label" x="860.0" y="969.0" text-anchor="middle">有效关联人 B</text></g><g class="actor"><rect x="1034.0" y="942.0" width="172" height="52" rx="12"/><text class="actor-label" x="1120.0" y="969.0" text-anchor="middle">商城／门店／第三方</text></g></svg></div>
+    </section>
+    <div class="columns">
+      <section class="panel"><div class="panel-head"><div><h2>步骤清单</h2><p>与上方时序图逐项对应。</p></div></div><h3 class="timeline-phase">单实例共享可见</h3><article class="timeline-step"><span>01</span><div><strong>卡券中心 → 卡券中心</strong><p>创建单张券实例并绑定手机号或 VIN</p></div></article><article class="timeline-step"><span>02</span><div><strong>有效关联人 A → 卡包 H5</strong><p>打开卡包并按业务分类、状态筛选</p></div></article><article class="timeline-step"><span>03</span><div><strong>卡包 H5 → 卡券中心</strong><p>查询个人券和当前有效关联 VIN 券</p></div></article><article class="timeline-step"><span>04</span><div><strong>卡券中心 → 卡包 H5</strong><p>按个人／VIN 分组返回，不生成空分组</p></div></article><article class="timeline-step"><span>05</span><div><strong>卡包 H5 → 有效关联人 A</strong><p>展示默认车辆标识、券种与可执行操作</p></div></article><article class="timeline-step"><span>06</span><div><strong>有效关联人 B → 卡包 H5</strong><p>以同一 VIN 的有效关联人身份查询</p></div></article><article class="timeline-step"><span>07</span><div><strong>卡包 H5 → 有效关联人 B</strong><p>返回同一券实例的最新状态</p></div></article><h3 class="timeline-phase">激活、兑换或核销</h3><article class="timeline-step"><span>08</span><div><strong>有效关联人 A → 卡券中心</strong><p>激活权益、请求核销码或进入兑换流程</p></div></article><article class="timeline-step"><span>09</span><div><strong>卡券中心 → 商城／门店／第三方</strong><p>携带 VIN、核销码与 requestId 发起履约</p></div></article><article class="timeline-step"><span>10</span><div><strong>商城／门店／第三方 → 卡券中心</strong><p>返回兑换／核销结果</p></div></article><article class="timeline-step"><span>11</span><div><strong>卡券中心 → 卡包 H5</strong><p>更新同一实例状态，所有关联人读取一致结果</p></div></article></section>
+      <aside>
+        <section class="panel side-card"><h3>关键规则与边界</h3><ul><li>业务分类筛选与个人／VIN 分组是正交维度。</li><li>VIN 共用券仍是后台单实例，不复制多人券实例。</li><li>已使用、已过期只保留详情，不展示使用操作。</li></ul></section>
+        <section class="panel side-card"><h3>待确认</h3><ul><li>解绑后的可见性、真实车型与 VIN 脱敏接口仍待确认。</li></ul></section>
+        <section class="panel side-card sources"><h3>当前依据</h3><ul><li><a href="../prototypes/p0-07/index.html">卡包 VIN 共用券前端原型</a><code>outputs/原型/卡包VIN共用券前端原型_20260724/index.html</code></li></ul></section>
+      </aside>
+    </div>
+    <p class="footer-note">本图根据当前静态原型和交互说明整理；范围外内容不会替代研发接口评审。</p>
+  </main>
+</body>
+</html>

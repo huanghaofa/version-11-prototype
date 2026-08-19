@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="P0-设计卡券互斥叠加配置原型 最新业务时序图">
+  <link rel="icon" href="data:,">
+  <title>P0-设计卡券互斥叠加配置原型｜最新时序图</title>
+  <style>
+    :root { color-scheme:light; --blue:#1769d2; --ink:#162033; --muted:#667085; --line:#dce4ef; --soft:#f4f7fb; --warn:#9a6700; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    a { color:#1559aa; }
+    .hero { padding:34px 24px 42px; color:white; background:linear-gradient(135deg,#102a56,#1769d2 72%,#59a5ff); }
+    .wrap { width:min(1280px,calc(100% - 36px)); margin:auto; }
+    .back { display:inline-flex; margin-bottom:20px; color:#fff; text-decoration:none; opacity:.88; }
+    .eyebrow { font-size:12px; letter-spacing:.09em; opacity:.74; }
+    h1 { margin:8px 0 9px; font-size:30px; line-height:1.35; }
+    .summary { margin:0; max-width:900px; line-height:1.7; opacity:.88; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .meta span { padding:6px 10px; border:1px solid #ffffff40; border-radius:999px; background:#ffffff12; font-size:12px; }
+    main { padding:22px 0 54px; }
+    .panel { margin-bottom:16px; padding:20px; border:1px solid var(--line); border-radius:14px; background:white; box-shadow:0 8px 26px #263d6410; }
+    .panel-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .panel h2 { margin:0; font-size:18px; }
+    .panel-head p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .status { white-space:nowrap; padding:5px 9px; border-radius:999px; color:#0f6b3d; background:#ecfdf3; font-size:12px; }
+    .change-note { margin:0 0 14px; padding:12px 14px; border:1px solid #ffd591; border-radius:10px; background:#fff7e6; }
+    .change-note strong { color:#9a5b00; font-size:13px; }
+    .change-note p { margin:4px 0 0; color:#805d08; font-size:13px; line-height:1.65; }
+    .diagram-scroll { overflow:auto; border:1px solid #e8edf5; border-radius:12px; background:linear-gradient(#fff,#fbfcfe); }
+    .sequence-svg { display:block; min-width:1040px; width:100%; height:auto; }
+    .lifeline { stroke:#b7c4d6; stroke-width:1.5; stroke-dasharray:5 5; }
+    .actor rect { fill:#fff; stroke:#8fb5e7; stroke-width:1.5; filter:drop-shadow(0 3px 5px #244a7a12); }
+    .actor-label { fill:#17375f; font-size:15px; font-weight:700; }
+    .actor-role { fill:#667085; font-size:11px; }
+    .phase rect { fill:#eef5ff; stroke:#c5dcfa; }
+    .phase text { fill:#1559aa; font-size:14px; font-weight:700; }
+    .message-line { fill:none; stroke:#2f6fcb; stroke-width:2; }
+    .message-label-bg { fill:#fff; stroke:#dbe6f5; }
+    .message circle { fill:#1769d2; }
+    .message-label { fill:#27364a; font-size:13px; }
+    .step-number { fill:#fff; font-size:9px; font-weight:700; }
+    .note rect { fill:#f6f8fb; stroke:#9aaabd; stroke-dasharray:5 4; }
+    .note.boundary rect { fill:#fff8e6; stroke:#e4b34d; }
+    .note text { fill:#526174; font-size:13px; }
+    .note.boundary text { fill:#805d08; }
+    .columns { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:16px; }
+    .timeline-phase { margin:18px 0 9px; padding:8px 11px; border-radius:9px; color:#1559aa; background:#eef5ff; font-size:14px; }
+    .timeline-phase:first-child { margin-top:0; }
+    .timeline-step { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid #edf0f5; }
+    .timeline-step > span { flex:0 0 30px; width:30px; height:30px; display:grid; place-items:center; color:white; background:#1769d2; border-radius:50%; font-size:11px; }
+    .timeline-step strong { font-size:13px; }
+    .timeline-step p, .timeline-note p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.65; }
+    .timeline-note { margin:10px 0; padding:12px; border-left:3px solid #d69b20; background:#fff8e6; }
+    .side-card + .side-card { margin-top:16px; }
+    .side-card h3 { margin:0 0 9px; font-size:15px; }
+    ul { margin:0; padding-left:20px; }
+    li { margin:7px 0; color:#475467; font-size:13px; line-height:1.6; }
+    .sources li { display:grid; gap:4px; }
+    code { overflow-wrap:anywhere; color:#667085; font-size:11px; }
+    .footer-note { color:var(--muted); text-align:center; font-size:12px; }
+    @media (max-width:800px) { .wrap{width:calc(100% - 22px)} .hero{padding:26px 12px 34px} h1{font-size:24px} .panel{padding:14px} .columns{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <a class="back" href="../index.html">← 返回 P0 原型中心</a>
+      <div class="eyebrow">P0 · LATEST SEQUENCE · 2026-08-19</div>
+      <h1>P0-设计卡券互斥叠加配置原型</h1>
+      <p class="summary">叠加与互斥统一关系表，展示主券、目标券及来源活动</p>
+      <div class="meta"><span>4 个参与者</span><span>9 次交互</span><span>来源：当前最新独立原型</span></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="panel">
+      <div class="panel-head"><div><h2>业务时序图</h2><p>横向滚动可查看完整参与者与交互。</p></div><span class="status">静态离线版</span></div>
+      
+      <div class="diagram-scroll"><svg class="sequence-svg" viewBox="0 0 1040 888" role="img" aria-label="P0-设计卡券互斥叠加配置原型 时序图"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill="#2f6fcb"/></marker></defs><line class="lifeline" x1="80.0" y1="92" x2="80.0" y2="802"/><line class="lifeline" x1="373.3" y1="92" x2="373.3" y2="802"/><line class="lifeline" x1="666.7" y1="92" x2="666.7" y2="802"/><line class="lifeline" x1="960.0" y1="92" x2="960.0" y2="802"/><g class="actor"><rect x="-6.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="80.0" y="43.0" text-anchor="middle">活动运营</text><text class="actor-role" x="80.0" y="64.0" text-anchor="middle">关系方式与券清单</text></g><g class="actor"><rect x="287.3" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="373.3" y="43.0" text-anchor="middle">活动中心</text><text class="actor-role" x="373.3" y="64.0" text-anchor="middle">售后活动规则</text></g><g class="actor"><rect x="580.7" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="666.7" y="43.0" text-anchor="middle">卡券中心</text><text class="actor-role" x="666.7" y="64.0" text-anchor="middle">可选券和券状态</text></g><g class="actor"><rect x="874.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="960.0" y="43.0" text-anchor="middle">组合判断方</text><text class="actor-role" x="960.0" y="64.0" text-anchor="middle">运行时关系判定</text></g><g class="phase"><rect x="44" y="132" width="952" height="36" rx="18"/><text x="66" y="156">关系配置</text></g><g class="message"><rect class="message-label-bg" x="82.7" y="183.0" width="288.0" height="30" rx="8"/><circle cx="95.7" cy="196.0" r="11"/><text class="step-number" x="95.7" y="200.0" text-anchor="middle">1</text><text class="message-label" x="226.7" y="203.0" text-anchor="middle">选择历史方式 1–4 或新增方式 5</text><line class="message-line" x1="88.0" y1="221.0" x2="363.3" y2="221.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="383.0" y="245.0" width="274.0" height="30" rx="8"/><circle cx="396.0" cy="258.0" r="11"/><text class="step-number" x="396.0" y="262.0" text-anchor="middle">2</text><text class="message-label" x="520.0" y="265.0" text-anchor="middle">按名称、ID和属性查询已发布有效券</text><line class="message-line" x1="381.3" y1="283.0" x2="656.7" y2="283.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="390.0" y="307.0" width="260.0" height="30" rx="8"/><circle cx="403.0" cy="320.0" r="11"/><text class="step-number" x="403.0" y="324.0" text-anchor="middle">3</text><text class="message-label" x="520.0" y="327.0" text-anchor="middle">返回可选券；失效或未发布券不可选</text><line class="message-line" x1="658.7" y1="345.0" x2="383.3" y2="345.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="82.7" y="369.0" width="288.0" height="30" rx="8"/><circle cx="95.7" cy="382.0" r="11"/><text class="step-number" x="95.7" y="386.0" text-anchor="middle">4</text><text class="message-label" x="226.7" y="389.0" text-anchor="middle">方式 5 同时维护叠加清单与互斥清单</text><line class="message-line" x1="88.0" y1="407.0" x2="363.3" y2="407.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="82.7" y="431.0" width="288.0" height="30" rx="8"/><circle cx="95.7" cy="444.0" r="11"/><text class="step-number" x="95.7" y="448.0" text-anchor="middle">5</text><text class="message-label" x="226.7" y="451.0" text-anchor="middle">校验两类均至少 1 张且同一券不重复</text><line class="message-line" x1="365.3" y1="469.0" x2="90.0" y2="469.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="110.7" y="493.0" width="232.0" height="30" rx="8"/><circle cx="123.7" cy="506.0" r="11"/><text class="step-number" x="123.7" y="510.0" text-anchor="middle">6</text><text class="message-label" x="226.7" y="513.0" text-anchor="middle">保存草稿并在互斥关系列表查看</text><line class="message-line" x1="88.0" y1="531.0" x2="363.3" y2="531.0" marker-end="url(#arrow)"/></g><g class="phase"><rect x="44" y="554" width="952" height="36" rx="18"/><text x="66" y="578">运行时判断顺序</text></g><g class="message"><rect class="message-label-bg" x="536.7" y="605.0" width="260.0" height="30" rx="8"/><circle cx="549.7" cy="618.0" r="11"/><text class="step-number" x="549.7" y="622.0" text-anchor="middle">7</text><text class="message-label" x="666.7" y="625.0" text-anchor="middle">请求判断当前活动和卡券是否可组合</text><line class="message-line" x1="952.0" y1="643.0" x2="383.3" y2="643.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="201.3" y="667.0" width="344.0" height="30" rx="8"/><circle cx="214.3" cy="680.0" r="11"/><text class="step-number" x="214.3" y="684.0" text-anchor="middle">8</text><text class="message-label" x="373.3" y="687.0" text-anchor="middle">依次判断活动互斥 → 卡券互斥 → 卡券叠加</text><path class="message-line" d="M 373.3 691.0 h 58 v 28 h -58" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="529.7" y="729.0" width="274.0" height="30" rx="8"/><circle cx="542.7" cy="742.0" r="11"/><text class="step-number" x="542.7" y="746.0" text-anchor="middle">9</text><text class="message-label" x="666.7" y="749.0" text-anchor="middle">返回命中关系；均未命中默认不可组合</text><line class="message-line" x1="381.3" y1="767.0" x2="950.0" y2="767.0" marker-end="url(#arrow)"/></g><g class="actor"><rect x="-6.0" y="802.0" width="172" height="52" rx="12"/><text class="actor-label" x="80.0" y="829.0" text-anchor="middle">活动运营</text></g><g class="actor"><rect x="287.3" y="802.0" width="172" height="52" rx="12"/><text class="actor-label" x="373.3" y="829.0" text-anchor="middle">活动中心</text></g><g class="actor"><rect x="580.7" y="802.0" width="172" height="52" rx="12"/><text class="actor-label" x="666.7" y="829.0" text-anchor="middle">卡券中心</text></g><g class="actor"><rect x="874.0" y="802.0" width="172" height="52" rx="12"/><text class="actor-label" x="960.0" y="829.0" text-anchor="middle">组合判断方</text></g></svg></div>
+    </section>
+    <div class="columns">
+      <section class="panel"><div class="panel-head"><div><h2>步骤清单</h2><p>与上方时序图逐项对应。</p></div></div><h3 class="timeline-phase">关系配置</h3><article class="timeline-step"><span>01</span><div><strong>活动运营 → 活动中心</strong><p>选择历史方式 1–4 或新增方式 5</p></div></article><article class="timeline-step"><span>02</span><div><strong>活动中心 → 卡券中心</strong><p>按名称、ID和属性查询已发布有效券</p></div></article><article class="timeline-step"><span>03</span><div><strong>卡券中心 → 活动中心</strong><p>返回可选券；失效或未发布券不可选</p></div></article><article class="timeline-step"><span>04</span><div><strong>活动运营 → 活动中心</strong><p>方式 5 同时维护叠加清单与互斥清单</p></div></article><article class="timeline-step"><span>05</span><div><strong>活动中心 → 活动运营</strong><p>校验两类均至少 1 张且同一券不重复</p></div></article><article class="timeline-step"><span>06</span><div><strong>活动运营 → 活动中心</strong><p>保存草稿并在互斥关系列表查看</p></div></article><h3 class="timeline-phase">运行时判断顺序</h3><article class="timeline-step"><span>07</span><div><strong>组合判断方 → 活动中心</strong><p>请求判断当前活动和卡券是否可组合</p></div></article><article class="timeline-step"><span>08</span><div><strong>活动中心 → 活动中心</strong><p>依次判断活动互斥 → 卡券互斥 → 卡券叠加</p></div></article><article class="timeline-step"><span>09</span><div><strong>活动中心 → 组合判断方</strong><p>返回命中关系；均未命中默认不可组合</p></div></article></section>
+      <aside>
+        <section class="panel side-card"><h3>关键规则与边界</h3><ul><li>活动互斥优先于活动内卡券关系。</li><li>售前卡券中心叠加规则与本售后活动规则隔离。</li><li>历史方式与历史数据继续按原值回显，无需迁移。</li></ul></section>
+        <section class="panel side-card"><h3>待确认</h3><ul><li>新增方式枚举值和两组券 ID 接口字段待研发确认。</li><li>从方式 5 切回历史方式时，隐藏名单保留还是清空待确认。</li></ul></section>
+        <section class="panel side-card sources"><h3>当前依据</h3><ul><li><a href="../prototypes/p0-11/index.html">卡券互斥叠加并行配置原型</a><code>outputs/原型/活动中心卡券互斥叠加并行配置原型_20260729/index.html</code></li></ul></section>
+      </aside>
+    </div>
+    <p class="footer-note">本图根据当前静态原型和交互说明整理；范围外内容不会替代研发接口评审。</p>
+  </main>
+</body>
+</html>

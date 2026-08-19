@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="P0-扩展活动适用门店配置 最新业务时序图">
+  <link rel="icon" href="data:,">
+  <title>P0-扩展活动适用门店配置｜最新时序图</title>
+  <style>
+    :root { color-scheme:light; --blue:#1769d2; --ink:#162033; --muted:#667085; --line:#dce4ef; --soft:#f4f7fb; --warn:#9a6700; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f5f7fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    a { color:#1559aa; }
+    .hero { padding:34px 24px 42px; color:white; background:linear-gradient(135deg,#102a56,#1769d2 72%,#59a5ff); }
+    .wrap { width:min(1280px,calc(100% - 36px)); margin:auto; }
+    .back { display:inline-flex; margin-bottom:20px; color:#fff; text-decoration:none; opacity:.88; }
+    .eyebrow { font-size:12px; letter-spacing:.09em; opacity:.74; }
+    h1 { margin:8px 0 9px; font-size:30px; line-height:1.35; }
+    .summary { margin:0; max-width:900px; line-height:1.7; opacity:.88; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .meta span { padding:6px 10px; border:1px solid #ffffff40; border-radius:999px; background:#ffffff12; font-size:12px; }
+    main { padding:22px 0 54px; }
+    .panel { margin-bottom:16px; padding:20px; border:1px solid var(--line); border-radius:14px; background:white; box-shadow:0 8px 26px #263d6410; }
+    .panel-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .panel h2 { margin:0; font-size:18px; }
+    .panel-head p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .status { white-space:nowrap; padding:5px 9px; border-radius:999px; color:#0f6b3d; background:#ecfdf3; font-size:12px; }
+    .change-note { margin:0 0 14px; padding:12px 14px; border:1px solid #ffd591; border-radius:10px; background:#fff7e6; }
+    .change-note strong { color:#9a5b00; font-size:13px; }
+    .change-note p { margin:4px 0 0; color:#805d08; font-size:13px; line-height:1.65; }
+    .diagram-scroll { overflow:auto; border:1px solid #e8edf5; border-radius:12px; background:linear-gradient(#fff,#fbfcfe); }
+    .sequence-svg { display:block; min-width:1040px; width:100%; height:auto; }
+    .lifeline { stroke:#b7c4d6; stroke-width:1.5; stroke-dasharray:5 5; }
+    .actor rect { fill:#fff; stroke:#8fb5e7; stroke-width:1.5; filter:drop-shadow(0 3px 5px #244a7a12); }
+    .actor-label { fill:#17375f; font-size:15px; font-weight:700; }
+    .actor-role { fill:#667085; font-size:11px; }
+    .phase rect { fill:#eef5ff; stroke:#c5dcfa; }
+    .phase text { fill:#1559aa; font-size:14px; font-weight:700; }
+    .message-line { fill:none; stroke:#2f6fcb; stroke-width:2; }
+    .message-label-bg { fill:#fff; stroke:#dbe6f5; }
+    .message circle { fill:#1769d2; }
+    .message-label { fill:#27364a; font-size:13px; }
+    .step-number { fill:#fff; font-size:9px; font-weight:700; }
+    .note rect { fill:#f6f8fb; stroke:#9aaabd; stroke-dasharray:5 4; }
+    .note.boundary rect { fill:#fff8e6; stroke:#e4b34d; }
+    .note text { fill:#526174; font-size:13px; }
+    .note.boundary text { fill:#805d08; }
+    .columns { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:16px; }
+    .timeline-phase { margin:18px 0 9px; padding:8px 11px; border-radius:9px; color:#1559aa; background:#eef5ff; font-size:14px; }
+    .timeline-phase:first-child { margin-top:0; }
+    .timeline-step { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid #edf0f5; }
+    .timeline-step > span { flex:0 0 30px; width:30px; height:30px; display:grid; place-items:center; color:white; background:#1769d2; border-radius:50%; font-size:11px; }
+    .timeline-step strong { font-size:13px; }
+    .timeline-step p, .timeline-note p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.65; }
+    .timeline-note { margin:10px 0; padding:12px; border-left:3px solid #d69b20; background:#fff8e6; }
+    .side-card + .side-card { margin-top:16px; }
+    .side-card h3 { margin:0 0 9px; font-size:15px; }
+    ul { margin:0; padding-left:20px; }
+    li { margin:7px 0; color:#475467; font-size:13px; line-height:1.6; }
+    .sources li { display:grid; gap:4px; }
+    code { overflow-wrap:anywhere; color:#667085; font-size:11px; }
+    .footer-note { color:var(--muted); text-align:center; font-size:12px; }
+    @media (max-width:800px) { .wrap{width:calc(100% - 22px)} .hero{padding:26px 12px 34px} h1{font-size:24px} .panel{padding:14px} .columns{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <a class="back" href="../index.html">← 返回 P0 原型中心</a>
+      <div class="eyebrow">P0 · LATEST SEQUENCE · 2026-08-19</div>
+      <h1>P0-扩展活动适用门店配置</h1>
+      <p class="summary">所有活动适用门店配置，以及 SA 按所属门店查看和分享活动</p>
+      <div class="meta"><span>6 个参与者</span><span>10 次交互</span><span>来源：当前最新独立原型</span></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="panel">
+      <div class="panel-head"><div><h2>业务时序图</h2><p>横向滚动可查看完整参与者与交互。</p></div><span class="status">静态离线版</span></div>
+      
+      <div class="diagram-scroll"><svg class="sequence-svg" viewBox="0 0 1440 1046" role="img" aria-label="P0-扩展活动适用门店配置 时序图"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill="#2f6fcb"/></marker></defs><line class="lifeline" x1="80.0" y1="92" x2="80.0" y2="960"/><line class="lifeline" x1="336.0" y1="92" x2="336.0" y2="960"/><line class="lifeline" x1="592.0" y1="92" x2="592.0" y2="960"/><line class="lifeline" x1="848.0" y1="92" x2="848.0" y2="960"/><line class="lifeline" x1="1104.0" y1="92" x2="1104.0" y2="960"/><line class="lifeline" x1="1360.0" y1="92" x2="1360.0" y2="960"/><g class="actor"><rect x="-6.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="80.0" y="43.0" text-anchor="middle">活动运营</text><text class="actor-role" x="80.0" y="64.0" text-anchor="middle">活动范围配置</text></g><g class="actor"><rect x="250.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="336.0" y="43.0" text-anchor="middle">活动中心</text><text class="actor-role" x="336.0" y="64.0" text-anchor="middle">storeScope 主数据</text></g><g class="actor"><rect x="506.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="592.0" y="43.0" text-anchor="middle">门店主数据</text><text class="actor-role" x="592.0" y="64.0" text-anchor="middle">可用门店与层级</text></g><g class="actor"><rect x="762.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="848.0" y="43.0" text-anchor="middle">组织／权限</text><text class="actor-role" x="848.0" y="64.0" text-anchor="middle">SA 所属门店</text></g><g class="actor"><rect x="1018.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="1104.0" y="43.0" text-anchor="middle">SA 动态二维码</text><text class="actor-role" x="1104.0" y="64.0" text-anchor="middle">候选池与分享校验</text></g><g class="actor"><rect x="1274.0" y="16.0" width="172" height="68" rx="12"/><text class="actor-label" x="1360.0" y="43.0" text-anchor="middle">卡券中心</text><text class="actor-role" x="1360.0" y="64.0" text-anchor="middle">券自身适用／核销门店</text></g><g class="phase"><rect x="44" y="132" width="1352" height="36" rx="18"/><text x="66" y="156">活动适用门店配置</text></g><g class="message"><rect class="message-label-bg" x="113.0" y="183.0" width="190.0" height="30" rx="8"/><circle cx="126.0" cy="196.0" r="11"/><text class="step-number" x="126.0" y="200.0" text-anchor="middle">1</text><text class="message-label" x="208.0" y="203.0" text-anchor="middle">创建或编辑任意活动类型</text><line class="message-line" x1="88.0" y1="221.0" x2="326.0" y2="221.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="348.0" y="245.0" width="232.0" height="30" rx="8"/><circle cx="361.0" cy="258.0" r="11"/><text class="step-number" x="361.0" y="262.0" text-anchor="middle">2</text><text class="message-label" x="464.0" y="265.0" text-anchor="middle">查询可用门店、编码与组织层级</text><line class="message-line" x1="344.0" y1="283.0" x2="582.0" y2="283.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="386.0" y="307.0" width="156.0" height="30" rx="8"/><circle cx="399.0" cy="320.0" r="11"/><text class="step-number" x="399.0" y="324.0" text-anchor="middle">3</text><text class="message-label" x="464.0" y="327.0" text-anchor="middle">仅返回可用门店</text><line class="message-line" x1="584.0" y1="345.0" x2="346.0" y2="345.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="36.0" y="369.0" width="344.0" height="48" rx="8"/><circle cx="49.0" cy="382.0" r="11"/><text class="step-number" x="49.0" y="386.0" text-anchor="middle">4</text><text class="message-label" x="208.0" y="389.0" text-anchor="middle">保存全部门店 ALL 或指定门店集合 SPE</text><text class="message-label" x="208.0" y="407.0" text-anchor="middle">CIFIED</text><line class="message-line" x1="88.0" y1="423.0" x2="326.0" y2="423.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="85.0" y="447.0" width="246.0" height="30" rx="8"/><circle cx="98.0" cy="460.0" r="11"/><text class="step-number" x="98.0" y="464.0" text-anchor="middle">5</text><text class="message-label" x="208.0" y="467.0" text-anchor="middle">回显全部门店或指定 N 家摘要</text><line class="message-line" x1="328.0" y1="485.0" x2="90.0" y2="485.0" marker-end="url(#arrow)"/></g><g class="phase"><rect x="44" y="508" width="1352" height="36" rx="18"/><text x="66" y="532">SA 候选池过滤与分享复核</text></g><g class="message"><rect class="message-label-bg" x="874.0" y="559.0" width="204.0" height="30" rx="8"/><circle cx="887.0" cy="572.0" r="11"/><text class="step-number" x="887.0" y="576.0" text-anchor="middle">6</text><text class="message-label" x="976.0" y="579.0" text-anchor="middle">读取当前 SA 所属门店</text><line class="message-line" x1="1096.0" y1="597.0" x2="858.0" y2="597.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="888.0" y="621.0" width="176.0" height="30" rx="8"/><circle cx="901.0" cy="634.0" r="11"/><text class="step-number" x="901.0" y="638.0" text-anchor="middle">7</text><text class="message-label" x="976.0" y="641.0" text-anchor="middle">返回 SA 门店身份</text><line class="message-line" x1="856.0" y1="659.0" x2="1094.0" y2="659.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="569.0" y="683.0" width="302.0" height="30" rx="8"/><circle cx="582.0" cy="696.0" r="11"/><text class="step-number" x="582.0" y="700.0" text-anchor="middle">8</text><text class="message-label" x="720.0" y="703.0" text-anchor="middle">查询投放有效、状态有效的活动及门店范围</text><line class="message-line" x1="1096.0" y1="721.0" x2="346.0" y2="721.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="576.0" y="745.0" width="288.0" height="30" rx="8"/><circle cx="589.0" cy="758.0" r="11"/><text class="step-number" x="589.0" y="762.0" text-anchor="middle">9</text><text class="message-label" x="720.0" y="765.0" text-anchor="middle">仅返回 ALL 或当前门店命中的活动</text><line class="message-line" x1="344.0" y1="783.0" x2="1094.0" y2="783.0" marker-end="url(#arrow)"/></g><g class="message"><rect class="message-label-bg" x="604.0" y="807.0" width="232.0" height="30" rx="8"/><circle cx="617.0" cy="820.0" r="11"/><text class="step-number" x="617.0" y="824.0" text-anchor="middle">10</text><text class="message-label" x="720.0" y="827.0" text-anchor="middle">生成并分享前再次校验门店命中</text><line class="message-line" x1="1096.0" y1="845.0" x2="346.0" y2="845.0" marker-end="url(#arrow)"/></g><g class="note boundary"><rect x="236.0" y="870" width="1174.0" height="64" rx="10"/><text x="252.0" y="896.0">活动适用门店只控制活动范围和 SA 可见／分享，不自动改写卡</text><text x="252.0" y="915.0">券适用或核销门店。</text></g><g class="actor"><rect x="-6.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="80.0" y="987.0" text-anchor="middle">活动运营</text></g><g class="actor"><rect x="250.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="336.0" y="987.0" text-anchor="middle">活动中心</text></g><g class="actor"><rect x="506.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="592.0" y="987.0" text-anchor="middle">门店主数据</text></g><g class="actor"><rect x="762.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="848.0" y="987.0" text-anchor="middle">组织／权限</text></g><g class="actor"><rect x="1018.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="1104.0" y="987.0" text-anchor="middle">SA 动态二维码</text></g><g class="actor"><rect x="1274.0" y="960.0" width="172" height="52" rx="12"/><text class="actor-label" x="1360.0" y="987.0" text-anchor="middle">卡券中心</text></g></svg></div>
+    </section>
+    <div class="columns">
+      <section class="panel"><div class="panel-head"><div><h2>步骤清单</h2><p>与上方时序图逐项对应。</p></div></div><h3 class="timeline-phase">活动适用门店配置</h3><article class="timeline-step"><span>01</span><div><strong>活动运营 → 活动中心</strong><p>创建或编辑任意活动类型</p></div></article><article class="timeline-step"><span>02</span><div><strong>活动中心 → 门店主数据</strong><p>查询可用门店、编码与组织层级</p></div></article><article class="timeline-step"><span>03</span><div><strong>门店主数据 → 活动中心</strong><p>仅返回可用门店</p></div></article><article class="timeline-step"><span>04</span><div><strong>活动运营 → 活动中心</strong><p>保存全部门店 ALL 或指定门店集合 SPECIFIED</p></div></article><article class="timeline-step"><span>05</span><div><strong>活动中心 → 活动运营</strong><p>回显全部门店或指定 N 家摘要</p></div></article><h3 class="timeline-phase">SA 候选池过滤与分享复核</h3><article class="timeline-step"><span>06</span><div><strong>SA 动态二维码 → 组织／权限</strong><p>读取当前 SA 所属门店</p></div></article><article class="timeline-step"><span>07</span><div><strong>组织／权限 → SA 动态二维码</strong><p>返回 SA 门店身份</p></div></article><article class="timeline-step"><span>08</span><div><strong>SA 动态二维码 → 活动中心</strong><p>查询投放有效、状态有效的活动及门店范围</p></div></article><article class="timeline-step"><span>09</span><div><strong>活动中心 → SA 动态二维码</strong><p>仅返回 ALL 或当前门店命中的活动</p></div></article><article class="timeline-step"><span>10</span><div><strong>SA 动态二维码 → 活动中心</strong><p>生成并分享前再次校验门店命中</p></div></article><aside class="timeline-note"><strong>范围说明</strong><p>活动适用门店只控制活动范围和 SA 可见／分享，不自动改写卡券适用或核销门店。</p></aside></section>
+      <aside>
+        <section class="panel side-card"><h3>关键规则与边界</h3><ul><li>未配置或清空选择时按全部门店生效，接口建议显式传 ALL。</li><li>正常 SA 端不展示门店未命中的活动；校验视图可展示过滤原因。</li><li>未进入 SA 投放配置的活动不进入候选池。</li></ul></section>
+        <section class="panel side-card"><h3>待确认</h3><ul><li>已启用活动改范围的生效时点、旧二维码权限、多门店 SA 归属和门店权威系统待确认。</li><li>活动范围与卡券范围冲突时采用警告还是阻断待确认。</li></ul></section>
+        <section class="panel side-card sources"><h3>当前依据</h3><ul><li><a href="../prototypes/p0-12/index.html">活动适用门店与 SA 分享范围原型</a><code>outputs/原型/活动适用门店与SA分享范围原型_20260810/index.html</code></li></ul></section>
+      </aside>
+    </div>
+    <p class="footer-note">本图根据当前静态原型和交互说明整理；范围外内容不会替代研发接口评审。</p>
+  </main>
+</body>
+</html>

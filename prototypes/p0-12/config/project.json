@@ -1,0 +1,7 @@
+{
+  "projectId": "sa-fe578ef4",
+  "created": "2026-08-10",
+  "name": "活动适用门店与SA分享范围原型",
+  "version": "1.0.0",
+  "routes": ["activity-form", "sa-pool"]
+}
