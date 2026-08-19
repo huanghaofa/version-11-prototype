@@ -1,247 +1,71 @@
-window.MockData = {
-  summary: {
-    total: 128,
-    refundable: 48,
-    processing: 31,
-    settledAmount: 42860.00
-  },
-  instances: [
-    {
-      id: "CI202607220001",
-      couponName: "夏日用品满200减120券",
-      couponCode: "CPN-SUMMER-120",
-      user: "138****7821",
-      ownerType: "vin",
-      vin: "LGBH52E07RY123456",
-      orderNo: "SO20260718008312",
-      writeoffChannel: "线上",
-      sourceSystem: "商城",
-      mallProductPrice: 528,
-      actualDiscountAmount: 100,
-      couponFaceValue: 120,
-      dealerPrice: 502,
-      priceBasisType: "实际优惠金额",
-      priceBasisValue: 100,
-      priceBasisNote: "2 件适用商品有效优惠汇总",
-      discount: 120,
-      refundDeduction: 20,
-      validDiscount: 100,
-      settlement: 80,
-      rule: "有效优惠金额 × 80%",
-      ruleVersion: "V3.2",
-      status: "refundable",
-      statusTime: "2026-07-22 10:18:31",
-      freezeTime: "--",
-      e3sNo: "--",
-      products: [
-        { sku: "SKU-100238", name: "车载吸尘器 Pro", amount: 399, dealerPrice: 380, discount: 80, refund: 0, applicable: true, applicableReason: "在卡券适用商品范围内", state: "正常" },
-        { sku: "SKU-100911", name: "定制后备箱收纳箱", amount: 259, dealerPrice: 246, discount: 0, refund: 0, applicable: false, applicableReason: "不在卡券适用商品范围内", state: "正常" },
-        { sku: "SKU-102016", name: "车用香氛补充装", amount: 129, dealerPrice: 122, discount: 40, refund: 20, applicable: true, applicableReason: "在卡券适用商品范围内", state: "已退款" }
-      ],
-      events: [
-        ["2026-07-18 14:32", "商城回传商品适用性", "订单共 3 件商品，其中 2 件适用本卡券"],
-        ["2026-07-18 14:32", "商城回传优惠明细", "仅适用商品分摊优惠 ¥120.00"],
-        ["2026-07-21 09:06", "商城回传退款", "1 件适用商品退款，扣减优惠 ¥20.00"],
-        ["2026-07-21 09:07", "卡券中心重算", "适用商品有效优惠 ¥100.00，预计结算 ¥80.00"]
-      ]
-    },
-    {
-      id: "CI202607210187",
-      couponName: "精品商城新人礼券",
-      couponCode: "CPN-NEW-200",
-      user: "186****3046",
-      ownerType: "oneId",
-      mobile: "186****3046",
-      oneId: "OID-000284917",
-      orderNo: "SO20260719002177",
-      writeoffChannel: "线上",
-      sourceSystem: "商城",
-      mallProductPrice: 1498,
-      actualDiscountAmount: 200,
-      couponFaceValue: 200,
-      dealerPrice: 1420,
-      priceBasisType: "实际优惠金额",
-      priceBasisValue: 200,
-      priceBasisNote: "2 件适用商品有效优惠汇总",
-      discount: 200,
-      refundDeduction: 0,
-      validDiscount: 200,
-      settlement: 160,
-      rule: "有效优惠金额 × 80%",
-      ruleVersion: "V3.2",
-      status: "processing",
-      statusTime: "2026-07-22 09:42:10",
-      freezeTime: "2026-07-22 09:42:10",
-      requestId: "REQ-E3S-202607220187",
-      e3sNo: "--",
-      products: [
-        { sku: "SKU-201876", name: "智能车载冰箱 20L", amount: 899, dealerPrice: 850, discount: 120, refund: 0, applicable: true, applicableReason: "在卡券适用商品范围内", state: "正常" },
-        { sku: "SKU-202019", name: "户外露营折叠桌椅", amount: 599, dealerPrice: 570, discount: 80, refund: 0, applicable: true, applicableReason: "在卡券适用商品范围内", state: "正常" }
-      ],
-      events: [
-        ["2026-07-19 18:21", "商城回传优惠明细", "2 件商品共分摊 ¥200.00"],
-        ["2026-07-22 09:42", "商城确认不可退款", "订单退款窗口已关闭"],
-        ["2026-07-22 09:42", "卡券中心冻结金额", "最终优惠 ¥200.00，最终结算 ¥160.00"],
-        ["2026-07-22 09:42", "卡券中心提交 E3S", "订单冻结后立即提交一次结算请求"]
-      ]
-    },
-    {
-      id: "CI202607210165",
-      couponName: "商城精品满500减150券",
-      couponCode: "CPN-MALL-150",
-      user: "139****1180",
-      ownerType: "vin",
-      vin: "LGBH52E03RY087216",
-      orderNo: "SO20260717007816",
-      writeoffChannel: "线上",
-      sourceSystem: "商城",
-      mallProductPrice: 799,
-      actualDiscountAmount: 150,
-      couponFaceValue: 150,
-      dealerPrice: 760,
-      priceBasisType: "实际优惠金额",
-      priceBasisValue: 150,
-      priceBasisNote: "1 件适用商品有效优惠",
-      discount: 150,
-      refundDeduction: 0,
-      validDiscount: 150,
-      settlement: 120,
-      rule: "有效优惠金额 × 80%",
-      ruleVersion: "V3.2",
-      status: "processing",
-      statusTime: "2026-07-22 08:20:56",
-      freezeTime: "2026-07-22 08:20:56",
-      requestId: "REQ-E3S-202607210165",
-      e3sNo: "--",
-      products: [
-        { sku: "SKU-300872", name: "原厂定制脚垫套装", amount: 799, dealerPrice: 760, discount: 150, refund: 0, applicable: true, applicableReason: "在卡券适用商品范围内", state: "正常" }
-      ],
-      events: [
-        ["2026-07-17 20:17", "商城回传优惠明细", "1 件商品分摊 ¥150.00"],
-        ["2026-07-22 08:20", "商城确认不可退款", "订单退款窗口已关闭"],
-        ["2026-07-22 08:20", "卡券中心冻结金额", "最终结算 ¥120.00"],
-        ["2026-07-22 08:20", "卡券中提交 E3S", "订单冻结后立即提交一次结算请求"]
-      ]
-    },
-    {
-      id: "CI202607200958",
-      couponName: "车主夏日关怀共用券",
-      couponCode: "CPN-CARE-100",
-      user: "158****9033",
-      ownerType: "oneId",
-      mobile: "158****9033",
-      oneId: "OID-000196328",
-      orderNo: "SO20260715003190",
-      writeoffChannel: "线上",
-      sourceSystem: "商城",
-      mallProductPrice: 329,
-      actualDiscountAmount: 100,
-      couponFaceValue: 100,
-      dealerPrice: 310,
-      priceBasisType: "实际优惠金额",
-      priceBasisValue: 100,
-      priceBasisNote: "1 件适用商品有效优惠",
-      discount: 100,
-      refundDeduction: 0,
-      validDiscount: 100,
-      settlement: 80,
-      rule: "有效优惠金额 × 80%",
-      ruleVersion: "V3.2",
-      status: "settled",
-      statusTime: "2026-07-21 17:36:45",
-      freezeTime: "2026-07-20 17:02:11",
-      requestId: "REQ-E3S-202607200958",
-      e3sNo: "E3S2026072100326",
-      products: [
-        { sku: "SKU-401102", name: "夏季车用清凉坐垫", amount: 329, dealerPrice: 310, discount: 100, refund: 0, applicable: true, applicableReason: "在卡券适用商品范围内", state: "正常" }
-      ],
-      events: [
-        ["2026-07-15 12:21", "商城回传优惠明细", "1 件商品分摊 ¥100.00"],
-        ["2026-07-20 17:02", "卡券中心冻结金额", "最终结算 ¥80.00"],
-        ["2026-07-21 17:36", "E3S 结算完成", "结算单 E3S2026072100326"]
-      ]
-    },
-    {
-      id: "CI202607200821",
-      couponName: "商城配件满300减80券",
-      couponCode: "CPN-PART-80",
-      user: "177****6625",
-      ownerType: "vin",
-      vin: "LGBH52E09RY052908",
-      orderNo: "SO20260716004508",
-      writeoffChannel: "线上",
-      sourceSystem: "商城",
-      mallProductPrice: 369,
-      actualDiscountAmount: 0,
-      couponFaceValue: 80,
-      dealerPrice: 350,
-      priceBasisType: "实际优惠金额",
-      priceBasisValue: 0,
-      priceBasisNote: "全额退款后为 0",
-      discount: 80,
-      refundDeduction: 80,
-      validDiscount: 0,
-      settlement: 0,
-      rule: "有效优惠金额 × 80%",
-      ruleVersion: "V3.2",
-      status: "closed",
-      statusTime: "2026-07-21 16:10:22",
-      freezeTime: "2026-07-21 16:10:22",
-      e3sNo: "--",
-      products: [
-        { sku: "SKU-501920", name: "原厂雨刷器套装", amount: 369, dealerPrice: 350, discount: 80, refund: 80, applicable: true, applicableReason: "在卡券适用商品范围内", state: "已全额退款" }
-      ],
-      events: [
-        ["2026-07-16 10:09", "商城回传优惠明细", "1 件商品分摊 ¥80.00"],
-        ["2026-07-21 16:09", "商城回传全额退款", "扣减优惠 ¥80.00"],
-        ["2026-07-21 16:10", "卡券中心关闭实例", "有效优惠和应结算均为 ¥0.00"]
-      ]
-    },
-    {
-      id: "CI202607190712",
-      couponName: "线下保养满500减100券",
-      couponCode: "CPN-OFFLINE-100",
-      user: "136****5280",
-      ownerType: "vin",
-      vin: "LGBH52E11RY031684",
-      orderNo: "E3S-WO202607190712",
-      writeoffChannel: "线下",
-      sourceSystem: "E3S",
-      mallProductPrice: null,
-      actualDiscountAmount: 100,
-      couponFaceValue: 100,
-      dealerPrice: 100,
-      priceBasisType: "网点价",
-      priceBasisValue: 100,
-      priceBasisNote: "E3S 核销网点价格",
-      discount: 100,
-      refundDeduction: 0,
-      validDiscount: 100,
-      settlement: 80,
-      rule: "网点价 × 80%",
-      ruleVersion: "V3.2",
-      status: "settled",
-      statusTime: "2026-07-20 15:26:18",
-      freezeTime: "2026-07-20 15:25:42",
-      requestId: "REQ-E3S-202607190712",
-      e3sNo: "E3S2026072000712",
-      products: [
-        { sku: "SVC-100120", name: "基础保养服务套餐", amount: 500, dealerPrice: 100, discount: 100, refund: 0, applicable: true, applicableReason: "在线下卡券适用范围内", state: "已核销" }
-      ],
-      events: [
-        ["2026-07-19 11:08", "E3S 回传线下核销", "核销金额与网点价快照已写入"],
-        ["2026-07-20 15:25", "卡券中心冻结金额", "采用网点价 ¥100.00，最终结算 ¥80.00"],
-        ["2026-07-20 15:26", "E3S 结算完成", "结算单 E3S2026072000712"]
-      ]
-    }
-  ],
-  rules: [
-    { ruleId: "SR20260722001", templateId: "CT202607180021", templateName: "车主夏日关怀共用券", brand: "东风日产", onlineMethod: "比例结算", onlineValue: "80", onlinePriceBasis: "实际优惠金额", offlineMethod: "比例结算", offlineValue: "80", offlinePriceBasis: "用户价", version: "V3.2", status: "已启用", usedCount: 18, remark: "线上商城按实际优惠金额结算，线下沿用原规则。" },
-    { ruleId: "SR20260722002", templateId: "CT202607190046", templateName: "精品商城新人礼券", brand: "东风日产", onlineMethod: "比例结算", onlineValue: "80", onlinePriceBasis: "实际优惠金额", offlineMethod: "比例结算", offlineValue: "80", offlinePriceBasis: "用户价", version: "V3.2", status: "草稿", usedCount: 0, remark: "同时维护线上与线下配置，结算时按核销渠道自动选择。" }
-  ],
-  submissions: [
-    { requestId: "REQ-E3S-202607220187", orderNo: "SO20260719002177", instanceId: "CI202607210187", ownerType: "oneId", mobile: "186****3046", oneId: "OID-000284917", amount: 160.00, submittedAt: "2026-07-22 09:42:12", e3sNo: "--", status: "E3S 处理中" },
-    { requestId: "REQ-E3S-202607210165", orderNo: "SO20260717007816", instanceId: "CI202607210165", ownerType: "vin", vin: "LGBH52E03RY087216", amount: 120.00, submittedAt: "2026-07-22 08:20:58", e3sNo: "--", status: "E3S 处理中" },
-    { requestId: "REQ-E3S-202607200958", orderNo: "SO20260715003190", instanceId: "CI202607200958", ownerType: "oneId", mobile: "158****9033", oneId: "OID-000196328", amount: 80.00, submittedAt: "2026-07-20 17:02:13", e3sNo: "E3S2026072100326", status: "结算完成" }
-  ]
-};
+(function () {
+  'use strict';
+
+  window.MockData = {
+    subsidies: [
+      {
+        id: 'DEMO-CPN-001', code: 'DEMO-REDEEM-0001', documentNo: 'DEMO-ORDER-001',
+        vin: 'DEMO-VIN-001', phone: '—', oneId: '—', channel: '线上', source: '新商城',
+        ruleId: 'RULE-ONLINE-01', ruleName: '商城精品券补贴规则', documentStatus: '部分退款',
+        settlementStatus: '未结算', redeemedAt: '2026-08-18 10:26:32', syncedAt: '2026-08-19 02:05:18',
+        details: [
+          { type: '商品', itemId: 'SKU-ACC-10086', itemName: '原厂行车记录仪', quantity: 1, discount: 200, expected: 120, actual: null },
+          { type: '商品', itemId: 'SKU-ACC-10092', itemName: '原厂后备箱垫', quantity: 1, discount: 80, expected: 0, actual: null }
+        ]
+      },
+      {
+        id: 'DEMO-CPN-002', code: 'DEMO-REDEEM-0002', documentNo: 'DEMO-ORDER-002',
+        vin: '—', phone: 'DEMO-MOBILE-002', oneId: 'DEMO-ONEID-002', channel: '线上', source: '新商城',
+        ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '已完成',
+        settlementStatus: '已结算', redeemedAt: '2026-08-12 15:08:44', syncedAt: '2026-08-19 02:06:02',
+        details: [
+          { type: '商品', itemId: 'SKU-LIFE-20201', itemName: '品牌联名保温杯', quantity: 2, discount: 100, expected: 60, actual: 60 },
+          { type: '商品', itemId: 'SKU-LIFE-20209', itemName: '车载香氛补充装', quantity: 1, discount: 50, expected: 30, actual: 28 }
+        ]
+      },
+      {
+        id: 'DEMO-CPN-003', code: 'DEMO-REDEEM-0003', documentNo: 'DEMO-ORDER-003',
+        vin: 'DEMO-VIN-003', phone: '—', oneId: '—', channel: '线上', source: '新商城',
+        ruleId: 'RULE-ONLINE-01', ruleName: '商城精品券补贴规则', documentStatus: '已全额退款',
+        settlementStatus: '无需结算', redeemedAt: '2026-08-17 09:42:10', syncedAt: '2026-08-19 02:08:45',
+        details: [
+          { type: '商品', itemId: 'SKU-ACC-30110', itemName: '原厂车载吸尘器', quantity: 1, discount: 0, expected: 0, actual: null }
+        ]
+      },
+      {
+        id: 'DEMO-CPN-004', code: 'DEMO-REDEEM-0004', documentNo: 'DEMO-WORKORDER-004',
+        vin: 'DEMO-VIN-004', phone: '—', oneId: '—', channel: '线下', source: 'E3S',
+        ruleId: 'RULE-OFFLINE-03', ruleName: '售后备件补贴规则', documentStatus: '已完工',
+        settlementStatus: '已结算', redeemedAt: '2026-08-10 13:15:29', syncedAt: '2026-08-19 03:01:12',
+        details: [
+          { type: '备件', itemId: 'PART-OIL-5W30', itemName: '全合成发动机机油', quantity: 1, discount: 120, expected: 72, actual: 72 },
+          { type: '备件', itemId: 'PART-FILTER-08', itemName: '机油滤清器', quantity: 1, discount: 30, expected: 18, actual: 18 }
+        ]
+      },
+      {
+        id: 'DEMO-CPN-005', code: 'DEMO-REDEEM-0005', documentNo: 'DEMO-WORKORDER-005',
+        vin: '—', phone: 'DEMO-MOBILE-005', oneId: 'DEMO-ONEID-005', channel: '线下', source: 'E3S',
+        ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '已完工',
+        settlementStatus: '未结算', redeemedAt: '2026-08-18 17:36:51', syncedAt: '2026-08-19 03:04:33',
+        details: [
+          { type: '备件', itemId: 'PART-WIPER-21', itemName: '前雨刮片套装', quantity: 1, discount: 80, expected: 48, actual: 48 }
+        ]
+      },
+      {
+        id: 'DEMO-CPN-006', code: 'DEMO-REDEEM-0006', documentNo: 'DEMO-ORDER-006',
+        vin: 'DEMO-VIN-006', phone: '—', oneId: '—', channel: '线上', source: '新商城',
+        ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '退款期内',
+        settlementStatus: '未结算', redeemedAt: '2026-08-18 20:05:16', syncedAt: '2026-08-19 02:10:11',
+        details: [
+          { type: '商品', itemId: 'SKU-ACC-40216', itemName: '原厂遮阳挡', quantity: 1, discount: 60, expected: 36, actual: null }
+        ]
+      }
+    ],
+    rules: [
+      { id: 'RULE-ONLINE-01', name: '商城精品券补贴规则', onlineType: '比例结算', onlineValue: '60', onlineBasis: '实际优惠金额', offlineType: '固定金额', offlineValue: '0', offlineBasis: '卡券面值', status: '启用', usageCount: 2, updatedAt: '2026-08-15 16:20:08' },
+      { id: 'RULE-COMMON-02', name: '用户关怀通用补贴规则', onlineType: '比例结算', onlineValue: '60', onlineBasis: '实际优惠金额', offlineType: '比例结算', offlineValue: '60', offlineBasis: '实际优惠金额', status: '启用', usageCount: 3, updatedAt: '2026-08-16 10:12:30' },
+      { id: 'RULE-OFFLINE-03', name: '售后备件补贴规则', onlineType: '固定金额', onlineValue: '0', onlineBasis: '网点价', offlineType: '比例结算', offlineValue: '60', offlineBasis: '实际优惠金额', status: '启用', usageCount: 1, updatedAt: '2026-08-18 09:05:44' },
+      { id: 'RULE-DRAFT-04', name: '待启用活动补贴规则', onlineType: '固定金额', onlineValue: '50', onlineBasis: '卡券面值', offlineType: '固定金额', offlineValue: '30', offlineBasis: '卡券面值', status: '停用', usageCount: 0, updatedAt: '2026-08-18 18:22:01' }
+    ]
+  };
+})();

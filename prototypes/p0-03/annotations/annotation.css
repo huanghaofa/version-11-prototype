@@ -1,18 +1,18 @@
 /* Prototype annotation runtime. All selectors are scoped with anno-. */
 #anno-toggle-btn {
   position: fixed;
-  top: 22px;
-  left: 192px;
+  right: 16px;
+  bottom: 44px;
   z-index: 99990;
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   border: 2px solid #ff4d4f;
   border-radius: 50%;
   background: #fff;
   color: #ff4d4f;
   box-shadow: 0 4px 14px rgba(255, 77, 79, 0.25);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1;
 }
@@ -25,13 +25,6 @@
   border-color: #d9d9d9;
   color: #8c8c8c;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-}
-
-@media (max-width: 760px) {
-  #anno-toggle-btn {
-    top: 24px;
-    left: 42px;
-  }
 }
 
 #anno-overlay {

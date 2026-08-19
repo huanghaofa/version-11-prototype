@@ -111,18 +111,10 @@
   }
 
   function placeToggle(btn) {
-    var appSidebar = document.querySelector('.app-sidebar');
-    if (appSidebar) {
-      btn.style.top = '22px';
-      btn.style.left = Math.max(16, appSidebar.getBoundingClientRect().right - 36) + 'px';
-      return;
-    }
-    var topBar = document.querySelector('.top-bar');
-    var sideMenu = document.querySelector('.side-menu, .sidebar, .nav-panel');
-    var top = topBar ? topBar.getBoundingClientRect().bottom + 12 : 16;
-    var left = sideMenu ? sideMenu.getBoundingClientRect().right + 16 : 16;
-    btn.style.top = Math.max(16, top) + 'px';
-    btn.style.left = Math.max(16, left) + 'px';
+    btn.style.top = 'auto';
+    btn.style.left = 'auto';
+    btn.style.right = '16px';
+    btn.style.bottom = '44px';
   }
 
   function ensureOverlay() {

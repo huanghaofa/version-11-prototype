@@ -35,11 +35,11 @@
     },
     {
       "title": "P0-卡券结算补贴",
-      "summary": "卡券规则、结算报表，以及商城线上与 E3S 线下结算",
+      "summary": "新商城与 E3S 按 T+1 推送补贴结果，卡券中心保存当前快照并提供查询明细",
       "prototypes": [
         {
-          "label": "商城卡券结算原型",
-          "source": "outputs/原型/商城卡券结算原型_20260722/index.html",
+          "label": "卡券补贴数据管理原型",
+          "source": "outputs/原型/卡券补贴数据管理原型_20260819/index.html",
           "deployPath": "./prototypes/p0-03/index.html"
         }
       ],

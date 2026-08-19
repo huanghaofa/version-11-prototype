@@ -1,95 +1,49 @@
 (function () {
   'use strict';
+  var config = null;
+  var currentPage = 'subsidy-data';
+  var fallbackConfig = { menu: [
+    { key: 'subsidy-data', label: '卡券补贴数据', icon: '▣' },
+    { key: 'rule-settings', label: '补贴规则设置', icon: '⚙' }
+  ] };
 
-  var _config = null;
-  var _currentPage = 'index';
-
-  /* ---- Load nav config from config/nav.json ---- */
   function loadConfig() {
-    return fetch('config/nav.json')
-      .then(function (res) { return res.json(); })
-      .then(function (cfg) {
-        _config = cfg;
-        render();
-        var initialPage = window.location.hash.replace('#', '') || cfg.defaultPage || 'index';
-        window.navigateTo(initialPage);
-      })
-      .catch(function (err) {
-        console.warn('Failed to load config/nav.json, using empty menu:', err);
-        var navEl = document.getElementById('main-nav');
-        if (navEl) {
-          navEl.innerHTML = '<p style="padding:16px;color:#ff4d4f;font-size:12px;line-height:1.6;">⚠️ 导航加载失败<br>请通过 HTTP 服务器打开页面：<br><code>python3 -m http.server 8080</code></p>';
-        }
-      });
-  }
-
-  /* ---- Render menu tree into #main-nav ---- */
-  function render() {
-    var navEl = document.getElementById('main-nav');
-    if (!navEl || !_config || !_config.menu) return;
-    var html = buildTree(_config.menu, 0);
-    navEl.innerHTML = html;
-    bindClicks(navEl);
-    highlightCurrent();
-  }
-
-  function buildTree(items, depth) {
-    if (!items || !items.length) return '';
-    var cls = depth === 0 ? 'nav-list nav-list--root' : 'nav-list nav-list--sub';
-    return '<ul class="' + cls + '">' + items.map(function (item) {
-      var hasChildren = item.children && item.children.length;
-      var linkCls = 'nav-link' + (hasChildren ? ' nav-link--group' : '');
-      var icon = item.icon ? '<span class="nav-icon">' + item.icon + '</span>' : '';
-      return '<li class="nav-item' + (hasChildren ? ' nav-item--group' : '') + '">' +
-        '<a href="#" class="' + linkCls + '" data-page="' + (item.key || '') + '">' +
-        icon + '<span class="nav-label">' + (item.label || '') + '</span></a>' +
-        (hasChildren ? buildTree(item.children, depth + 1) : '') +
-        '</li>';
-    }).join('') + '</ul>';
-  }
-
-  function bindClicks(navEl) {
-    var links = navEl.querySelectorAll('.nav-link[data-page]');
-    Array.prototype.forEach.call(links, function (link) {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        var pageKey = this.getAttribute('data-page');
-        if (pageKey) window.navigateTo(pageKey);
-      });
+    return fetch('config/nav.json').then(function (res) { return res.json(); }).then(function (cfg) {
+      config = cfg;
+      renderNav();
+      var fromHash = window.location.hash.replace('#', '');
+      window.navigateTo(window.Pages[fromHash] ? fromHash : currentPage);
+    }).catch(function (err) {
+      config = fallbackConfig;
+      renderNav();
+      var fromHash = window.location.hash.replace('#', '');
+      window.navigateTo(window.Pages[fromHash] ? fromHash : currentPage);
+      console.info('已使用内置导航配置；通过 HTTP 打开时将读取 config/nav.json。');
     });
   }
-
-  function highlightCurrent() {
-    var navEl = document.getElementById('main-nav');
-    if (!navEl) return;
-    var prev = navEl.querySelector('.nav-link.active');
-    if (prev) prev.classList.remove('active');
-    var cur = navEl.querySelector('.nav-link[data-page="' + _currentPage + '"]');
-    if (cur) cur.classList.add('active');
+  function renderNav() {
+    var html = '<ul class="nav-list">' + config.menu.map(function (item) {
+      return '<li><a href="#' + item.key + '" class="nav-link" data-page="' + item.key + '"><span class="nav-icon">' + item.icon + '</span><span>' + item.label + '</span></a></li>';
+    }).join('') + '</ul>';
+    document.getElementById('main-nav').innerHTML = html;
+    document.getElementById('main-nav').addEventListener('click', function (event) {
+      var link = event.target.closest('[data-page]');
+      if (!link) return;
+      event.preventDefault();
+      window.navigateTo(link.dataset.page);
+    });
   }
-
-  /* ---- Navigate to page ---- */
+  function highlight() {
+    document.querySelectorAll('.nav-link').forEach(function (link) { link.classList.toggle('active', link.dataset.page === currentPage); });
+  }
   window.navigateTo = function (pageKey) {
-    _currentPage = pageKey;
-    var page = window.Pages && window.Pages[pageKey];
-    if (!page || typeof page.render !== 'function') return;
-    document.getElementById('app').innerHTML = page.render();
-    if (typeof page.init === 'function') page.init();
-    highlightCurrent();
+    if (!window.Pages[pageKey]) return;
+    currentPage = pageKey;
+    window.location.hash = pageKey;
+    document.getElementById('app').innerHTML = window.Pages[pageKey].render();
+    window.Pages[pageKey].init();
+    highlight();
   };
-
-  window.getCurrentPage = function () {
-    return _currentPage;
-  };
-
-  window.getNavConfig = function () {
-    return _config;
-  };
-
-  /* ---- Init ---- */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadConfig);
-  } else {
-    loadConfig();
-  }
+  window.getCurrentPage = function () { return currentPage; };
+  document.addEventListener('DOMContentLoaded', loadConfig);
 })();
