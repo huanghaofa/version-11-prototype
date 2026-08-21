@@ -1,5 +1,5 @@
 {
-  "generatedOn": "2026-08-19",
+  "generatedOn": "2026-08-20",
   "tasks": [
     {
       "title": "P0-兑换券卡券中心方案",
@@ -7,29 +7,25 @@
       "prototypes": [
         {
           "label": "通用兑换券原型",
-          "source": "outputs/原型/通用兑换券原型_20260720/index.html",
           "deployPath": "./prototypes/p0-01/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-01.html"
       }
     },
     {
       "title": "P0-设计多备件券核销方案",
-      "summary": "组合折扣券支持自由组合、分组组合、Excel 导入与整单核销",
+      "summary": "组合折扣券支持自由组合、分组组合、0 折免费、Excel 导入与整单核销",
       "prototypes": [
         {
           "label": "卡券多明细批量核销原型",
-          "source": "outputs/原型/卡券多明细批量核销原型_20260724/index.html",
           "deployPath": "./prototypes/p0-02/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-02.html"
       }
     },
@@ -39,13 +35,11 @@
       "prototypes": [
         {
           "label": "卡券补贴数据管理原型",
-          "source": "outputs/原型/卡券补贴数据管理原型_20260819/index.html",
           "deployPath": "./prototypes/p0-03/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-03.html"
       }
     },
@@ -55,13 +49,11 @@
       "prototypes": [
         {
           "label": "E3S 权益编码关联原型",
-          "source": "outputs/原型/卡券中心_E3S权益编码关联原型_20260722/index.html",
           "deployPath": "./prototypes/p0-04/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-04.html"
       }
     },
@@ -71,34 +63,29 @@
       "prototypes": [
         {
           "label": "活动中心积分奖励原型",
-          "source": "outputs/原型/活动中心积分奖励原型_20260722/index.html",
           "deployPath": "./prototypes/p0-05/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-05.html"
       }
     },
     {
       "title": "P0-梳理SA动态二维码流程",
-      "summary": "SA 动态二维码、海报模板与上传、长期有效及用户聚合页",
+      "summary": "SA 动态二维码、海报模板、长期有效、用户聚合页及报表最多 20 个活动组合查询",
       "prototypes": [
         {
           "label": "后台管理原型",
-          "source": "outputs/原型/SA动态二维码与来源报表后台原型_20260717/index.html",
           "deployPath": "./prototypes/p0-06-01/index.html"
         },
         {
           "label": "用户端聚合页原型",
-          "source": "outputs/原型/SA动态二维码用户端聚合页原型_20260717/index.html",
           "deployPath": "./prototypes/p0-06-02/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-06.html"
       }
     },
@@ -108,13 +95,11 @@
       "prototypes": [
         {
           "label": "卡包 VIN 共用券前端原型",
-          "source": "outputs/原型/卡包VIN共用券前端原型_20260724/index.html",
           "deployPath": "./prototypes/p0-07/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-07.html"
       }
     },
@@ -124,13 +109,11 @@
       "prototypes": [
         {
           "label": "活动中心关联兑换券原型",
-          "source": "outputs/原型/活动中心关联兑换券原型_20260728/index.html",
           "deployPath": "./prototypes/p0-08/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-08.html"
       }
     },
@@ -140,13 +123,11 @@
       "prototypes": [
         {
           "label": "一店一码一键领取原型",
-          "source": "outputs/原型/一店一码一键领取原型_20260728/index.html",
           "deployPath": "./prototypes/p0-09/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-09.html"
       }
     },
@@ -156,13 +137,11 @@
       "prototypes": [
         {
           "label": "商城订单消费金额达 N 元行为事件后台原型",
-          "source": "outputs/原型/商城订单金额达N元抽奖原型_20260729/index.html",
           "deployPath": "./prototypes/p0-10/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-10.html"
       }
     },
@@ -172,45 +151,39 @@
       "prototypes": [
         {
           "label": "卡券互斥叠加并行配置原型",
-          "source": "outputs/原型/活动中心卡券互斥叠加并行配置原型_20260729/index.html",
           "deployPath": "./prototypes/p0-11/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-11.html"
       }
     },
     {
       "title": "P0-扩展活动适用门店配置",
-      "summary": "所有活动适用门店配置，以及 SA 按所属门店查看和分享活动",
+      "summary": "所有活动适用门店配置、Excel 覆盖导入，以及 SA 按所属门店查看和分享活动",
       "prototypes": [
         {
           "label": "活动适用门店与 SA 分享范围原型",
-          "source": "outputs/原型/活动适用门店与SA分享范围原型_20260810/index.html",
           "deployPath": "./prototypes/p0-12/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-12.html"
       }
     },
     {
       "title": "P0-组合活动",
-      "summary": "组合活动展示名称、适用门店及 SA 动态二维码展示与权限规则",
+      "summary": "组合活动展示名称、适用门店覆盖导入及 SA 动态二维码展示与权限规则",
       "prototypes": [
         {
           "label": "活动中心组合活动原型",
-          "source": "outputs/原型/SIT现状基线原型_20260716/index.html",
           "deployPath": "./prototypes/p0-13/index.html"
         }
       ],
       "sequence": {
         "label": "最新业务时序图",
-        "source": "tools/prototype-launcher/p0_sequences.json",
         "deployPath": "./sequences/p0-13.html"
       }
     }

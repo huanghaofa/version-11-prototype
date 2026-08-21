@@ -368,7 +368,12 @@
 
   var comboDraft = null;
   var comboEditorMode = 'create';
-  var comboStoreUI = {tab:'all',keyword:'',selection:new Set()};
+  var comboStoreImportDemoIds = ['S002','S005','S007'];
+
+  function createComboStoreUI() {
+    return {tab:'all',keyword:'',selection:new Set(),importOpen:false,importFileName:''};
+  }
+  var comboStoreUI = createComboStoreUI();
 
   function cloneCombo(value) { return JSON.parse(JSON.stringify(value)); }
   function comboStoreById(id) {
@@ -427,7 +432,7 @@
     var configure = modal.querySelector('[data-combo-configure-stores]');
     if (configure) configure.addEventListener('click', function () {
       syncComboDraftFromEditor();
-      comboStoreUI = {tab:'all',keyword:'',selection:new Set()};
+      comboStoreUI = createComboStoreUI();
       if (comboDraft.storeScope && comboDraft.storeScope.mode === 'SPECIFIED') {
         (comboDraft.storeScope.storeIds || []).forEach(function (id) {
           var store = comboStoreById(id);
@@ -504,6 +509,24 @@
     });
     return html;
   }
+  function comboStoreImportPreview() {
+    return comboStoreImportDemoIds.map(comboStoreById).filter(function (store) { return store && store.available; });
+  }
+  function renderComboStoreImportPanel() {
+    var fileName = comboStoreUI.importFileName;
+    var previewStores = comboStoreImportPreview();
+    var previewRows = previewStores.map(function (store, index) {
+      return '<tr><td>' + (index + 1) + '</td><td>' + esc(store.code) + '</td><td>' + esc(store.name) + '</td><td><span class="combo-import-status">可导入</span></td></tr>';
+    }).join('');
+    var preview = fileName ? '<div class="combo-store-import-file"><span>已选择文件</span><strong>' + esc(fileName) + '</strong></div>' +
+      '<div class="combo-store-import-summary"><div><strong>' + previewStores.length + '</strong><span>演示数据行</span></div><div><strong>' + previewStores.length + '</strong><span>可用门店</span></div><div><strong>0</strong><span>演示失败行</span></div></div>' +
+      '<div class="table-shell combo-store-import-preview"><table class="data-table"><thead><tr><th>序号</th><th>门店编码</th><th>门店名称</th><th>演示校验</th></tr></thead><tbody>' + previewRows + '</tbody></table></div>' :
+      '<div class="combo-store-import-empty"><strong>选择文件后显示演示校验结果</strong><span>本静态原型不解析真实 Excel，也不会上传任何门店数据。</span></div>';
+    return '<section class="combo-store-import-panel" data-anno="combo-store-import"><div class="combo-store-import-title"><div><strong>覆盖导入门店</strong><span>确认后将清空当前已选门店，并以导入结果作为新的适用门店范围。</span></div><span class="combo-import-badge">仅覆盖</span></div>' +
+      '<div class="combo-store-import-warning"><strong>原型边界：</strong>正式模板字段、文件限制、重复或无效门店处理及错误明细均待确认；当前仅用固定 Mock 结果演示覆盖语义。</div>' +
+      '<label class="combo-store-upload-box"><input data-combo-store-import-file type="file" accept=".xlsx,.xls"><span class="combo-store-upload-icon">XLSX</span><span><strong>' + (fileName ? '重新选择文件' : '选择门店导入文件') + '</strong><small>原型入口暂接受 .xlsx / .xls；正式格式待确认</small></span></label>' +
+      preview + '<div class="combo-store-import-actions"><button class="button" data-combo-store-import-cancel type="button">返回手工选择</button><button class="button primary" data-combo-store-import-confirm type="button"' + (fileName ? '' : ' disabled') + '>确认覆盖导入</button></div></section>';
+  }
   function bindComboStoreSelector() {
     var modal = document.getElementById('prototypeModal');
     if (!modal) return;
@@ -515,7 +538,7 @@
       input.addEventListener('change', function () { input.getAttribute('data-combo-store-group').split(',').filter(Boolean).forEach(function (id) { if (input.checked) comboStoreUI.selection.add(id); else comboStoreUI.selection.delete(id); }); openComboStoreSelector(); });
     });
     Array.prototype.forEach.call(modal.querySelectorAll('[data-combo-store-tab]'), function (button) {
-      button.addEventListener('click', function () { comboStoreUI.tab = button.getAttribute('data-combo-store-tab'); openComboStoreSelector(); });
+      button.addEventListener('click', function () { comboStoreUI.tab = button.getAttribute('data-combo-store-tab'); comboStoreUI.importOpen=false;comboStoreUI.importFileName='';openComboStoreSelector(); });
     });
     var search = modal.querySelector('[data-combo-store-search]');
     var runSearch = function () { comboStoreUI.keyword = search ? search.value : ''; openComboStoreSelector(); };
@@ -526,13 +549,38 @@
     if (reset) reset.addEventListener('click', function () { comboStoreUI.keyword='';openComboStoreSelector(); });
     var clear = modal.querySelector('[data-combo-store-clear]');
     if (clear) clear.addEventListener('click', function () { comboStoreUI.selection.clear();openComboStoreSelector(); });
+    var openImport = modal.querySelector('[data-combo-store-import-open]');
+    if (openImport) openImport.addEventListener('click', function () { comboStoreUI.importOpen=true;comboStoreUI.importFileName='';openComboStoreSelector(); });
+    var importFile = modal.querySelector('[data-combo-store-import-file]');
+    if (importFile) importFile.addEventListener('change', function () {
+      var file = importFile.files && importFile.files[0];
+      if (!file) return;
+      if (!/\.xlsx?$/i.test(file.name)) { window.showToast('请选择 .xlsx 或 .xls 文件（原型演示）'); return; }
+      comboStoreUI.importFileName=file.name;
+      openComboStoreSelector();
+    });
+    var cancelImport = modal.querySelector('[data-combo-store-import-cancel]');
+    if (cancelImport) cancelImport.addEventListener('click', function () { comboStoreUI.importOpen=false;comboStoreUI.importFileName='';openComboStoreSelector(); });
+    var confirmImport = modal.querySelector('[data-combo-store-import-confirm]');
+    if (confirmImport) confirmImport.addEventListener('click', function () {
+      if (!comboStoreUI.importFileName) { window.showToast('请先选择门店导入文件'); return; }
+      var previousCount = comboStoreUI.selection.size;
+      var importedIds = comboStoreImportPreview().map(function (store) { return store.id; });
+      comboStoreUI.selection = new Set(importedIds);
+      comboStoreUI.tab='selected';
+      comboStoreUI.keyword='';
+      comboStoreUI.importOpen=false;
+      comboStoreUI.importFileName='';
+      openComboStoreSelector();
+      window.showToast('覆盖导入完成：原已选 ' + previousCount + ' 家，现为 ' + importedIds.length + ' 家（Mock）');
+    });
   }
   function openComboStoreSelector() {
     var body = '<div class="combo-store-info"><strong>适用范围：</strong>列表仅展示可用门店；不选择任何门店时按全部门店生效。</div>' +
-      '<div class="combo-store-search"><input data-combo-store-search placeholder="输入门店名称、编码、省或城市" value="' + esc(comboStoreUI.keyword) + '"><button class="button primary" data-combo-store-search-button type="button">搜索</button><button class="button" data-combo-store-reset type="button">重置</button></div>' +
-      '<div class="combo-store-tabs"><div><button class="' + (comboStoreUI.tab === 'all' ? 'active' : '') + '" data-combo-store-tab="all" type="button">全部门店</button><button class="' + (comboStoreUI.tab === 'selected' ? 'active' : '') + '" data-combo-store-tab="selected" type="button">已选门店（' + comboStoreUI.selection.size + '）</button></div><button class="link-action" data-combo-store-clear type="button">清空已选</button></div>' +
-      '<div class="combo-store-tree" data-anno="combo-store-selector">' + renderComboStoreTree() + '</div><div class="combo-store-footer-note">当前已选 <strong>' + comboStoreUI.selection.size + '</strong> 家；零家确认后按“全部门店”生效。</div>';
-    window.openPrototypeModal({title:'选择适用门店',wide:true,confirmText:'确定',body:body,onCancel:function(){openComboEditor(comboEditorMode);},onConfirm:function(){var ids=Array.from(comboStoreUI.selection);comboDraft.storeScope=ids.length?{mode:'SPECIFIED',storeIds:ids}:{mode:'ALL',storeIds:[]};openComboEditor(comboEditorMode);}});
+      (comboStoreUI.importOpen ? '' : '<div class="combo-store-search"><input data-combo-store-search placeholder="输入门店名称、编码、省或城市" value="' + esc(comboStoreUI.keyword) + '"><button class="button primary" data-combo-store-search-button type="button">搜索</button><button class="button" data-combo-store-reset type="button">重置</button></div>') +
+      '<div class="combo-store-tabs"><div class="combo-store-tab-list"><button class="' + (comboStoreUI.tab === 'all' && !comboStoreUI.importOpen ? 'active' : '') + '" data-combo-store-tab="all" type="button">全部门店</button><button class="' + (comboStoreUI.tab === 'selected' && !comboStoreUI.importOpen ? 'active' : '') + '" data-combo-store-tab="selected" type="button">已选门店（' + comboStoreUI.selection.size + '）</button></div><div class="combo-store-tab-actions"><button class="button' + (comboStoreUI.importOpen ? ' primary' : '') + '" data-combo-store-import-open type="button">导入门店</button><button class="link-action" data-combo-store-clear type="button">清空已选</button></div></div>' +
+      (comboStoreUI.importOpen ? renderComboStoreImportPanel() : '<div class="combo-store-tree" data-anno="combo-store-selector">' + renderComboStoreTree() + '</div><div class="combo-store-footer-note">当前已选 <strong>' + comboStoreUI.selection.size + '</strong> 家；零家确认后按“全部门店”生效。</div>');
+    window.openPrototypeModal({title:'选择适用门店',wide:true,confirmText:comboStoreUI.importOpen ? false : '确定',body:body,onCancel:function(){openComboEditor(comboEditorMode);},onConfirm:function(){var ids=Array.from(comboStoreUI.selection);comboDraft.storeScope=ids.length?{mode:'SPECIFIED',storeIds:ids}:{mode:'ALL',storeIds:[]};openComboEditor(comboEditorMode);}});
     bindComboStoreSelector();
   }
 
@@ -548,9 +596,9 @@
       var target=event.target.closest('[data-action]');
       if(!target)return;
       var action=target.getAttribute('data-action');
-      if(action==='combo-new'){comboDraft=null;comboStoreUI={tab:'all',keyword:'',selection:new Set()};openComboEditor('create');}
+      if(action==='combo-new'){comboDraft=null;comboStoreUI=createComboStoreUI();openComboEditor('create');}
       if(action==='combo-view'){var viewRecord=(data().comboActivities||[])[Number(target.getAttribute('data-row-index'))];comboDraft=null;openComboEditor('edit',viewRecord,true);}
-      if(action==='combo-edit'){var editRecord=(data().comboActivities||[])[Number(target.getAttribute('data-row-index'))];comboDraft=null;comboStoreUI={tab:'all',keyword:'',selection:new Set()};openComboEditor('edit',editRecord,false);}
+      if(action==='combo-edit'){var editRecord=(data().comboActivities||[])[Number(target.getAttribute('data-row-index'))];comboDraft=null;comboStoreUI=createComboStoreUI();openComboEditor('edit',editRecord,false);}
     });
   }
   window.Pages['activity-combo'] = {render:comboActivityPage,init:bindComboActivity};

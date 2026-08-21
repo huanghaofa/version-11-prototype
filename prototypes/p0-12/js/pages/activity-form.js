@@ -8,8 +8,14 @@
     modalTab: 'all',
     keyword: '',
     draftSelection: new Set(),
-    clearConfirmOpen: false
+    clearConfirmOpen: false,
+    importOpen: false,
+    importState: { status: 'idle', fileName: '', message: '', totalRows: 0, validCount: 0, errorCount: 0, validStoreIds: [], rows: [] }
   };
+
+  function emptyImportState() {
+    return { status: 'idle', fileName: '', message: '', totalRows: 0, validCount: 0, errorCount: 0, validStoreIds: [], rows: [] };
+  }
 
   function storeNames(ids, limit) {
     var names = ids.map(window.getStoreById).filter(function (store) { return store && store.available; }).map(function (store) { return store.name; });
@@ -93,7 +99,8 @@
         '<div class="page-actions"><button class="btn" data-cancel>取消</button><button class="btn btn-primary" data-next>下一步：关联卡券</button></div>' +
       '</div>' +
       (ui.modalOpen ? renderStoreModal() : '') +
-      (ui.clearConfirmOpen ? renderClearConfirm() : '')
+      (ui.clearConfirmOpen ? renderClearConfirm() : '') +
+      (ui.importOpen ? renderExcelImportDialog() : '')
     );
   }
 
@@ -158,14 +165,54 @@
         '<div class="store-modal-body">' +
           '<div class="modal-info"><span>i</span><p>列表仅展示可用门店。选择指定门店后，仅这些门店的 SA 可查看并分享活动；不选择任何门店则适用于所有门店。</p></div>' +
           '<div class="tree-search"><input class="form-input" data-store-search placeholder="输入门店名称或编码" value="' + window.escapeHtml(ui.keyword) + '"><button class="btn btn-primary" data-search-store>搜索</button><button class="btn" data-reset-search>重置</button></div>' +
-          '<div class="store-tree-toolbar"><div><button class="' + (ui.modalTab === 'all' ? 'is-active' : '') + '" data-modal-tab="all">全部门店</button>' +
+          '<div class="store-tree-toolbar"><div class="store-tree-tabs"><button class="' + (ui.modalTab === 'all' ? 'is-active' : '') + '" data-modal-tab="all">全部门店</button>' +
           '<button class="' + (ui.modalTab === 'selected' ? 'is-active' : '') + '" data-modal-tab="selected">已选门店 <span>' + ui.draftSelection.size + '</span></button></div>' +
-          '<button class="text-btn" data-clear-draft>清空已选</button></div>' +
+          '<div class="store-tree-actions"><a class="text-btn" href="assets/templates/活动适用门店导入模板.xlsx" download>下载导入模板</a>' +
+          '<button class="import-btn" data-open-store-import>Excel 覆盖导入</button><button class="text-btn" data-clear-draft>清空已选</button></div></div>' +
           '<div class="store-tree" data-testid="store-tree">' + renderStoreTree() + '</div>' +
         '</div>' +
         '<footer class="store-modal-footer"><div><span>当前已选</span><strong>' + ui.draftSelection.size + '</strong><span>家门店</span>' +
         '<small>' + (ui.draftSelection.size ? '确认后按指定门店生效' : '零家将按全部门店生效') + '</small></div>' +
         '<div><button class="btn" data-close-modal>取消</button><button class="btn btn-primary" data-confirm-stores>确定</button></div></footer>' +
+      '</section></div>';
+  }
+
+  function renderImportRows(importState) {
+    if (importState.status === 'idle') {
+      return '<div class="excel-preview-empty"><span>表</span><strong>选择文件后显示校验结果</strong><p>原型读取第一张工作表，并按“门店编码”匹配当前可用门店。</p></div>';
+    }
+    if (importState.status === 'loading') {
+      return '<div class="excel-preview-empty is-loading"><span>···</span><strong>正在解析并校验文件</strong><p>请稍候，不会立即修改当前已选门店。</p></div>';
+    }
+    if (importState.status === 'error') {
+      return '<div class="excel-import-error"><strong>文件校验失败</strong><p>' + window.escapeHtml(importState.message) + '</p></div>';
+    }
+
+    var visibleRows = importState.rows.slice(0, 50);
+    return '<div class="excel-import-summary"><div><span>数据行</span><strong>' + importState.totalRows + '</strong></div>' +
+      '<div class="is-valid"><span>可覆盖门店</span><strong>' + importState.validCount + '</strong></div>' +
+      '<div class="is-error"><span>异常行</span><strong>' + importState.errorCount + '</strong></div></div>' +
+      '<div class="excel-preview-table-wrap"><table class="excel-preview-table"><thead><tr><th>Excel 行</th><th>门店编码</th><th>匹配结果</th><th>校验说明</th></tr></thead><tbody>' +
+      visibleRows.map(function (row) {
+        return '<tr class="' + (row.valid ? 'is-valid' : 'is-error') + '"><td>' + row.rowNumber + '</td><td>' + window.escapeHtml(row.code) + '</td>' +
+          '<td>' + (row.valid ? window.escapeHtml(row.storeName) : '—') + '</td><td><span>' + (row.valid ? '通过' : '异常') + '</span>' + window.escapeHtml(row.reason) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      (importState.rows.length > visibleRows.length ? '<p class="excel-preview-more">仅展示前 50 行，全部行仍参与校验。</p>' : '');
+  }
+
+  function renderExcelImportDialog() {
+    var importState = ui.importState;
+    var ready = importState.status === 'ready';
+    var canConfirm = ready && importState.validCount > 0;
+    return '<div class="modal-overlay excel-import-overlay"><section class="excel-import-dialog" role="dialog" aria-modal="true" aria-labelledby="excel-import-title">' +
+      '<header><div><span>活动适用门店</span><h2 id="excel-import-title">Excel 覆盖导入</h2></div><button class="icon-btn" data-close-import aria-label="关闭">×</button></header>' +
+      '<div class="excel-import-body"><div class="excel-cover-warning"><span>!</span><p><strong>本次为覆盖导入。</strong>确认后，Excel 中校验通过的门店将替换当前已选的 ' + ui.draftSelection.size + ' 家门店，不会追加；仍需返回选择器点击“确定”后才保存活动范围。</p></div>' +
+      '<div class="excel-import-guide"><div><strong>模板字段：门店编码</strong><p>仅支持 .xlsx；不存在、不可用、空编码及重复行不会进入覆盖结果。</p></div><a class="btn" href="assets/templates/活动适用门店导入模板.xlsx" download>下载模板</a></div>' +
+      '<label class="excel-upload-box"><input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-store-import-file>' +
+      '<span>XLSX</span><div><strong>' + (importState.fileName ? window.escapeHtml(importState.fileName) : '点击选择 Excel 文件') + '</strong><p>' + (importState.fileName ? '可重新选择文件并覆盖本次校验结果' : '读取第一张工作表，文件不会上传到真实服务器') + '</p></div><em>选择文件</em></label>' +
+      '<div class="excel-preview" data-testid="excel-import-preview">' + renderImportRows(importState) + '</div></div>' +
+      '<footer><p>' + (ready ? '将用 <strong>' + importState.validCount + '</strong> 家有效门店覆盖当前选择' + (importState.errorCount ? '，' + importState.errorCount + ' 行异常不导入' : '') : '完成文件校验后才能确认覆盖') + '</p>' +
+      '<div><button class="btn" data-close-import>取消</button><button class="btn btn-primary" data-confirm-import ' + (canConfirm ? '' : 'disabled') + '>确认覆盖</button></div></footer>' +
       '</section></div>';
   }
 
@@ -188,6 +235,7 @@
       return store && store.available;
     }) : []);
     ui.modalOpen = true;
+    ui.importOpen = false;
     ui.modalTab = 'all';
     ui.keyword = '';
     rerender();
@@ -204,6 +252,7 @@
       button.addEventListener('click', function () {
         state.formMode = button.getAttribute('data-form-mode');
         ui.modalOpen = false;
+        ui.importOpen = false;
         ui.clearConfirmOpen = false;
         rerender();
       });
@@ -223,7 +272,7 @@
     if (clearScope) clearScope.addEventListener('click', function () { ui.clearConfirmOpen = true; rerender(); });
 
     Array.prototype.forEach.call(document.querySelectorAll('[data-close-modal]'), function (button) {
-      button.addEventListener('click', function () { ui.modalOpen = false; rerender(); });
+      button.addEventListener('click', function () { ui.modalOpen = false; ui.importOpen = false; rerender(); });
     });
     Array.prototype.forEach.call(document.querySelectorAll('[data-modal-tab]'), function (button) {
       button.addEventListener('click', function () { ui.modalTab = button.getAttribute('data-modal-tab'); rerender(); });
@@ -238,6 +287,48 @@
     if (resetSearch) resetSearch.addEventListener('click', function () { ui.keyword = ''; rerender(); });
     var clearDraft = document.querySelector('[data-clear-draft]');
     if (clearDraft) clearDraft.addEventListener('click', function () { ui.draftSelection.clear(); rerender(); });
+
+    var openImport = document.querySelector('[data-open-store-import]');
+    if (openImport) openImport.addEventListener('click', function () {
+      ui.importState = emptyImportState();
+      ui.importOpen = true;
+      rerender();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-close-import]'), function (button) {
+      button.addEventListener('click', function () { ui.importOpen = false; rerender(); });
+    });
+    var importFileInput = document.querySelector('[data-store-import-file]');
+    if (importFileInput) importFileInput.addEventListener('change', function () {
+      var file = importFileInput.files && importFileInput.files[0];
+      if (!file) return;
+      ui.importState = emptyImportState();
+      ui.importState.status = 'loading';
+      ui.importState.fileName = file.name;
+      rerender();
+      window.ExcelStoreImporter.parse(file, data.stores).then(function (result) {
+        ui.importState = result;
+        ui.importState.status = 'ready';
+        rerender();
+      }).catch(function (error) {
+        ui.importState = emptyImportState();
+        ui.importState.status = 'error';
+        ui.importState.fileName = file.name;
+        ui.importState.message = error && error.message ? error.message : '文件解析失败，请使用页面提供的模板';
+        rerender();
+      });
+    });
+    var confirmImport = document.querySelector('[data-confirm-import]');
+    if (confirmImport) confirmImport.addEventListener('click', function () {
+      if (ui.importState.status !== 'ready' || !ui.importState.validStoreIds.length) return;
+      ui.draftSelection = new Set(ui.importState.validStoreIds);
+      var successCount = ui.importState.validCount;
+      var errorCount = ui.importState.errorCount;
+      ui.importOpen = false;
+      ui.modalTab = 'selected';
+      ui.keyword = '';
+      window.showToast('Excel 覆盖完成：已替换为 ' + successCount + ' 家门店' + (errorCount ? '，' + errorCount + ' 行未导入' : '') + '；请点击“确定”保存', errorCount ? 'warning' : 'success');
+      rerender();
+    });
 
     Array.prototype.forEach.call(document.querySelectorAll('[data-store-id]'), function (input) {
       input.addEventListener('change', function () {

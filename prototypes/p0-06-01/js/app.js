@@ -20,6 +20,18 @@
   var esc = window.SACommon.escapeHtml;
   var status = window.SACommon.status;
   var data = window.SAReportData;
+  var reportActivityFilter = {
+    selectedIds: [],
+    draftIds: [],
+    tab: 'available',
+    queryId: '',
+    queryName: '',
+    queryType: '',
+    queryStatus: '',
+    page: 1,
+    pageSize: 10,
+    limit: 20
+  };
 
   function centerTabs(current) {
     var activityTabs = ['组合活动列表','专属福利活动列表','保客活动创建','保客活动互斥关系','保客活动一店一码','SA活动配置','SA活动报表'];
@@ -62,17 +74,119 @@
   function renderFilters(fields) {
     var visible = fields.slice(0, 8);
     var hidden = fields.slice(8);
+    var hasActivityMulti = fields.some(function (field) { return field.type === 'activity-multi'; });
     function renderField(field) {
-      var control = field.type === 'select' ? '<select>' + optionList(field.options || [], field.placeholder) + '</select>' :
-        '<input type="' + (field.type || 'text') + '" placeholder="' + esc(field.placeholder || '请输入') + '" value="' + esc(field.value || '') + '">';
+      var control;
+      if (field.type === 'activity-multi') control = renderActivityMultiControl();
+      else if (field.type === 'select') control = '<select>' + optionList(field.options || [], field.placeholder) + '</select>';
+      else control = '<input type="' + (field.type || 'text') + '" placeholder="' + esc(field.placeholder || '请输入') + '" value="' + esc(field.value || '') + '">';
       return '<div class="filter-field"><label>' + esc(field.label) + '：</label>' + control + '</div>';
     }
     return '<div class="filter-panel ' + (filtersExpanded ? 'expanded' : '') + '"><div class="filter-grid">' +
       visible.map(renderField).join('') +
       (hidden.length ? '<div class="filter-hidden">' + hidden.map(renderField).join('') + '</div>' : '') +
-      '</div><div class="filter-actions"><button class="button" data-reset type="button">重置</button><button class="button primary" data-query type="button">查询</button>' +
+      '</div>' + (hasActivityMulti ? '<div class="filter-logic-note"><strong>多活动查询：</strong>活动之间按“或”匹配，与其他筛选条件按“且”匹配；未选择时查询全部有权限活动。</div>' : '') +
+      '<div class="filter-actions"><button class="button" data-reset type="button">重置</button><button class="button primary" data-query type="button">查询</button>' +
       (hidden.length ? '<button class="expand-toggle" data-filter-toggle type="button">' + (filtersExpanded ? '收起' : '展开') + ' ' + (filtersExpanded ? '⌃' : '⌄') + '</button>' : '') +
       '</div></div>';
+  }
+
+  function reportActivityCatalog() {
+    return data.reportActivityCatalog || [];
+  }
+
+  function reportActivityById(id) {
+    return reportActivityCatalog().find(function (item) { return item.id === id; });
+  }
+
+  function reportActivityLabel() {
+    if (!reportActivityFilter.selectedIds.length) return '全部活动';
+    if (reportActivityFilter.selectedIds.length === 1) {
+      var selected = reportActivityById(reportActivityFilter.selectedIds[0]);
+      return selected ? selected.id + ' / ' + selected.name : '已选1个活动';
+    }
+    return '已选 ' + reportActivityFilter.selectedIds.length + ' 个活动';
+  }
+
+  function renderActivityMultiControl() {
+    var selected = reportActivityFilter.selectedIds.length;
+    return '<div class="activity-multi-control">' +
+      '<button class="activity-multi-trigger" data-open-report-activity-selector type="button" title="' + esc(reportActivityLabel()) + '"><span>' + esc(reportActivityLabel()) + '</span><em>选择活动</em></button>' +
+      '<button class="activity-multi-clear" data-clear-report-activity type="button"' + (selected ? '' : ' hidden') + '>清除</button></div>';
+  }
+
+  function selectorOptionList(items, selected, placeholder) {
+    return '<option value="">' + esc(placeholder || '全部') + '</option>' + items.map(function (item) {
+      return '<option value="' + esc(item) + '"' + (item === selected ? ' selected' : '') + '>' + esc(item) + '</option>';
+    }).join('');
+  }
+
+  function filteredReportActivities() {
+    var idKeyword = reportActivityFilter.queryId.trim().toLowerCase();
+    var nameKeyword = reportActivityFilter.queryName.trim().toLowerCase();
+    return reportActivityCatalog().filter(function (item) {
+      return (!idKeyword || item.id.toLowerCase().indexOf(idKeyword) > -1) &&
+        (!nameKeyword || item.name.toLowerCase().indexOf(nameKeyword) > -1) &&
+        (!reportActivityFilter.queryType || item.type === reportActivityFilter.queryType) &&
+        (!reportActivityFilter.queryStatus || item.status === reportActivityFilter.queryStatus);
+    });
+  }
+
+  function reportSelectorPagination(total) {
+    var pageCount = Math.max(1, Math.ceil(total / reportActivityFilter.pageSize));
+    if (reportActivityFilter.page > pageCount) reportActivityFilter.page = pageCount;
+    var buttons = '';
+    var index;
+    for (index = 1; index <= pageCount; index += 1) {
+      buttons += '<button class="page-no' + (index === reportActivityFilter.page ? ' active' : '') + '" data-report-activity-page="' + index + '" type="button">' + index + '</button>';
+    }
+    return '<div class="pagination-row selector-pagination"><span>共 ' + total + ' 条</span>' +
+      '<button class="page-no" data-report-activity-page="' + Math.max(1, reportActivityFilter.page - 1) + '" type="button"' + (reportActivityFilter.page === 1 ? ' disabled' : '') + '>‹</button>' +
+      buttons +
+      '<button class="page-no" data-report-activity-page="' + Math.min(pageCount, reportActivityFilter.page + 1) + '" type="button"' + (reportActivityFilter.page === pageCount ? ' disabled' : '') + '>›</button>' +
+      '<span>' + reportActivityFilter.pageSize + ' 条/页</span></div>';
+  }
+
+  function renderReportActivitySelector() {
+    var available = filteredReportActivities();
+    var start = (reportActivityFilter.page - 1) * reportActivityFilter.pageSize;
+    var pageRows = available.slice(start, start + reportActivityFilter.pageSize);
+    var selectedRows = reportActivityFilter.draftIds.map(reportActivityById).filter(Boolean);
+    var isFull = reportActivityFilter.draftIds.length >= reportActivityFilter.limit;
+    var filter = '<div class="selector-filter report-activity-selector-filter">' +
+      '<div><label>活动类型</label><select data-report-activity-query-type>' + selectorOptionList(['普通活动','组合活动'],reportActivityFilter.queryType,'全部类型') + '</select></div>' +
+      '<div><label>活动状态</label><select data-report-activity-query-status>' + selectorOptionList(['已启用','草稿','未启用','已结束','已停用'],reportActivityFilter.queryStatus,'全部状态') + '</select></div>' +
+      '<div><label>活动ID</label><input data-report-activity-query-id value="' + esc(reportActivityFilter.queryId) + '" placeholder="请输入活动ID"></div>' +
+      '<div><label>活动名称</label><input data-report-activity-query-name value="' + esc(reportActivityFilter.queryName) + '" placeholder="请输入活动名称"></div>' +
+      '<button class="button primary" data-report-activity-search type="button">查询</button></div>';
+    var availableBody = pageRows.length ? pageRows.map(function (item) {
+      var checked = reportActivityFilter.draftIds.indexOf(item.id) > -1;
+      var disabled = isFull && !checked;
+      return '<tr class="' + (checked ? 'selected-row' : '') + (disabled ? ' disabled-row' : '') + '"><td><input type="checkbox" data-report-activity-choice value="' + esc(item.id) + '"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + ' aria-label="选择' + esc(item.name) + '"></td><td>' + esc(item.id) + '</td><td class="wrap">' + esc(item.name) + '</td><td>' + status(item.type) + '</td><td>' + status(item.status) + '</td><td>' + status(item.level) + '</td><td>' + esc(item.time) + '</td></tr>';
+    }).join('') : '<tr><td colspan="7"><div class="selector-empty"><strong>没有匹配的活动</strong><span>请调整活动ID、名称、类型或状态</span></div></td></tr>';
+    var availableTable = filter +
+      '<div class="selector-table-title"><strong>可选活动（' + available.length + '）</strong><span>跨查询、跨分页保留已选结果</span></div>' +
+      (isFull ? '<div class="selector-limit-tip" role="status">已达到20个活动上限，请先移除已选活动后再继续选择。</div>' : '') +
+      '<div class="table-shell selector-table-shell"><table class="data-table report-activity-selector-table"><thead><tr><th>选择</th><th>活动ID</th><th>活动名称</th><th>活动类型</th><th>活动状态</th><th>准入等级</th><th>活动时间</th></tr></thead><tbody>' + availableBody + '</tbody></table></div>' + reportSelectorPagination(available.length);
+    var selectedTable = selectedRows.length ? '<div class="selector-table-title"><strong>已选活动（' + selectedRows.length + '/20）</strong><span>确认后回填报表查询条件</span></div><div class="table-shell selector-table-shell selected-activity-table"><table class="data-table"><thead><tr><th>活动ID</th><th>活动名称</th><th>类型</th><th>状态</th><th>准入等级</th><th>操作</th></tr></thead><tbody>' + selectedRows.map(function (item) {
+      return '<tr><td>' + esc(item.id) + '</td><td class="wrap">' + esc(item.name) + '</td><td>' + status(item.type) + '</td><td>' + status(item.status) + '</td><td>' + status(item.level) + '</td><td><button class="link-button danger-link" data-remove-report-activity="' + esc(item.id) + '" type="button">移除</button></td></tr>';
+    }).join('') + '</tbody></table></div>' : '<div class="selector-empty"><strong>暂无已选活动</strong><span>请切换到“可选活动”页签进行选择</span></div>';
+    var body = '<div class="selector-tabs"><button class="' + (reportActivityFilter.tab === 'available' ? 'active' : '') + '" data-report-activity-tab="available" type="button">可选活动</button><button class="' + (reportActivityFilter.tab === 'selected' ? 'active' : '') + '" data-report-activity-tab="selected" type="button">已选活动（' + selectedRows.length + '/20）</button></div>' +
+      '<div class="selector-tip"><strong>选择说明：</strong>一次最多选择20个活动；多个活动之间按“或”查询，未选择代表全部活动。</div>' +
+      (reportActivityFilter.tab === 'available' ? availableTable : selectedTable);
+    var foot = '<span class="selector-selection-count">已选 <strong>' + selectedRows.length + '</strong> / 20</span><div><button class="button" data-clear-report-activity-draft type="button"' + (selectedRows.length ? '' : ' disabled') + '>清空已选</button><button class="button" data-close-modal type="button">取消</button><button class="button primary" data-confirm-report-activity type="button">确认</button></div>';
+    window.SACommon.openModal('选择查询活动', body, foot, 'wide-modal placement-selector-modal report-activity-selector-modal');
+  }
+
+  function openReportActivitySelector() {
+    reportActivityFilter.draftIds = reportActivityFilter.selectedIds.slice();
+    reportActivityFilter.tab = 'available';
+    reportActivityFilter.queryId = '';
+    reportActivityFilter.queryName = '';
+    reportActivityFilter.queryType = '';
+    reportActivityFilter.queryStatus = '';
+    reportActivityFilter.page = 1;
+    renderReportActivitySelector();
   }
 
   function renderKpis(items) {
@@ -102,6 +216,14 @@
     return status(value);
   }
 
+  function reportActivityMatches(id) {
+    return !reportActivityFilter.selectedIds.length || reportActivityFilter.selectedIds.indexOf(id) > -1;
+  }
+
+  function emptyReportRow(colspan) {
+    return '<tr><td colspan="' + colspan + '"><div class="empty-state report-filter-empty">当前所选活动暂无演示记录，请调整活动范围后查询。</div></td></tr>';
+  }
+
   function renderActivityOverview() {
     var fields = [
       {label:'统计时间',type:'text',value:'2026-07-11 至 2026-07-17'},
@@ -109,17 +231,17 @@
       {label:'区域',type:'select',options:data.meta.regions},
       {label:'来源门店',type:'select',options:data.meta.stores},
       {label:'来源SA',type:'select',options:data.meta.sas},
-      {label:'活动',type:'select',options:data.meta.activities},
+      {label:'活动',type:'activity-multi'},
       {label:'参与级别',type:'select',options:['号码级','绑车级','认证级']},
       {label:'执行方式',type:'select',options:['直接领券','自动抽奖']}
     ];
-    var rows = data.activityOverview.rows;
+    var rows = data.activityOverview.rows.filter(function (row) { return reportActivityMatches(row.activityId); });
     return renderFilters(fields) + renderKpis(data.activityOverview.kpis) +
       '<div class="overview-grid">' + renderTrend(data.activityOverview.trend) + renderRanks('来源SA活动参与排行', data.activityOverview.ranks) + '</div>' +
-      '<div class="panel"><div class="panel-head"><div class="panel-title">来源SA活动汇总 <span class="panel-subtitle">默认按来源SA + 活动汇总</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
+      '<div class="panel"><div class="panel-head"><div class="panel-title">来源SA活动汇总 <span class="panel-subtitle">当前显示 ' + rows.length + ' 条演示记录，按来源SA + 活动汇总</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
       '<div class="table-shell"><table class="data-table"><thead><tr><th>来源SA</th><th>来源门店</th><th>活动ID / 活动名称</th><th>参与级别</th><th>执行方式</th><th>扫码UV</th><th>符合准入主体</th><th>活动参与数</th><th>发券数</th><th>转化率</th><th>最后参与时间</th><th>操作</th></tr></thead><tbody>' +
-      rows.map(function (row) { return '<tr><td>' + esc(row.saName) + '<br><span class="panel-subtitle">' + esc(row.saId) + '</span></td><td>' + esc(row.store) + '</td><td class="wrap">' + esc(row.activityId) + '<br>' + esc(row.activity) + '</td><td>' + status(row.level) + '</td><td>' + esc(row.type) + '</td><td class="number">' + row.scanUv + '</td><td class="number">' + row.eligible + '</td><td class="number"><a class="link-action" href="#activity-participation">' + row.participation + '</a></td><td class="number">' + row.coupons + '</td><td>' + row.rate + '</td><td>' + row.last + '</td><td><a class="link-action" href="#activity-participation">查看明细</a></td></tr>'; }).join('') +
-      '</tbody></table></div>' + window.SACommon.pagination(25) + '</div>';
+      (rows.length ? rows.map(function (row) { return '<tr data-report-activity-id="' + esc(row.activityId) + '"><td>' + esc(row.saName) + '<br><span class="panel-subtitle">' + esc(row.saId) + '</span></td><td>' + esc(row.store) + '</td><td class="wrap">' + esc(row.activityId) + '<br>' + esc(row.activity) + '</td><td>' + status(row.level) + '</td><td>' + esc(row.type) + '</td><td class="number">' + row.scanUv + '</td><td class="number">' + row.eligible + '</td><td class="number"><a class="link-action" href="#activity-participation">' + row.participation + '</a></td><td class="number">' + row.coupons + '</td><td>' + row.rate + '</td><td>' + row.last + '</td><td><a class="link-action" href="#activity-participation">查看明细</a></td></tr>'; }).join('') : emptyReportRow(12)) +
+      '</tbody></table></div>' + window.SACommon.pagination(reportActivityFilter.selectedIds.length ? rows.length : 25) + '</div>';
   }
 
   function qrFields() {
@@ -149,7 +271,7 @@
   function participationFields() {
     return [
       {label:'参与时间',type:'text',value:'2026-07-11 至 2026-07-17'},
-      {label:'活动',type:'select',options:data.meta.activities},
+      {label:'活动',type:'activity-multi'},
       {label:'来源SA',type:'select',options:data.meta.sas},
       {label:'来源门店',type:'select',options:data.meta.stores},
       {label:'参与级别',type:'select',options:['号码级','绑车级','认证级']},
@@ -162,14 +284,17 @@
   }
 
   function renderParticipationRows() {
-    return data.participationRows.map(function (row) {
-      return '<tr><td><a class="link-action" data-view-participation="' + row.id + '">' + row.id + '</a></td><td class="wrap">' + row.activityId + '<br>' + esc(row.activity) + '</td><td>' + status(row.level) + '</td><td>' + esc(row.type) + '</td><td>' + row.mobile + '<br><span class="panel-subtitle">' + row.oneId + '</span></td><td>' + row.vin + '</td><td>' + esc(row.subject) + '</td><td>' + esc(row.sa) + '<br><span class="panel-subtitle">' + esc(row.store) + '</span></td><td>' + row.sceneId + '</td><td>' + row.participated + '</td><td>' + row.confirmed + '</td><td>' + resultStatus(row.result) + '</td><td>' + row.couponCount + '</td><td><a class="link-action" data-view-participation="' + row.id + '">查看</a></td></tr>';
+    var rows = data.participationRows.filter(function (row) { return reportActivityMatches(row.activityId); });
+    if (!rows.length) return emptyReportRow(14);
+    return rows.map(function (row) {
+      return '<tr data-report-activity-id="' + esc(row.activityId) + '"><td><a class="link-action" data-view-participation="' + row.id + '">' + row.id + '</a></td><td class="wrap">' + row.activityId + '<br>' + esc(row.activity) + '</td><td>' + status(row.level) + '</td><td>' + esc(row.type) + '</td><td>' + row.mobile + '<br><span class="panel-subtitle">' + row.oneId + '</span></td><td>' + row.vin + '</td><td>' + esc(row.subject) + '</td><td>' + esc(row.sa) + '<br><span class="panel-subtitle">' + esc(row.store) + '</span></td><td>' + row.sceneId + '</td><td>' + row.participated + '</td><td>' + row.confirmed + '</td><td>' + resultStatus(row.result) + '</td><td>' + row.couponCount + '</td><td><a class="link-action" data-view-participation="' + row.id + '">查看</a></td></tr>';
     }).join('');
   }
 
   function renderParticipationPage() {
-    return renderFilters(participationFields()) + '<div class="panel"><div class="panel-head"><div class="panel-title">活动参与记录 <span class="panel-subtitle">一条记录对应一个活动参与主体的成功执行结果</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
-      '<div class="table-shell"><table class="data-table"><thead><tr><th>参与流水</th><th>活动ID / 名称</th><th>级别</th><th>执行方式</th><th>手机号 / oneID</th><th>执行VIN</th><th>参与主体</th><th>来源SA / 门店</th><th>sceneId</th><th>参与时间</th><th>来源确认时间</th><th>结果</th><th>发券数</th><th>操作</th></tr></thead><tbody>' + renderParticipationRows() + '</tbody></table></div>' + window.SACommon.pagination(1126) + '</div>';
+    var count = data.participationRows.filter(function (row) { return reportActivityMatches(row.activityId); }).length;
+    return renderFilters(participationFields()) + '<div class="panel"><div class="panel-head"><div class="panel-title">活动参与记录 <span class="panel-subtitle">当前显示 ' + count + ' 条演示记录；一条记录对应一个活动参与主体</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
+      '<div class="table-shell"><table class="data-table"><thead><tr><th>参与流水</th><th>活动ID / 名称</th><th>级别</th><th>执行方式</th><th>手机号 / oneID</th><th>执行VIN</th><th>参与主体</th><th>来源SA / 门店</th><th>sceneId</th><th>参与时间</th><th>来源确认时间</th><th>结果</th><th>发券数</th><th>操作</th></tr></thead><tbody>' + renderParticipationRows() + '</tbody></table></div>' + window.SACommon.pagination(reportActivityFilter.selectedIds.length ? count : 1126) + '</div>';
   }
 
   function couponOverviewFields() {
@@ -314,11 +439,63 @@
   window.SAApp = { navigate:navigate, render:render, pages:pageMap };
 
   document.addEventListener('click', function (event) {
+    var reportTarget;
     if (window.ActivityConfigPages) window.ActivityConfigPages.handleClick(event);
     if (event.target.closest('#globalSpecButton')) location.href = 'docs/interaction.html';
-    if (event.target.closest('[data-export]')) window.SACommon.showToast('原型演示：已按当前筛选条件创建导出任务');
-    if (event.target.closest('[data-query]')) window.SACommon.showToast('查询完成，当前共返回演示数据');
+    if (event.target.closest('[data-open-report-activity-selector]')) { openReportActivitySelector(); return; }
+    if ((reportTarget = event.target.closest('[data-report-activity-tab]'))) {
+      reportActivityFilter.tab = reportTarget.getAttribute('data-report-activity-tab');
+      renderReportActivitySelector(); return;
+    }
+    if (event.target.closest('[data-report-activity-search]')) {
+      reportActivityFilter.queryId = document.querySelector('[data-report-activity-query-id]').value;
+      reportActivityFilter.queryName = document.querySelector('[data-report-activity-query-name]').value;
+      reportActivityFilter.queryType = document.querySelector('[data-report-activity-query-type]').value;
+      reportActivityFilter.queryStatus = document.querySelector('[data-report-activity-query-status]').value;
+      reportActivityFilter.page = 1;
+      renderReportActivitySelector(); return;
+    }
+    if ((reportTarget = event.target.closest('[data-report-activity-page]'))) {
+      if (!reportTarget.disabled) reportActivityFilter.page = Number(reportTarget.getAttribute('data-report-activity-page'));
+      renderReportActivitySelector(); return;
+    }
+    if ((reportTarget = event.target.closest('[data-remove-report-activity]'))) {
+      reportActivityFilter.draftIds = reportActivityFilter.draftIds.filter(function (id) { return id !== reportTarget.getAttribute('data-remove-report-activity'); });
+      renderReportActivitySelector(); return;
+    }
+    if (event.target.closest('[data-clear-report-activity-draft]')) {
+      reportActivityFilter.draftIds = [];
+      renderReportActivitySelector(); return;
+    }
+    if (event.target.closest('[data-confirm-report-activity]')) {
+      reportActivityFilter.selectedIds = reportActivityFilter.draftIds.slice();
+      window.SACommon.closeModal();
+      render();
+      window.SACommon.showToast(reportActivityFilter.selectedIds.length ? '已选择' + reportActivityFilter.selectedIds.length + '个活动，可继续组合其他条件查询' : '已恢复查询全部活动');
+      return;
+    }
+    if (event.target.closest('[data-clear-report-activity]')) {
+      reportActivityFilter.selectedIds = [];
+      reportActivityFilter.draftIds = [];
+      render();
+      window.SACommon.showToast('已清除活动条件，当前查询全部活动');
+      return;
+    }
+    var isActivityReport = page === 'activity-overview' || page === 'activity-participation';
+    if (event.target.closest('[data-export]')) {
+      window.SACommon.showToast(isActivityReport
+        ? '原型演示：已按当前条件导出' + (reportActivityFilter.selectedIds.length ? reportActivityFilter.selectedIds.length + '个活动' : '全部活动') + '数据'
+        : '原型演示：已按当前条件导出数据');
+    }
+    if (event.target.closest('[data-query]')) {
+      window.SACommon.showToast(isActivityReport ? '查询完成，当前活动范围：' + reportActivityLabel() : '查询完成');
+    }
     if (event.target.closest('[data-reset]')) {
+      if (page === 'activity-overview' || page === 'activity-participation') {
+        reportActivityFilter.selectedIds = [];
+        reportActivityFilter.draftIds = [];
+        render();
+      }
       document.querySelectorAll('.filter-panel input').forEach(function (input) { input.value = input.type === 'text' && input.defaultValue ? input.defaultValue : ''; });
       document.querySelectorAll('.filter-panel select').forEach(function (select) { select.selectedIndex = 0; });
       window.SACommon.showToast('筛选条件已重置');
@@ -346,11 +523,25 @@
       pendingOpen = {type:'participation',id:participationCross.getAttribute('data-cross-participation')};
       if (page === 'activity-participation') navigate(); else location.hash = 'activity-participation';
     }
-    if (event.target.closest('.page-no')) window.SACommon.showToast('已切换到对应演示分页');
+    if (event.target.closest('.page-no') && !event.target.closest('[data-report-activity-page]')) window.SACommon.showToast('已切换到对应演示分页');
   });
 
   document.addEventListener('change', function (event) {
     if (window.ActivityConfigPages) window.ActivityConfigPages.handleChange(event);
+    if (event.target.matches('[data-report-activity-choice]')) {
+      var choiceId = event.target.value;
+      var choiceIndex = reportActivityFilter.draftIds.indexOf(choiceId);
+      if (event.target.checked && choiceIndex === -1) {
+        if (reportActivityFilter.draftIds.length >= reportActivityFilter.limit) {
+          event.target.checked = false;
+          window.SACommon.showToast('最多选择20个活动，请先移除已选活动');
+          return;
+        }
+        reportActivityFilter.draftIds.push(choiceId);
+      }
+      if (!event.target.checked && choiceIndex > -1) reportActivityFilter.draftIds.splice(choiceIndex,1);
+      renderReportActivitySelector();
+    }
   });
 
   function openQr(sceneId) {

@@ -41,8 +41,21 @@
   }
 
   function formatDiscount(rate) {
-    var value = Number(rate || 0);
-    return (Math.round(value * 10) / 10).toString() + '折';
+    var value = Number(rate);
+    if (!Number.isFinite(value)) value = 0;
+    value = Math.round(value * 10) / 10;
+    return value === 0 ? '0折（免费）' : value.toString() + '折';
+  }
+
+  function combinationDiscountDescription(mode, rate) {
+    if (Number(rate) === 0) {
+      return mode === 'free'
+        ? '当前为 0 折：实际选中且不超过最大核销数量的商品全部免费。'
+        : '当前为 0 折：各商品最低核销数量范围内全部免费，超出部分仍按原价结算。';
+    }
+    return mode === 'free'
+      ? '自由组合内实际选中的商品共用此折扣，每项最多优惠至配置的最大核销数量。'
+      : '所有分组共用此折扣；每个商品只优惠最低核销数量，超出的同商品数量按原价结算。';
   }
 
   function combinationName(sequence) {
@@ -147,7 +160,7 @@
     return '<div class="combination-config">' +
       '<div class="combination-config-heading"><div><strong>商品组合配置</strong><span>' + headingText + '</span></div><div class="combination-heading-actions"><a class="btn btn-small" href="' + templateHref + '" download>⇩ 下载Excel模板</a><button class="btn btn-small" id="openExcelImport" type="button">⇧ Excel上传商品</button>' + (mode === 'grouped' ? '<button class="btn btn-primary btn-small" id="addCombination" type="button">＋ 新增核销组合</button>' : '') + '</div></div>' +
       renderModeSelector(template) +
-      '<div class="combination-shared-rule"><div><span>券级共用折扣</span><strong>' + formatDiscount(template.discountRate) + '</strong></div><p>' + (mode === 'free' ? '自由组合内实际选中的商品共用此折扣，每项最多优惠至配置的最大核销数量。' : '所有分组共用此折扣；每个商品只优惠最低核销数量，超出的同商品数量按原价结算。') + '</p></div>' +
+      '<div class="combination-shared-rule"><div><span>券级共用折扣</span><strong>' + formatDiscount(template.discountRate) + '</strong></div><p class="combination-discount-description">' + combinationDiscountDescription(mode, template.discountRate) + '</p></div>' +
       groupedFixedNote + body +
       '<div class="batch-rule-note">' + ruleNote + '</div>' +
     '</div>';
@@ -175,7 +188,9 @@
 
   function discountField(template) {
     if (template.couponType === '折扣券' || isCombinationCoupon(template)) {
-      return row('折扣比例', '<div class="input-suffix compact-control"><input id="discountRate" class="form-input" type="number" min="0.1" max="9.9" step="0.1" value="' + template.discountRate + '"><span>折</span></div>', true, isCombinationCoupon(template) ? '券级共用折扣，所有核销组合保持一致' : '按现有折扣券规则配置');
+      var minRate = isCombinationCoupon(template) ? 0 : 0.1;
+      var help = isCombinationCoupon(template) ? '支持 0-9.9 折；0 折表示配置优惠范围内免费，组合数量边界保持不变' : '按现有折扣券规则配置';
+      return row('折扣比例', '<div class="input-suffix compact-control"><input id="discountRate" class="form-input" type="number" min="' + minRate + '" max="9.9" step="0.1" value="' + template.discountRate + '"><span>折</span></div>', true, help);
     }
     return row('卡券面值', '<div class="input-suffix compact-control"><input id="faceValue" class="form-input" type="number" min="1" value="' + template.faceValue + '"><span>元</span></div>', true, '整张券只有一个优惠总额');
   }
@@ -425,8 +440,12 @@
     var discountRate = document.getElementById('discountRate');
     if (discountRate) {
       discountRate.addEventListener('input', function () {
-        var nextRate = Math.max(0.1, Math.min(9.9, Math.round(Number(this.value || 0.1) * 10) / 10));
+        var minRate = isCombinationCoupon(template) ? 0 : 0.1;
+        var rawRate = Number(this.value);
+        if (!Number.isFinite(rawRate)) rawRate = minRate;
+        var nextRate = Math.max(minRate, Math.min(9.9, Math.round(rawRate * 10) / 10));
         template.discountRate = nextRate;
+        if (rawRate < minRate || rawRate > 9.9) this.value = nextRate;
         Array.prototype.forEach.call(document.querySelectorAll('.shared-discount-tag'), function (tag) { tag.textContent = '共用 ' + formatDiscount(nextRate); });
         Array.prototype.forEach.call(document.querySelectorAll('.combination-shared-rule strong'), function (value) { value.textContent = formatDiscount(nextRate); });
         Array.prototype.forEach.call(document.querySelectorAll('.combination-card'), function (card) {
@@ -438,6 +457,8 @@
         Array.prototype.forEach.call(document.querySelectorAll('.free-combination-panel .discount-scope'), function (scope) {
           scope.textContent = '实际选中数量享 ' + formatDiscount(nextRate);
         });
+        var description = document.querySelector('.combination-discount-description');
+        if (description) description.textContent = combinationDiscountDescription(combinationMode(template), nextRate);
       });
       discountRate.addEventListener('change', function () {
         this.value = template.discountRate;

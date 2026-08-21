@@ -210,10 +210,12 @@ button { border: 0; }
 .combo-store-info { margin-bottom: 12px; padding: 10px 12px; color: #35536d; background: #f2f9ff; border: 1px solid #cbe4f8; }
 .combo-store-search { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; margin-bottom: 12px; }
 .combo-store-search input { min-height: 32px; padding: 6px 9px; border: 1px solid #d6dfe8; outline: none; }
-.combo-store-tabs { min-height: 39px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e4e9ef; }
-.combo-store-tabs > div { display: flex; gap: 4px; }
-.combo-store-tabs button:not(.link-action) { min-height: 36px; padding: 0 14px; color: #53687c; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; }
-.combo-store-tabs button.active { color: #0e70c0; border-bottom-color: #1689e5; font-weight: 650; }
+.combo-store-tabs { min-height: 39px; display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #e4e9ef; }
+.combo-store-tabs > div { display: flex; align-items: center; gap: 4px; }
+.combo-store-tabs [data-combo-store-tab] { min-height: 36px; padding: 0 14px; color: #53687c; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; }
+.combo-store-tabs [data-combo-store-tab].active { color: #0e70c0; border-bottom-color: #1689e5; font-weight: 650; }
+.combo-store-tab-actions { padding-bottom: 4px; }
+.combo-store-tab-actions .button { min-height: 30px; padding: 0 11px; }
 .combo-store-tree { max-height: 390px; overflow: auto; margin-top: 10px; border: 1px solid #e1e7ed; }
 .combo-store-row { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 12px; border-bottom: 1px solid #edf1f5; }
 .combo-store-row:last-child { border-bottom: 0; }
@@ -227,6 +229,31 @@ button { border: 0; }
 .combo-store-footer-note { margin-top: 10px; color: #65758a; }
 .combo-store-footer-note strong { color: #1689e5; font-size: 15px; }
 .combo-store-empty { padding: 36px 20px; }
+.combo-store-import-panel { margin-top: 12px; padding: 16px; border: 1px solid #d8e3ec; background: #fbfdff; }
+.combo-store-import-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.combo-store-import-title > div { display: flex; flex-direction: column; gap: 5px; }
+.combo-store-import-title strong { color: #263e54; font-size: 15px; }
+.combo-store-import-title span { color: #65778a; line-height: 1.6; }
+.combo-import-badge { flex: 0 0 auto; padding: 3px 9px; color: #9a5c00 !important; background: #fff2ce; border-radius: 11px; font-size: 10px; font-weight: 700; }
+.combo-store-import-warning { margin-top: 12px; padding: 9px 11px; color: #5f4b1c; background: #fffae9; border-left: 3px solid #e5b84e; font-size: 11px; line-height: 1.65; }
+.combo-store-upload-box { position: relative; display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 14px; border: 1px dashed #91b8d8; background: #f3f9fe; cursor: pointer; }
+.combo-store-upload-box input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.combo-store-upload-box > span:last-child { display: flex; flex-direction: column; gap: 3px; }
+.combo-store-upload-box small { color: #748598; font-size: 10px; }
+.combo-store-upload-icon { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; color: #0e70c0; background: #e4f2fd; font-size: 10px; font-weight: 700; }
+.combo-store-import-file { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 9px 11px; background: #f5f8fb; border: 1px solid #e0e7ed; }
+.combo-store-import-file span { color: #728397; }
+.combo-store-import-file strong { color: #314a60; word-break: break-all; }
+.combo-store-import-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 10px; }
+.combo-store-import-summary > div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 10px; border: 1px solid #e0e7ed; background: #fff; }
+.combo-store-import-summary strong { color: #1689e5; font-size: 18px; }
+.combo-store-import-summary span { color: #728397; font-size: 10px; }
+.combo-store-import-preview { max-height: 190px; overflow: auto; margin-top: 10px; }
+.combo-store-import-preview .data-table { min-width: 620px; }
+.combo-import-status { display: inline-flex; padding: 2px 7px; color: #237a49; background: #eefaf3; border-radius: 9px; font-size: 10px; }
+.combo-store-import-empty { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 12px; padding: 28px 16px; color: #728397; background: #fff; border: 1px solid #e0e7ed; text-align: center; }
+.combo-store-import-empty strong { color: #4a5f72; }
+.combo-store-import-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
 .toast { position: fixed; z-index: 1500; left: 50%; top: 72px; transform: translate(-50%, -12px); padding: 9px 15px; color: #fff; background: rgba(22,39,56,.92); border-radius: 4px; opacity: 0; pointer-events: none; transition: .2s; font-size: 12px; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -895,7 +922,15 @@ body.sit-ui {
   .sit-ui .combo-editor-grid .span-3 { grid-column: 1; }
   .sit-ui .combo-scope-card { align-items: flex-start; flex-wrap: wrap; }
   .sit-ui .combo-scope-actions { width: 100%; justify-content: flex-start; }
+  .sit-ui .combo-store-tabs { align-items: flex-start; flex-wrap: wrap; }
+  .sit-ui .combo-store-tabs > div { width: 100%; flex-wrap: wrap; }
+  .sit-ui .combo-store-tab-actions { justify-content: flex-start; }
   .sit-ui .combo-store-row.level-2 { padding-left: 22px; }
   .sit-ui .combo-store-row.level-3 { padding-left: 34px; }
   .sit-ui .combo-store-row.level-4 { padding-left: 46px; }
+  .sit-ui .combo-store-import-panel { padding: 12px; }
+  .sit-ui .combo-store-import-title { flex-direction: column; gap: 8px; }
+  .sit-ui .combo-store-import-summary { grid-template-columns: 1fr; gap: 6px; }
+  .sit-ui .combo-store-import-actions { flex-direction: column-reverse; }
+  .sit-ui .combo-store-import-actions .button { width: 100%; }
 }

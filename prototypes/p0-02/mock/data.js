@@ -9,7 +9,7 @@
       couponType: '组合折扣券',
       applicableType: '备件',
       faceValue: 100,
-      discountRate: 8,
+      discountRate: 0,
       discountMode: '组合商品共用折扣',
       redemptionMode: '一次性批量核销',
       status: '草稿',

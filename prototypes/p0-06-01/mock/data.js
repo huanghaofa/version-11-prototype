@@ -130,4 +130,32 @@
       {id:'RED-20260716-001884',couponId:'CPN-66002447',coupon:'基础保养抵扣券',activity:'夏季养护礼遇',sa:'陈晓明 SA10086',sourceStore:'广州花都专营店',owner:'VIN尾号1234',actualUser:'138****5678',redeemStore:'广州花都专营店',cross:'否',order:'SO-20260716-881604',redeemed:'2026-07-16 16:58:20',amount:'¥520.00',subsidy:'¥150.00',status:'核销成功'}
     ]
   };
+
+  function buildReportActivityCatalog() {
+    var reportData = window.SAReportData;
+    var rows = reportData.activityConfigs.map(function (item) {
+      return {id:item.id,name:item.name,type:'普通活动',status:item.status,level:item.level,time:item.time};
+    }).concat(reportData.comboActivities.map(function (item) {
+      return {id:item.id,name:String(item.displayName || '').trim() || item.name,type:'组合活动',status:item.active ? '已启用' : '已停用',level:item.level,time:item.time};
+    }));
+    var themes = ['春季焕新','夏季养护','秋季检测','冬季关怀','会员回馈','到店保养','车主生日','复购促进'];
+    var audiences = ['活跃车主','留存车主','流失召回','认证车主','新购车主','高价值车主'];
+    var levels = ['号码级','绑车级','认证级'];
+    var statuses = ['已启用','已启用','已启用','草稿','已结束'];
+    var index;
+    for (index = 1; index <= 36; index += 1) {
+      var combo = index % 7 === 0;
+      rows.push({
+        id:(combo ? 'DEMO-COMB-' : 'DEMO-ACT-') + '2026' + String(index).padStart(3,'0'),
+        name:themes[(index - 1) % themes.length] + '·' + audiences[(index - 1) % audiences.length] + (combo ? '组合活动' : '活动'),
+        type:combo ? '组合活动' : '普通活动',
+        status:statuses[(index - 1) % statuses.length],
+        level:levels[(index - 1) % levels.length],
+        time:'2026-' + String((index % 6) + 5).padStart(2,'0') + '-01 至 2026-' + String((index % 6) + 6).padStart(2,'0') + '-28'
+      });
+    }
+    return rows;
+  }
+
+  window.SAReportData.reportActivityCatalog = buildReportActivityCatalog();
 })();

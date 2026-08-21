@@ -11,16 +11,28 @@
   };
   var passiveRailIcons = ['icon-gerendaiban','icon-qiche','icon-gongdan','icon-hetongguanli','icon-stock','icon-people','icon-synchronization','icon-systemManagement','icon-help'];
 
+  function activateConfig(cfg) {
+    config = cfg;
+    render();
+    var hashKey = window.location.hash.replace(/^#\/?/, '');
+    window.navigateTo(window.Pages && window.Pages[hashKey] ? hashKey : 'overview', false);
+  }
+
   function loadConfig() {
+    if (window.location.protocol === 'file:' && window.InlineNavConfig) {
+      activateConfig(window.InlineNavConfig);
+      return Promise.resolve();
+    }
     return fetch('config/nav.json').then(function (res) {
       if (!res.ok) throw new Error('导航配置加载失败');
       return res.json();
     }).then(function (cfg) {
-      config = cfg;
-      render();
-      var hashKey = window.location.hash.replace(/^#\/?/, '');
-      window.navigateTo(window.Pages && window.Pages[hashKey] ? hashKey : 'overview', false);
+      activateConfig(cfg);
     }).catch(function () {
+      if (window.InlineNavConfig) {
+        activateConfig(window.InlineNavConfig);
+        return;
+      }
       var nav = document.getElementById('main-nav');
       if (nav) nav.innerHTML = '<p style="padding:18px;color:#ffcfcc;font-size:12px">导航加载失败，请通过本地 HTTP 服务打开。</p>';
     });
