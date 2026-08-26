@@ -264,6 +264,8 @@ tbody td { padding:12px; vertical-align:top; }
 .mobile-select-product.unavailable, .product-mini.unavailable { background:#fafafa; color:#999; }
 .mobile-select-product.unavailable .product-pic, .product-mini.unavailable .product-pic { filter:grayscale(1); opacity:.55; }
 .stock-sold-out { display:inline-block; margin-left:4px; padding:1px 5px; border-radius:3px; background:#f2f2f2; color:#999; font-size:11px; font-weight:500; vertical-align:1px; }
+.row-disabled { background:#fafafa; color:#999; }
+.row-disabled button, .row-disabled input { cursor:not-allowed; }
 .mobile-select-info { min-width:0; }
 .mobile-select-info strong { display:block; font-size:13px; line-height:1.45; }
 .mobile-select-info p { color:#8c8c8c; font-size:11px; margin-top:4px; }

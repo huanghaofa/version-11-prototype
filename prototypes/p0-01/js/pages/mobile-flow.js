@@ -4,7 +4,7 @@
   var flow = window.ExchangeFlow;
 
   function isAvailable(product) {
-    return Number(product.stock) > 0;
+    return product && product.redeemable !== false && product.configEligible !== false;
   }
 
   function selectedStore() {
@@ -12,13 +12,13 @@
   }
 
   function productMini(product, withQty) {
-    return '<div class="product-mini ' + (isAvailable(product) ? '' : 'unavailable') + '"><div class="product-pic">' + product.icon + '</div><div class="product-mini-info"><strong>' + product.name + (withQty ? ' × ' + flow.quantity(product.id) : '') + (isAvailable(product) ? '' : ' <span class="stock-sold-out">已售罄</span>') + '</strong><p>' + product.category + ' · ' + flow.activeCoupon().fulfillmentLabel + '</p>' + (withQty ? '' : '<button class="mobile-text-btn" data-product-detail="' + product.id + '">查看详情</button>') + '</div></div>';
+    return '<div class="product-mini ' + (isAvailable(product) ? '' : 'unavailable') + '"><div class="product-pic">' + product.icon + '</div><div class="product-mini-info"><strong>' + product.name + (withQty ? ' × ' + flow.quantity(product.id) : '') + '</strong><p>' + product.productTypeLabel + ' · ' + product.saleStatusLabel + (product.saleStatus === 'not_listed' ? '（仍可兑换）' : '') + '</p>' + (withQty ? '' : '<button class="mobile-text-btn" data-product-detail="' + product.id + '">查看详情</button>') + '</div></div>';
   }
 
   function openProductDetail(productId) {
     var product = flow.product(productId);
     var max = flow.rule(product.id).maxRedeemQty;
-    window.openModal('<div class="modal-content mobile-product-detail"><div class="modal-header"><b>商品详情</b><button class="btn btn-link" data-close-modal>×</button></div><div class="modal-body"><div class="product-detail-hero">' + product.icon + '</div><h2>' + product.name + (isAvailable(product) ? '' : ' <span class="stock-sold-out">已售罄</span>') + '</h2><p class="helper">商品编号：' + product.id + ' · ' + product.category + ' / ' + product.subCategory + '</p><div class="detail-price">商城价 ¥' + product.price + '</div><div class="detail-lines"><p><span>供应商</span><b>' + product.supplier + '</b></p><p><span>商品库存</span><b>' + (product.stockLabel || product.stock) + '</b></p><p><span>整券履约方式</span><b>' + flow.activeCoupon().fulfillmentLabel + '</b></p><p><span>本商品最多可兑</span><b>' + max + '件</b></p><p><span>履约说明</span><b>' + product.description + '</b></p></div>' + (isAvailable(product) ? '' : '<div class="evidence-note warn" style="margin-top:12px">当前库存为0，仅可查看商品详情，不能加入本次兑换。</div>') + '</div><div class="modal-footer"><button class="btn btn-primary" data-close-modal>返回选品</button></div></div>');
+    window.openModal('<div class="modal-content mobile-product-detail"><div class="modal-header"><b>商品详情</b><button class="btn btn-link" data-close-modal>×</button></div><div class="modal-body"><div class="product-detail-hero">' + product.icon + '</div><h2>' + product.name + '</h2><p class="helper">产品中心SKU：' + product.id + ' · ' + product.productTypeLabel + ' / ' + product.subCategory + '</p><div class="detail-lines"><p><span>商品数据源</span><b>产品中心</b></p><p><span>销售上架状态</span><b>' + product.saleStatusLabel + '</b></p><p><span>产品中心可兑换</span><b>' + (product.redeemable ? '是' : '否') + '</b></p><p><span>整券履约方式</span><b>' + flow.activeCoupon().fulfillmentLabel + '</b></p><p><span>本商品最多可兑</span><b>' + max + '件</b></p><p><span>履约说明</span><b>' + product.description + '</b></p></div>' + (product.saleStatus === 'not_listed' ? '<div class="evidence-note" style="margin-top:12px">该GUI皮肤尚未在商城上架，但产品中心标记为可兑换，因此仍可正常选择。</div>' : '') + '</div><div class="modal-footer"><button class="btn btn-primary" data-close-modal>返回选品</button></div></div>');
   }
 
   function detailPage(coupon) {
@@ -28,7 +28,7 @@
     return '<div class="mobile-hero"><div class="type">通用兑换券 · ' + coupon.fulfillmentLabel + '</div><h2>' + coupon.name + '</h2><div>有效期至 ' + coupon.expiresAt + '</div></div>' +
       '<div class="mobile-card"><div class="choice-rule"><b>' + coupon.candidateProductIds.length + '选' + coupon.redeemQuantity + '</b><span>' + coupon.subtitle + '</span></div><p class="helper">本券所有商品均使用“' + coupon.fulfillmentLabel + '”，不支持跨履约类型组合。</p></div>' + vehicle +
       '<div class="mobile-card"><h3>候选商品（' + coupon.candidateProductIds.length + '种）</h3>' + flow.candidates().slice(0, 3).map(function (product) { return productMini(product, false); }).join('') + (coupon.candidateProductIds.length > 3 ? '<div class="more-products">还有' + (coupon.candidateProductIds.length - 3) + '种商品，进入下一步查看</div>' : '') + '</div>' +
-      '<div class="mobile-card"><h3>使用说明</h3><p class="helper">' + (coupon.fulfillmentType === 'store_verify' ? '需先选择省、市和门店，再选择商品；完成后展示核销码。' : (coupon.fulfillmentType === 'direct_ship' ? '选品后将携带商品ID与卡券ID跳转新商城确认订单页。' : '确认兑换后卡券立即核销，车联网履约进度在兑换详情查询。')) + '</p></div>' +
+      '<div class="mobile-card"><h3>使用说明</h3><p class="helper">' + (coupon.fulfillmentType === 'store_verify' ? '需先选择省、市和门店，再选择商品；完成后展示核销码。' : (coupon.fulfillmentType === 'direct_ship' ? '选品后将携带商品ID与卡券ID跳转新商城确认订单页。' : '一期仅兑换产品中心GUI皮肤；确认后车联网同步返回最终成功或失败。')) + '</p></div>' +
       '<button class="mobile-cta" data-next="' + (coupon.fulfillmentType === 'store_verify' ? 'store' : 'select') + '">' + (coupon.fulfillmentType === 'store_verify' ? '先选门店' : '去选商品') + '</button>';
   }
 
@@ -58,11 +58,11 @@
       var qty = flow.quantity(product.id);
       var max = Number(flow.rule(product.id).maxRedeemQty || 1);
       var disabledPlus = !isAvailable(product) || qty >= max || flow.total() >= coupon.redeemQuantity;
-      return '<div class="mobile-select-product ' + (isAvailable(product) ? '' : 'unavailable') + '"><div class="product-pic">' + product.icon + '</div><div class="mobile-select-info"><strong>' + product.name + (isAvailable(product) ? '' : ' <span class="stock-sold-out">已售罄</span>') + '</strong><p>' + product.category + ' · 最多可兑' + max + '件 · 库存 ' + (product.stockLabel || product.stock) + '</p><button class="mobile-text-btn" data-product-detail="' + product.id + '">商品详情</button></div><div class="mobile-qty"><button data-dec="' + product.id + '" ' + (qty === 0 ? 'disabled' : '') + '>−</button><span>' + qty + '</span><button data-inc="' + product.id + '" ' + (disabledPlus ? 'disabled' : '') + '>＋</button></div></div>';
+      return '<div class="mobile-select-product ' + (isAvailable(product) ? '' : 'unavailable') + '"><div class="product-pic">' + product.icon + '</div><div class="mobile-select-info"><strong>' + product.name + '</strong><p>GUI皮肤 · ' + product.saleStatusLabel + (product.saleStatus === 'not_listed' ? '（仍可兑）' : '') + ' · 最多可兑' + max + '件</p><button class="mobile-text-btn" data-product-detail="' + product.id + '">商品详情</button></div><div class="mobile-qty"><button data-dec="' + product.id + '" ' + (qty === 0 ? 'disabled' : '') + '>−</button><span>' + qty + '</span><button data-inc="' + product.id + '" ' + (disabledPlus ? 'disabled' : '') + '>＋</button></div></div>';
     }).join('');
     var nextLabel = coupon.fulfillmentType === 'direct_ship' ? '去商城确认订单' : (coupon.fulfillmentType === 'store_verify' ? '确认并生成核销码' : '选好了，确认兑换');
     return header + '<div class="selection-tip"><b>' + coupon.candidateProductIds.length + '选' + coupon.redeemQuantity + '</b><span>已选 <strong>' + flow.total() + '</strong> / ' + coupon.redeemQuantity + ' 件</span></div>' +
-      '<p class="helper" style="margin:8px 2px">数量上限按商品分别配置；库存为0不可选择。</p>' + products +
+      '<p class="helper" style="margin:8px 2px">数量上限按SKU分别配置；销售未上架不影响已标记可兑换的GUI皮肤。</p>' + products +
       '<button class="mobile-cta" ' + (flow.total() === coupon.redeemQuantity ? 'data-submit-selection' : 'disabled style="opacity:.45"') + '>' + nextLabel + '</button>';
   }
 
@@ -71,13 +71,18 @@
     return '<div class="mobile-card"><h3>兑换内容（共' + flow.total() + '件）</h3>' + flow.chosen().map(function (product) { return productMini(product, true); }).join('') + '</div>' +
       '<div class="mobile-card"><h3>车联网履约车辆</h3><b>' + vehicle.car + '</b><p class="helper">' + vehicle.plate + ' · ' + vehicle.vin + '</p><p class="helper">车辆由券实例自动带入，不可修改。</p></div>' +
       '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>使用兑换券</span><b>1张</b></div><div class="inline" style="justify-content:space-between;margin-top:8px"><span>应付金额</span><b style="color:#ff5a36">¥0.00</b></div></div>' +
-      '<div class="exchange-warning"><b>确认兑换后卡券立即核销</b><p>车联网履约状态不影响券状态；本期不支持撤销、退款或恢复。</p></div><button class="mobile-cta" data-next="success">确认兑换</button>';
+      '<div class="exchange-warning"><b>提交后同步调用车联网</b><p>本次请求直接返回最终成功或失败；成功才创建兑换单并核销券，失败保持可使用。</p></div><button class="mobile-cta" data-sync-result="success">确认兑换（模拟同步成功）</button><button class="mobile-secondary-cta" data-sync-result="failed">模拟同步失败</button>';
   }
 
   function successPage() {
     var record = window.PrototypeState.currentRedemption;
+    if (!record.exchangeSucceeded) {
+      return '<div class="success-icon" style="background:#fff1f0;color:#cf1322">!</div><h2 style="text-align:center">兑换失败</h2><p class="helper" style="text-align:center;margin:8px 0 22px">车联网已在当前请求中同步返回最终失败</p>' +
+        '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>返回方式</span><b>同步实时返回</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>履约结果</span><span class="tag red">履约失败</span></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>卡券状态</span><span class="tag green">可使用</span></div><p class="failure-text" style="margin-top:12px">失败原因：' + record.failureReason + '</p></div>' +
+        '<button class="mobile-cta" data-retry-exchange>重新兑换</button><button class="mobile-secondary-cta" data-home>返回卡券中心</button>';
+    }
     return '<div class="success-icon">✓</div><h2 style="text-align:center">兑换成功</h2><p class="helper" style="text-align:center;margin:8px 0 22px">兑换单已创建，本张兑换券已核销</p>' +
-      '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>兑换单号</span><b>' + record.orderNo + '</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>车联网履约</span><span class="tag orange">待履约</span></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>卡券状态</span><span class="tag gray">已核销</span></div></div>' +
+      '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>兑换单号</span><b>' + record.orderNo + '</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>车联网履约</span><span class="tag green">履约成功</span></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>返回方式</span><b>同步实时返回</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>卡券状态</span><span class="tag gray">已核销</span></div></div>' +
       '<button class="mobile-cta" data-current-record>查看兑换详情</button><button class="mobile-secondary-cta" data-home>返回卡券中心</button>';
   }
 
@@ -104,7 +109,7 @@
     var step = window.PrototypeState.exchangeStep;
     var note = coupon.fulfillmentType === 'store_verify'
       ? '顺序强制为“选门店 → 选商品 → 生成兑换单并核销券 → 展示核销码”。'
-      : (coupon.fulfillmentType === 'direct_ship' ? '选品后跳转新商城确认订单；只有商城提交订单成功回跳后才创建兑换单并核销券。' : '券实例已绑定 VIN，用户无需选车；兑换单创建成功后立即核销券。');
+      : (coupon.fulfillmentType === 'direct_ship' ? '选品后跳转新商城确认订单；只有商城提交订单成功回跳后才创建兑换单并核销券。' : '券实例已绑定 VIN；卡券中心同步调用车联网，成功后创建兑换单并核销，失败不核销。');
     return window.prototypeShell('前台兑换流程', '卡券中心 / App与微信小程序',
       stepList(coupon, step) + '<div class="mobile-workspace"><div id="phoneHost">' + phone(step) + '</div><div>' +
       '<div class="panel"><div class="panel-head">当前示例券 <span class="tag orange">' + coupon.fulfillmentLabel + '</span></div><div class="panel-body"><b>' + coupon.name + '</b><p class="helper">' + coupon.subtitle + '</p><div class="evidence-note" style="margin-top:14px">' + note + '</div></div></div>' +
@@ -134,7 +139,7 @@
         var id = button.dataset.inc;
         var product = flow.product(id);
         var max = Number(flow.rule(id).maxRedeemQty || 1);
-        if (!isAvailable(product)) { window.showToast('该商品库存为0，暂不可选择'); return; }
+        if (!isAvailable(product)) { window.showToast('该商品未被产品中心标记为可兑换'); return; }
         if (flow.quantity(id) >= max) { window.showToast('该商品最多可兑换' + max + '件'); return; }
         if (flow.total() >= coupon.redeemQuantity) { window.showToast('本券最多选择' + coupon.redeemQuantity + '件'); return; }
         window.PrototypeState.redeemQuantities[id] = flow.quantity(id) + 1;
@@ -166,6 +171,15 @@
         gotoStep('confirm');
       }
     };
+    document.querySelectorAll('[data-sync-result]').forEach(function (button) {
+      button.onclick = function () {
+        window.ExchangeFlow.createRedemption({vehicle:window.ExchangeCouponMock.coupon.boundVehicle,syncResult:button.dataset.syncResult});
+        window.PrototypeState.exchangeStep = 'success';
+        window.navigateTo('mobile-flow');
+      };
+    });
+    var retry = document.querySelector('[data-retry-exchange]');
+    if (retry) retry.onclick = function () { window.PrototypeState.currentRedemption = null; window.PrototypeState.exchangeStep = 'confirm'; window.navigateTo('mobile-flow'); };
     var back = document.querySelector('[data-back]');
     if (back) back.onclick = function () {
       var previous = {store:'detail',select:coupon.fulfillmentType === 'store_verify' ? 'store' : 'detail',confirm:'select',success:'confirm'};

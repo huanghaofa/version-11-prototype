@@ -26,7 +26,7 @@
 
   function quantity(productId) {
     var item = product(productId);
-    if (!item || Number(item.stock) <= 0) return 0;
+    if (!item || item.redeemable === false || item.configEligible === false) return 0;
     return Number(window.PrototypeState.redeemQuantities[productId] || 0);
   }
 
@@ -61,21 +61,26 @@
   function createRedemption(extra) {
     var coupon = activeCoupon();
     var type = coupon.fulfillmentType;
+    extra = extra || {};
+    var syncFailed = type === 'telematics' && extra.syncResult === 'failed';
     var orderNo = 'RD20260728' + String(Date.now()).slice(-4);
     var record = {
-      orderNo: orderNo,
+      orderNo: syncFailed ? '未生成' : orderNo,
       couponId: coupon.id,
       couponName: coupon.name,
-      couponStatus: '已核销',
+      couponStatus: syncFailed ? '可使用' : '已核销',
       fulfillmentType: type,
       fulfillmentLabel: fulfillmentLabel(type),
-      fulfillmentStatus: type === 'telematics' ? '待履约' : (type === 'direct_ship' ? '待发货' : '待核销'),
+      fulfillmentStatus: type === 'telematics' ? (syncFailed ? '履约失败' : '履约成功') : (type === 'direct_ship' ? '待发货' : '待核销'),
+      responseMode: type === 'telematics' ? '同步实时返回' : '独立履约场景',
+      exchangeSucceeded: !syncFailed,
+      failureReason: syncFailed ? '目标车辆暂不支持所选皮肤版本，请稍后重试或联系客服' : '',
       exchangeTime: '2026-07-28 14:30:00',
       items: chosen().map(function (item) {
-        return {productId: item.id, qty: quantity(item.id)};
+        return {productId: item.id, qty: quantity(item.id), status: type === 'telematics' ? (syncFailed ? 'failed' : 'success') : item.defaultStatus};
       })
     };
-    Object.keys(extra || {}).forEach(function (key) { record[key] = extra[key]; });
+    Object.keys(extra).forEach(function (key) { record[key] = extra[key]; });
     window.PrototypeState.currentRedemption = record;
     return record;
   }

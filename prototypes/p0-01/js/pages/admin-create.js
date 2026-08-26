@@ -12,6 +12,10 @@
     return (product.allowedFulfillmentValues || []).indexOf(type) > -1;
   }
 
+  function phaseEligible(product) {
+    return product.sourceSystem === '产品中心' && product.productType === 'GUI_SKIN' && product.configEligible !== false && product.redeemable !== false && supports(product, window.PrototypeState.couponFulfillmentType);
+  }
+
   function selectedProducts() {
     return window.ExchangeCouponMock.products.filter(function (product) {
       return window.PrototypeState.selectedProductIds.indexOf(product.id) > -1;
@@ -29,7 +33,7 @@
         ? '<div class="inline sku-max-inline"><input class="input sku-max-input" type="number" min="1" data-max-product="' + product.id + '" value="' + productMax(product.id) + '"><span>件</span></div>'
         : '<div class="qty-control"><button data-admin-minus="' + product.id + '">−</button><span>' + productMax(product.id) + '</span><button data-admin-plus="' + product.id + '">＋</button></div>';
       return '<div class="selected-row selected-row-single-fulfillment">' +
-        '<div><b>' + (product.spuName || product.name) + '</b><div class="sku-spec-line"><span class="tag blue">规格：' + (product.specName || '默认规格') + '</span><code>' + product.id + '</code></div><div class="helper">' + product.category + ' · ' + product.supplier + '</div></div>' +
+        '<div><b>' + (product.spuName || product.name) + '</b><div class="sku-spec-line"><span class="tag blue">规格：' + (product.specName || '默认规格') + '</span><code>' + product.id + '</code></div><div class="helper">产品中心 · ' + product.productTypeLabel + ' · ' + product.saleStatusLabel + (product.saleStatus === 'not_listed' ? '（不影响兑换）' : '') + '</div></div>' +
         '<div>' + ruleCell + '</div><div><span class="tag blue">' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</span></div>' +
         '<button class="btn btn-link remove-product" data-id="' + product.id + '">移除</button></div>';
     }).join('');
@@ -44,6 +48,10 @@
     return window.ExchangeCouponMock.products.filter(function (product) {
       return supports(product, window.PrototypeState.couponFulfillmentType);
     });
+  }
+
+  function eligibleProducts() {
+    return compatibleProducts().filter(phaseEligible);
   }
 
   function switchFulfillment(nextValue, selectEl) {
@@ -76,10 +84,11 @@
       ? {name:'单商品最多可兑换数量',required:'是',example:'2',rule:'正整数；用户选择该SKU时不可超过此数量'}
       : {name:'固定兑换数量',required:'是',example:'1',rule:'正整数；固定组合中该SKU的兑换件数'};
     return [
-      {name:'SKU编码',required:'是',example:'SKU-10001',rule:'新商城唯一SKU编码，用于匹配商品'},
-      {name:'商品名称',required:'否',example:'车机流量包 10GB',rule:'仅供运营核对，不作为商品匹配依据'},
+      {name:'产品中心SKU编码',required:'是',example:'SKU-GUI-10002',rule:'产品中心唯一SKU编码，用于匹配具体GUI皮肤规格'},
+      {name:'商品名称',required:'否',example:'深海流光皮肤·深海蓝',rule:'仅供运营核对，不作为商品匹配依据'},
+      {name:'商品类型',required:'是',example:'GUI_SKIN',rule:'一期只允许GUI_SKIN；流量、会员及其他类型校验失败'},
       quantityField,
-      {name:'供应商编码',required:'否',example:'SUP-IOV',rule:'填写时与新商城商品主数据进行一致性校验'}
+      {name:'销售上架状态',required:'否',example:'NOT_LISTED',rule:'仅展示；未上架但产品中心可兑换的GUI皮肤仍可导入'}
     ];
   }
 
@@ -90,7 +99,7 @@
       return '<tr><td><b>' + field.name + '</b></td><td><span class="tag ' + (field.required === '是' ? 'orange' : 'gray') + '">' + field.required + '</span></td><td><code>' + field.example + '</code></td><td>' + field.rule + '</td></tr>';
     }).join('');
     var example = withExampleRow
-      ? '</tbody></table></div><div class="template-example"><b>Excel 示例行</b><div><code>SKU-10001</code><span>车机流量包 10GB</span><code>' + (window.PrototypeState.ruleMode === 'choice' ? '2' : '1') + '</code><code>SUP-IOV</code></div></div>'
+      ? '</tbody></table></div><div class="template-example"><b>Excel 示例行</b><div><code>SKU-GUI-10002</code><span>深海流光皮肤·深海蓝</span><code>GUI_SKIN</code><code>' + (window.PrototypeState.ruleMode === 'choice' ? '2' : '1') + '</code><code>NOT_LISTED</code></div></div>'
       : '</tbody></table></div>';
     return header + rows + example;
   }
@@ -100,10 +109,10 @@
     var validated = false;
     var modeLabel = window.PrototypeState.ruleMode === 'choice' ? 'N选M' : '固定商品组合';
     var host = window.openModal('<div class="modal-content product-import-modal"><div class="modal-header"><b>批量导入适用商品</b><button class="btn btn-link" data-close-modal>×</button></div>' +
-      '<div class="modal-body"><div class="import-context-grid"><div><span>整券履约方式</span><b>' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</b></div><div><span>兑换方式</span><b>' + modeLabel + '</b></div><div><span>当前已选 SKU/规格</span><b>' + selectedProducts().length + ' 个</b></div></div>' +
+      '<div class="modal-body"><div class="import-context-grid"><div><span>商品数据源</span><b>产品中心</b></div><div><span>一期商品范围</span><b>仅 GUI 皮肤</b></div><div><span>当前已选 SKU/规格</span><b>' + selectedProducts().length + ' 个</b></div></div>' +
       '<div class="import-section"><h3>1. 选择导入方式</h3><div class="radio-row"><label><input type="radio" name="importMode" value="append" checked> 追加商品</label><label><input type="radio" name="importMode" value="replace"> 覆盖当前商品</label></div><p class="helper">追加时保留当前商品；覆盖时以文件中的有效数据替换当前候选池。</p></div>' +
       '<div class="import-section"><h3>2. 上传文件</h3><div class="file-picker-row"><button class="btn" id="pickProductFile">选择 Excel 文件</button><span id="productFileName">未选择文件</span></div><p class="helper">仅支持 .xlsx，文件不超过 5MB，读取第一个工作表，最多 5,000 行。</p></div>' +
-      '<div class="import-section"><h3>3. 文件字段</h3>' + importFieldTable(false) + '<div class="evidence-note" style="margin-top:12px">履约方式不放入模板。系统统一使用当前整券履约方式“<b>' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</b>”校验每个SKU，不兼容商品导入失败。</div></div>' +
+      '<div class="import-section"><h3>3. 文件字段</h3>' + importFieldTable(false) + '<div class="evidence-note" style="margin-top:12px">按产品中心商品类型与可兑换标识校验：GUI皮肤可通过；销售未上架不拦截；会员、流量及其他类型失败。</div></div>' +
       '<div id="importPreview" class="import-preview" hidden></div></div>' +
       '<div class="modal-footer"><button class="btn" data-close-modal>取消</button><button class="btn btn-primary" id="validateProductFile">开始校验</button></div></div>');
     host.querySelector('#pickProductFile').onclick = function () {
@@ -118,21 +127,21 @@
       if (!validated) {
         validated = true;
         host.querySelector('#importPreview').hidden = false;
-        host.querySelector('#importPreview').innerHTML = '<div class="import-result-head"><b>模拟校验结果</b><span>共3行：<em>2行通过</em>，<strong>1行失败</strong></span></div><div class="import-result-row"><code>第2行 · SKU-10001</code><span class="tag green">通过</span><span>商品存在，支持当前整券履约方式</span></div><div class="import-result-row"><code>第3行 · SKU-10002</code><span class="tag green">通过</span><span>最大兑换数量为1</span></div><div class="import-result-row error"><code>第4行 · SKU-20001</code><span class="tag red">失败</span><span>该商品不支持“' + typeLabel(window.PrototypeState.couponFulfillmentType) + '”</span></div><p class="helper">确认导入时仅导入校验通过的数据；失败行需修改后重新上传。</p>';
+        host.querySelector('#importPreview').innerHTML = '<div class="import-result-head"><b>模拟校验结果</b><span>共4行：<em>2行通过</em>，<strong>2行失败</strong></span></div><div class="import-result-row"><code>第2行 · SKU-GUI-10001</code><span class="tag green">通过</span><span>GUI皮肤，已上架且可兑换</span></div><div class="import-result-row"><code>第3行 · SKU-GUI-10002</code><span class="tag green">通过</span><span>GUI皮肤，销售未上架但产品中心可兑换</span></div><div class="import-result-row error"><code>第4行 · SKU-TRAFFIC-20001</code><span class="tag red">失败</span><span>流量类不在一期范围</span></div><div class="import-result-row error"><code>第5行 · SKU-MEMBER-30001</code><span class="tag red">失败</span><span>会员类不在一期范围</span></div><p class="helper">确认导入时仅导入校验通过的数据；其他商品类型需移除后重新上传。</p>';
         host.querySelector('#validateProductFile').textContent = '确认导入通过数据';
         return;
       }
       host.remove();
-      window.showToast('原型演示：2条有效商品已完成模拟导入');
+      window.showToast('原型演示：2条产品中心GUI皮肤已完成模拟导入');
     };
   }
 
   function downloadTemplateModal() {
     var modeLabel = window.PrototypeState.ruleMode === 'choice' ? 'N选M' : '固定商品组合';
     var host = window.openModal('<div class="modal-content product-import-modal"><div class="modal-header"><b>下载商品导入模板</b><button class="btn btn-link" data-close-modal>×</button></div>' +
-      '<div class="modal-body"><div class="import-context-grid"><div><span>模板版本</span><b>V2026.07</b></div><div><span>整券履约方式</span><b>' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</b></div><div><span>兑换方式</span><b>' + modeLabel + '</b></div></div>' +
+      '<div class="modal-body"><div class="import-context-grid"><div><span>模板版本</span><b>V2026.08</b></div><div><span>商品数据源</span><b>产品中心</b></div><div><span>一期范围</span><b>仅 GUI 皮肤</b></div></div>' +
       '<div class="import-section"><h3>模板字段说明</h3>' + importFieldTable(true) + '</div>' +
-      '<div class="evidence-note warn" style="margin-top:14px"><b>下载口径：</b>模板根据当前兑换方式生成数量字段；整券履约方式不写入Excel，由导入时的卡券配置统一校验。切换兑换方式后应重新下载模板。</div></div>' +
+      '<div class="evidence-note warn" style="margin-top:14px"><b>下载口径：</b>模板根据当前兑换方式生成数量字段；商品类型必须为GUI_SKIN。销售上架状态只作展示，未上架但产品中心可兑换的GUI皮肤可以导入。</div></div>' +
       '<div class="modal-footer"><button class="btn" data-close-modal>取消</button><button class="btn btn-primary" id="confirmDownloadTemplate">下载 Excel 模板</button></div></div>');
     host.querySelector('#confirmDownloadTemplate').onclick = function () {
       host.remove();
@@ -150,10 +159,10 @@
       return '<option value="' + supplier.id + '">' + supplier.name + '</option>';
     }).join('');
     var host = window.openModal('<div class="modal-content product-modal"><div class="modal-header"><b>选择适用商品</b><button class="btn btn-link" data-close-modal>×</button></div><div class="modal-body">' +
-      '<div class="modal-toolbar"><input class="input" id="productKeyword" placeholder="请输入商品名称、SKU编码或规格"><select class="select" id="categoryFilter" style="max-width:170px"><option value="">全部商品分类</option><option>车联网商品</option><option>精品实物</option><option>门店服务</option></select><select class="select" id="supplierFilter" style="max-width:210px"><option value="">全部供应商</option>' + supplierOptions + '</select><button class="btn btn-primary" id="queryProducts">查询</button><button class="btn" id="resetProducts">重置</button></div>' +
-      '<div class="helper supplier-source">供应商下拉数据来源：新商城供应商主数据</div>' +
-      '<div class="evidence-note" style="margin:10px 0 12px">整券履约方式：<b>' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</b>。先查询商品，再点击“选择规格”下钻到 SKU；最终候选池、数量规则和回显均以 SKU/规格为单位。</div>' +
-      '<div class="table-wrapper"><table><thead><tr><th><label class="product-select-all"><input type="checkbox" id="selectAllProducts"> <span>全选本页全部规格</span></label></th><th>商品</th><th>供应商</th><th>价格区间</th><th>规格数</th><th>履约方式</th><th>操作</th></tr></thead><tbody id="productRows"></tbody></table></div>' +
+      '<div class="modal-toolbar"><input class="input" id="productKeyword" placeholder="请输入商品名称、产品中心SKU或规格"><select class="select" id="categoryFilter" style="max-width:180px"><option value="">全部商品类型</option><option value="GUI_SKIN">GUI皮肤</option><option value="TRAFFIC">流量（一期不支持）</option><option value="MEMBERSHIP">会员（一期不支持）</option><option value="OTHER">其他（一期不支持）</option></select><select class="select" id="supplierFilter" style="max-width:210px"><option value="">全部供应商</option>' + supplierOptions + '</select><button class="btn btn-primary" id="queryProducts">查询</button><button class="btn" id="resetProducts">重置</button></div>' +
+      '<div class="helper supplier-source">商品名称、类型、SKU/规格、供应商、销售上架状态和可兑换标识均来源于产品中心。</div>' +
+      '<div class="evidence-note" style="margin:10px 0 12px"><b>一期仅允许 GUI 皮肤。</b>销售未上架不作为禁选理由；只要产品中心标记可兑换，仍可加入候选池。会员、流量及其他类型显示但不可选择。</div>' +
+      '<div class="table-wrapper"><table><thead><tr><th><label class="product-select-all"><input type="checkbox" id="selectAllProducts"> <span>全选本页可用规格</span></label></th><th>商品</th><th>产品类型</th><th>销售上架状态</th><th>规格数</th><th>一期范围</th><th>操作</th></tr></thead><tbody id="productRows"></tbody></table></div>' +
       '<div class="product-selection-footer"><div class="product-selection-count" id="productSelectionSummary"></div><div class="pagination product-pagination" id="productPagination"></div></div></div>' +
       '<div class="modal-footer"><button class="btn" data-close-modal>取消</button><button class="btn btn-primary" id="confirmProducts">提交</button></div></div>');
 
@@ -169,6 +178,12 @@
             subCategory: sku.subCategory,
             supplierId: sku.supplierId,
             supplier: sku.supplier,
+            productType: sku.productType,
+            productTypeLabel: sku.productTypeLabel,
+            saleStatus: sku.saleStatus,
+            saleStatusLabel: sku.saleStatusLabel,
+            configEligible: sku.configEligible,
+            exclusionReason: sku.exclusionReason,
             skus: []
           };
         }
@@ -184,7 +199,7 @@
       return productGroups().filter(function (group) {
         var skuKeywords = group.skus.map(function (sku) { return sku.id + ' ' + (sku.specName || '') + ' ' + sku.name; }).join(' ');
         return (!keyword || (group.name + ' ' + skuKeywords).toLowerCase().indexOf(keyword) > -1) &&
-          (!category || group.category === category) &&
+          (!category || group.productType === category) &&
           (!supplier || group.supplierId === supplier);
       });
     }
@@ -195,15 +210,16 @@
 
     function rowHtml(group) {
       var selectedCount = selectedSkuCount(group);
-      var prices = group.skus.map(function (sku) { return Number(sku.price); });
-      var minPrice = Math.min.apply(Math, prices);
-      var maxPrice = Math.max.apply(Math, prices);
       var allSelected = selectedCount === group.skus.length;
-      return '<tr data-product-row="' + group.id + '"><td><input type="checkbox" class="product-group-check" data-id="' + group.id + '" ' + (allSelected ? 'checked' : '') + ' aria-label="选择 ' + group.name + ' 的全部规格"></td>' +
-        '<td><b>' + group.name + '</b><div class="helper">' + group.id + ' · ' + group.category + ' / ' + group.subCategory + '</div></td><td>' + group.supplier + '</td><td class="product-price-range">¥' + minPrice + (minPrice === maxPrice ? '' : ' ～ ¥' + maxPrice) + '</td><td><b>' + group.skus.length + '</b> 个规格<div class="helper">已选 ' + selectedCount + ' 个</div></td><td><span class="tag gray">' + typeLabel(window.PrototypeState.couponFulfillmentType) + '</span></td><td><button class="btn btn-link product-drill-action" data-choose-skus="' + group.id + '">' + (selectedCount ? '修改规格' : '选择规格') + '</button></td></tr>';
+      var eligible = group.skus.some(phaseEligible);
+      var saleLabel = group.skus.some(function (sku) { return sku.saleStatus === 'not_listed'; }) ? '含销售未上架规格' : '已上架';
+      return '<tr data-product-row="' + group.id + '" class="' + (eligible ? '' : 'row-disabled') + '"><td><input type="checkbox" class="product-group-check" data-id="' + group.id + '" ' + (allSelected ? 'checked' : '') + ' ' + (eligible ? '' : 'disabled') + ' aria-label="选择 ' + group.name + ' 的可用规格"></td>' +
+        '<td><b>' + group.name + '</b><div class="helper">' + group.id + ' · 产品中心</div></td><td><span class="tag ' + (eligible ? 'blue' : 'gray') + '">' + group.productTypeLabel + '</span></td><td>' + saleLabel + '<div class="helper">未上架不影响可兑换判断</div></td><td><b>' + group.skus.length + '</b> 个规格<div class="helper">已选 ' + selectedCount + ' 个</div></td><td>' + (eligible ? '<span class="tag green">一期可选</span>' : '<span class="tag red">一期不支持</span><div class="helper">' + (group.exclusionReason || '仅支持GUI皮肤') + '</div>') + '</td><td><button class="btn btn-link product-drill-action" data-choose-skus="' + group.id + '" ' + (eligible ? '' : 'disabled') + '>' + (eligible ? (selectedCount ? '修改规格' : '选择规格') : '不可选择') + '</button></td></tr>';
     }
 
-    function setDraftSelected(id, selected) {
+  function setDraftSelected(id, selected) {
+      var product = window.ExchangeCouponMock.products.find(function (item) { return item.id === id; });
+      if (selected && !phaseEligible(product)) return;
       var index = draftSelectedIds.indexOf(id);
       if (selected && index === -1) draftSelectedIds.push(id);
       if (!selected && index > -1) draftSelectedIds.splice(index, 1);
@@ -212,34 +228,36 @@
 
     function updateSelectionState() {
       var currentPageSkus = [];
-      currentPageGroups.forEach(function (group) { currentPageSkus = currentPageSkus.concat(group.skus); });
+      currentPageGroups.forEach(function (group) { currentPageSkus = currentPageSkus.concat(group.skus.filter(phaseEligible)); });
       var selectedOnPage = currentPageSkus.filter(function (sku) { return draftSelectedIds.indexOf(sku.id) > -1; }).length;
       var selectAll = host.querySelector('#selectAllProducts');
       selectAll.checked = currentPageSkus.length > 0 && selectedOnPage === currentPageSkus.length;
       selectAll.indeterminate = selectedOnPage > 0 && selectedOnPage < currentPageSkus.length;
       var selectedSpuIds = {};
-      compatibleProducts().forEach(function (sku) { if (draftSelectedIds.indexOf(sku.id) > -1) selectedSpuIds[sku.spuId || sku.id] = true; });
+      eligibleProducts().forEach(function (sku) { if (draftSelectedIds.indexOf(sku.id) > -1) selectedSpuIds[sku.spuId || sku.id] = true; });
       host.querySelector('#productSelectionSummary').innerHTML = '已选 <strong>' + draftSelectedIds.length + '</strong> 个 SKU/规格<span>· 覆盖 ' + Object.keys(selectedSpuIds).length + ' 个商品，翻页和筛选后仍保留</span>';
     }
 
     function openSkuModal(group) {
-      var tempSelectedIds = group.skus.filter(function (sku) { return draftSelectedIds.indexOf(sku.id) > -1; }).map(function (sku) { return sku.id; });
+      var eligibleSkus = group.skus.filter(phaseEligible);
+      var tempSelectedIds = eligibleSkus.filter(function (sku) { return draftSelectedIds.indexOf(sku.id) > -1; }).map(function (sku) { return sku.id; });
       var tempRules = Object.assign({}, draftRules);
       var specHost = window.openModal('<div class="modal-content sku-modal"><div class="modal-header"><div><b>选择规格 / SKU</b><div class="helper">' + group.name + ' · ' + group.id + '</div></div><button class="btn btn-link" data-close-modal>×</button></div><div class="modal-body">' +
         '<div class="evidence-note" style="margin-bottom:12px">请勾选需要加入兑换券候选池的具体规格。' + (mode === 'choice' ? '“最多可兑换数量”按每个 SKU 独立保存。' : '“固定兑换数量”按每个 SKU 独立保存。') + '</div>' +
         '<div class="sku-selection-note"><label class="product-select-all"><input type="checkbox" id="selectAllSkus"> 全选本商品规格</label><span id="skuSelectionCount"></span></div>' +
-        '<div class="table-wrapper sku-modal-table"><table><thead><tr><th>选择</th><th>规格</th><th>SKU编码</th><th>商城价</th><th>可用库存</th><th>' + (mode === 'choice' ? '单SKU最多可兑' : '固定兑换数量') + '</th></tr></thead><tbody id="skuRows"></tbody></table></div></div>' +
+        '<div class="table-wrapper sku-modal-table"><table><thead><tr><th>选择</th><th>规格</th><th>产品中心SKU</th><th>销售上架状态</th><th>可兑换标识</th><th>' + (mode === 'choice' ? '单SKU最多可兑' : '固定兑换数量') + '</th></tr></thead><tbody id="skuRows"></tbody></table></div></div>' +
         '<div class="modal-footer"><button class="btn" data-close-modal>取消</button><button class="btn btn-primary" id="confirmSkuSelection">确认规格</button></div></div>');
 
       function renderSkuRows() {
         specHost.querySelector('#skuRows').innerHTML = group.skus.map(function (sku) {
           var checked = tempSelectedIds.indexOf(sku.id) > -1;
-          return '<tr data-sku-row="' + sku.id + '"><td><input type="checkbox" class="sku-check" data-id="' + sku.id + '" ' + (checked ? 'checked' : '') + ' aria-label="选择规格 ' + (sku.specName || '默认规格') + '"></td><td><b>' + (sku.specName || '默认规格') + '</b><div class="helper">' + sku.name + '</div></td><td><code>' + sku.id + '</code></td><td>¥' + sku.price + '</td><td>' + (sku.stockLabel || sku.stock) + '</td><td><div class="inline sku-max-inline"><input class="input sku-max-input" type="number" min="1" data-sku-rule="' + sku.id + '" value="' + Number(tempRules[sku.id] || 1) + '" ' + (checked ? '' : 'disabled') + '><span>件</span></div></td></tr>';
+          var eligible = phaseEligible(sku);
+          return '<tr data-sku-row="' + sku.id + '" class="' + (eligible ? '' : 'row-disabled') + '"><td><input type="checkbox" class="sku-check" data-id="' + sku.id + '" ' + (checked ? 'checked' : '') + ' ' + (eligible ? '' : 'disabled') + ' aria-label="选择规格 ' + (sku.specName || '默认规格') + '"></td><td><b>' + (sku.specName || '默认规格') + '</b><div class="helper">' + sku.name + '</div></td><td><code>' + sku.id + '</code></td><td>' + sku.saleStatusLabel + (sku.saleStatus === 'not_listed' ? '<div class="helper">不影响兑换</div>' : '') + '</td><td>' + (eligible ? '<span class="tag green">可兑换</span>' : '<span class="tag red">一期不可选</span>') + '</td><td><div class="inline sku-max-inline"><input class="input sku-max-input" type="number" min="1" data-sku-rule="' + sku.id + '" value="' + Number(tempRules[sku.id] || 1) + '" ' + (checked && eligible ? '' : 'disabled') + '><span>件</span></div></td></tr>';
         }).join('');
         var selectAllSkus = specHost.querySelector('#selectAllSkus');
-        selectAllSkus.checked = tempSelectedIds.length === group.skus.length;
-        selectAllSkus.indeterminate = tempSelectedIds.length > 0 && tempSelectedIds.length < group.skus.length;
-        specHost.querySelector('#skuSelectionCount').innerHTML = '已选 <b>' + tempSelectedIds.length + '</b> / ' + group.skus.length + ' 个规格';
+        selectAllSkus.checked = eligibleSkus.length > 0 && tempSelectedIds.length === eligibleSkus.length;
+        selectAllSkus.indeterminate = tempSelectedIds.length > 0 && tempSelectedIds.length < eligibleSkus.length;
+        specHost.querySelector('#skuSelectionCount').innerHTML = '已选 <b>' + tempSelectedIds.length + '</b> / ' + eligibleSkus.length + ' 个一期可用规格';
         specHost.querySelectorAll('.sku-check').forEach(function (check) {
           check.onchange = function () {
             var index = tempSelectedIds.indexOf(check.dataset.id);
@@ -255,7 +273,7 @@
       }
 
       specHost.querySelector('#selectAllSkus').onchange = function () {
-        tempSelectedIds = this.checked ? group.skus.map(function (sku) { return sku.id; }) : [];
+        tempSelectedIds = this.checked ? eligibleSkus.map(function (sku) { return sku.id; }) : [];
         tempSelectedIds.forEach(function (id) { if (!tempRules[id]) tempRules[id] = 1; });
         renderSkuRows();
       };
@@ -277,7 +295,7 @@
         check.indeterminate = currentSelectedCount > 0 && currentSelectedCount < currentGroup.skus.length;
         check.onchange = function () {
           var group = productGroups().find(function (item) { return item.id === check.dataset.id; });
-          group.skus.forEach(function (sku) { setDraftSelected(sku.id, check.checked); });
+          group.skus.filter(phaseEligible).forEach(function (sku) { setDraftSelected(sku.id, check.checked); });
           renderTable();
         };
       });
@@ -311,7 +329,7 @@
 
     host.querySelector('#selectAllProducts').onchange = function () {
       var checked = this.checked;
-      currentPageGroups.forEach(function (group) { group.skus.forEach(function (sku) { setDraftSelected(sku.id, checked); }); });
+      currentPageGroups.forEach(function (group) { group.skus.filter(phaseEligible).forEach(function (sku) { setDraftSelected(sku.id, checked); }); });
       renderTable();
     };
     host.querySelector('#queryProducts').onclick = function () { currentPage = 1; renderTable(); };
@@ -324,7 +342,7 @@
     };
     host.querySelector('#confirmProducts').onclick = function () {
       var redeemLimit = 2;
-      var ids = compatibleProducts().filter(function (product) { return draftSelectedIds.indexOf(product.id) > -1; }).map(function (product) { return product.id; });
+      var ids = eligibleProducts().filter(function (product) { return draftSelectedIds.indexOf(product.id) > -1; }).map(function (product) { return product.id; });
       if (mode === 'choice' && ids.length < redeemLimit) { window.showToast('候选商品数不能少于每券可兑换件数2'); return; }
       if (mode === 'choice') {
         var capacity = ids.reduce(function (sum, id) { return sum + Number(draftRules[id] || 1); }, 0);
@@ -379,29 +397,29 @@
 
   window.Pages['admin-create'] = {
     render: function () {
-      var fulfillmentOptions = window.ExchangeCouponMock.fulfillmentTypes.map(function (type) {
+      var fulfillmentOptions = window.ExchangeCouponMock.phaseOneFulfillmentTypes.map(function (type) {
         return '<option value="' + type.value + '" ' + (type.value === window.PrototypeState.couponFulfillmentType ? 'selected' : '') + '>' + type.label + '</option>';
       }).join('');
       return window.prototypeShell('新增卡券', '卡券中心 / 卡券管理 / 新增卡券',
-        '<div class="evidence-note warn" style="margin-bottom:16px"><b>本轮规则：</b>整张兑换券只能选择一种履约方式；商品选择范围由该履约方式过滤。</div>' +
+        '<div class="evidence-note warn" style="margin-bottom:16px"><b>2026-08-25确认口径：</b>商品统一来自产品中心；一期仅配置GUI皮肤；销售未上架但产品中心可兑换的皮肤仍可选择；车联网同步返回最终结果。</div>' +
         '<div class="panel"><div class="panel-body">' +
         '<div class="form-section"><div class="section-title">基本信息</div><div class="form-grid">' +
         '<div class="field"><label class="required">品牌</label><select class="select"><option>日产</option></select></div>' +
-        '<div class="field"><label class="required">业务场景</label><select class="select"><option>商城营销 / 新商城</option></select></div>' +
+        '<div class="field"><label class="required">业务场景</label><select class="select"><option>车联网兑换场景（目标态）</option></select></div>' +
         '<div class="field"><label class="required">卡券分类</label><select class="select"><option>兑换券</option></select></div>' +
-        '<div class="field"><label class="required">卡券名称</label><input class="input" value="车联网好礼5选2兑换券"></div>' +
-        '<div class="field full"><label>卡券描述</label><textarea class="textarea">从5种同履约类型商品中任选2件，兑换单创建成功后立即核销卡券。</textarea></div>' +
+        '<div class="field"><label class="required">卡券名称</label><input class="input" value="GUI皮肤5选2兑换券"></div>' +
+        '<div class="field full"><label>卡券描述</label><textarea class="textarea">从产品中心5款GUI皮肤中任选2件；车联网同步返回履约成功后创建兑换单并核销卡券。</textarea></div>' +
         '<div class="field"><label class="required">发放数量</label><div class="inline"><input class="input" value="10000"><span>张</span></div></div>' +
         '<div class="field"><label>适用车系/车型</label><button class="btn">选择车系/车型</button><div class="helper">建券和发券时由运营控制，兑换时不二次过滤</div></div>' +
-        '<div class="field full"><label class="required">使用须知</label><textarea class="textarea">1. 本券仅包含一种履约方式；2. 确认兑换后卡券立即核销；3. 履约进度在兑换详情中查询；4. 失败请联系客服。</textarea></div>' +
+        '<div class="field full"><label class="required">使用须知</label><textarea class="textarea">1. 一期仅支持GUI皮肤；2. 销售未上架不影响可兑换皮肤；3. 车联网同步返回成功后卡券核销；4. 同步失败卡券保持可使用。</textarea></div>' +
         '</div></div>' +
         '<div class="form-section"><div class="section-title">兑换规则 <span class="tag orange">兑换券专属</span></div><div class="form-grid">' +
-        '<div class="field"><label class="required">整券履约方式</label><select class="select" id="couponFulfillmentType">' + fulfillmentOptions + '</select><div class="helper">当前即使枚举只有一个也使用下拉；一张券只能保存一个值</div></div>' +
+        '<div class="field"><label class="required">整券履约方式</label><select class="select" id="couponFulfillmentType">' + fulfillmentOptions + '</select><div class="helper">一期仅有车联网履约一个枚举值，仍保留下拉控件</div></div>' +
         '<div class="field"><label class="required">兑换方式</label><div class="radio-row"><label><input type="radio" name="ruleMode" value="fixed" ' + (window.PrototypeState.ruleMode === 'fixed' ? 'checked' : '') + '> 固定商品组合</label><label><input type="radio" name="ruleMode" value="choice" ' + (window.PrototypeState.ruleMode === 'choice' ? 'checked' : '') + '> N选M</label></div></div>' +
         ruleFields() +
-        '<div class="field full"><label class="required">适用商城商品 SKU/规格</label><div style="margin-bottom:10px"><button class="btn btn-primary" id="chooseProducts">选择商品及规格</button><button class="btn" id="uploadProducts">上传文件</button><button class="btn" id="downloadProductTemplate">下载模板</button></div><div class="selected-box" id="selectedProducts">' + selectedRows() + '</div><div class="helper">先下钻到 SKU/规格后加入候选池；“最多可兑换数量”保存在券与 SKU 的关系上。</div></div>' +
+        '<div class="field full"><label class="required">产品中心 GUI 皮肤 SKU/规格</label><div style="margin-bottom:10px"><button class="btn btn-primary" id="chooseProducts">选择商品及规格</button><button class="btn" id="uploadProducts">上传文件</button><button class="btn" id="downloadProductTemplate">下载模板</button></div><div class="selected-box" id="selectedProducts">' + selectedRows() + '</div><div class="helper">商品源为产品中心；只允许GUI皮肤。下钻到SKU/规格后配置数量，未上架但可兑换的GUI皮肤正常回显。</div></div>' +
         '</div></div>' +
-        '<div class="form-section"><div class="section-title">核销规则</div><div class="form-grid"><div class="field"><label>核销时点</label><input class="input" value="兑换单创建成功后立即核销" disabled><div class="helper">不等待履约、发货或到店核销结果；本期不做预占</div></div><div class="field"><label>可逆规则</label><input class="input" value="不支持撤销、退款恢复" disabled></div></div></div>' +
+        '<div class="form-section"><div class="section-title">履约与核销规则</div><div class="form-grid"><div class="field"><label>车联网返回方式</label><input class="input" value="同步实时返回最终成功/失败" disabled><div class="helper">不使用已受理、异步回调或履约中状态</div></div><div class="field"><label>核销时点</label><input class="input" value="同步履约成功后创建兑换单并核销" disabled></div></div></div>' +
         '</div></div><div class="sticky-actions"><button class="btn" id="resetForm">重置</button><button class="btn btn-primary" id="submitForm">提交</button></div>');
     },
     init: function () {
@@ -414,15 +432,15 @@
       });
       document.getElementById('submitForm').onclick = function () {
         if (!window.PrototypeState.selectedProductIds.length) { window.showToast('请先选择适用商品 SKU/规格'); return; }
-        var incompatible = selectedProducts().some(function (product) { return !supports(product, window.PrototypeState.couponFulfillmentType); });
-        if (incompatible) { window.showToast('存在与整券履约方式不兼容的商品'); return; }
-        window.showToast('原型演示：单一履约与 SKU 级规则校验通过');
+        var incompatible = selectedProducts().some(function (product) { return !phaseEligible(product); });
+        if (incompatible) { window.showToast('存在非GUI皮肤或产品中心不可兑换商品'); return; }
+        window.showToast('原型演示：产品中心GUI皮肤、单一履约与SKU级规则校验通过');
       };
       document.getElementById('resetForm').onclick = function () {
         window.PrototypeState.ruleMode = 'choice';
         window.PrototypeState.couponFulfillmentType = 'telematics';
-        window.PrototypeState.selectedProductIds = ['SKU-10001','SKU-10002','SKU-10003','SKU-10004','SKU-10005'];
-        window.PrototypeState.couponProductRules = {'SKU-10001':2,'SKU-10002':1,'SKU-10003':1,'SKU-10004':1,'SKU-10005':1};
+        window.PrototypeState.selectedProductIds = ['SKU-GUI-10001','SKU-GUI-10002','SKU-GUI-10003','SKU-GUI-10004','SKU-GUI-10005'];
+        window.PrototypeState.couponProductRules = {'SKU-GUI-10001':2,'SKU-GUI-10002':1,'SKU-GUI-10003':1,'SKU-GUI-10004':1,'SKU-GUI-10005':1};
         window.navigateTo('admin-create');
         window.showToast('已恢复车联网5选2演示规则');
       };

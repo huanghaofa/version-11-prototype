@@ -10,7 +10,7 @@
   }
 
   function pageData(){
-    if(window.PrototypeState.fulfillmentSource==='current'&&currentItems().length){return {orderNo:'RD202607221015',exchangeTime:'2026-07-22 10:15:38',couponStatus:'已核销',orderStatus:'履约处理中',items:currentItems()};}
+    if(window.PrototypeState.fulfillmentSource==='current'&&currentItems().length){return {orderNo:'RD202608251015',exchangeTime:'2026-08-25 10:15:38',couponStatus:'已核销',orderStatus:'履约成功',responseMode:'同步实时返回',items:currentItems()};}
     return window.ExchangeCouponMock.redemptionRecord;
   }
 
@@ -24,7 +24,7 @@
     if(item.status==='failed')action='<button class="fulfillment-action danger" data-contact data-product="'+p.name+'">查看处理方式</button>';
     else if(p.fulfillmentValue==='direct_ship'&&(item.status==='shipped'||item.status==='signed'))action='<button class="fulfillment-action" data-logistics="'+(order?order.orderNo:'')+'">查看物流</button>';
     var extra='';
-    if(p.fulfillmentValue==='telematics')extra='<p>履约车辆：'+window.ExchangeCouponMock.coupon.boundVehicle.plate+' · '+window.ExchangeCouponMock.coupon.boundVehicle.vin+'</p>';
+    if(p.fulfillmentValue==='telematics')extra='<p>履约车辆：'+window.ExchangeCouponMock.coupon.boundVehicle.plate+' · '+window.ExchangeCouponMock.coupon.boundVehicle.vin+'</p><p>返回方式：同步实时返回</p>';
     if(p.fulfillmentValue==='direct_ship')extra='<p>收货人：'+window.ExchangeCouponMock.coupon.receiver.name+' '+window.ExchangeCouponMock.coupon.receiver.phone+'</p>';
     if(p.fulfillmentValue==='store_verify')extra='<p>适用范围：全部适用专营店</p>';
     return '<div class="fulfillment-item '+(item.status==='failed'?'has-error':'')+'"><div class="fulfillment-item-top"><div class="product-pic">'+p.icon+'</div><div><b>'+p.name+' × '+item.qty+'</b><p>'+p.fulfillment+' · '+p.supplier+'</p></div><span class="tag '+tagClass(item.status)+'">'+label+'</span></div><div class="fulfillment-item-extra"><p>履约单：'+(order?order.orderNo:'系统生成中')+'</p>'+extra+(item.failureReason?'<p class="failure-text">失败原因：'+item.failureReason+'</p>':'')+'</div>'+action+'</div>';
@@ -44,7 +44,7 @@
   function render(){
     var data=pageData();var hasFailure=data.items.some(function(i){return i.status==='failed';});
     return window.prototypeShell('兑换单履约 / 发货状态','卡券中心 / 兑换单 / 履约与发货',
-      '<div class="mobile-workspace"><div class="phone"><div class="phone-notch"></div><div class="mobile-nav"><span class="back" data-fulfillment-back>‹</span>履约 / 发货状态</div><div class="mobile-body"><div class="fulfillment-order-head"><div><span>兑换单号</span><b>'+data.orderNo+'</b></div><span class="tag orange">'+data.orderStatus+'</span><p>卡券状态：'+data.couponStatus+' · 兑换时间：'+data.exchangeTime+'</p></div>'+(hasFailure?'<div class="failure-banner"><b>部分商品履约失败</b><p>点击失败商品查看处理方式并联系客服。</p></div>':'')+'<div class="fulfillment-list">'+data.items.map(itemCard).join('')+'</div><div class="mobile-card"><h3>状态说明</h3><p class="helper">不同商品会分别更新状态，整张兑换券不会因单个商品失败而恢复。</p></div><button class="mobile-secondary-cta" data-fulfillment-back>返回兑换详情</button></div></div><div><div class="panel"><div class="panel-head">状态枚举 <span class="tag orange">目标态</span></div><div class="panel-body"><div class="status-enum-block"><b>车联网履约</b><p><span>待履约</span><span>履约中</span><span>履约成功</span><span class="danger-text">失败</span></p></div><div class="status-enum-block"><b>直邮</b><p><span>待发货</span><span>已发货</span><span>已签收</span><span class="danger-text">失败</span></p></div><div class="status-enum-block"><b>到店核销</b><p><span>待核销</span><span>已核销</span></p></div></div></div><div class="panel"><div class="panel-head">页面行为</div><div class="panel-body"><p>• 车联网状态逐商品展示。</p><p style="margin-top:8px">• 失败商品弹窗提示联系客服。</p><p style="margin-top:8px">• 直邮“已发货/已签收”可点击查询物流单。</p><p style="margin-top:8px">• 到店核销仅展示待核销和已核销。</p></div></div></div></div>');
+      '<div class="mobile-workspace"><div class="phone"><div class="phone-notch"></div><div class="mobile-nav"><span class="back" data-fulfillment-back>‹</span>履约结果</div><div class="mobile-body"><div class="fulfillment-order-head"><div><span>兑换单号</span><b>'+data.orderNo+'</b></div><span class="tag '+tagClass(data.orderStatus==='履约成功'?'success':'failed')+'">'+data.orderStatus+'</span><p>卡券状态：'+data.couponStatus+' · 兑换时间：'+data.exchangeTime+'</p></div>'+(hasFailure?'<div class="failure-banner"><b>车联网同步返回履约失败</b><p>该次兑换未成功，失败原因可用于重试或联系客服。</p></div>':'')+'<div class="fulfillment-list">'+data.items.map(itemCard).join('')+'</div><div class="mobile-card"><h3>状态说明</h3><p class="helper">一期GUI皮肤在同一次请求内返回最终成功或失败，不经过已受理、异步回调或履约中。</p></div><button class="mobile-secondary-cta" data-fulfillment-back>返回兑换详情</button></div></div><div><div class="panel"><div class="panel-head">一期车联网状态 <span class="tag orange">已确认</span></div><div class="panel-body"><div class="status-enum-block"><b>同步最终结果</b><p><span>履约成功</span><span class="danger-text">履约失败</span></p></div><div class="evidence-note">直邮和到店核销属于独立场景，本次不修改其状态枚举。</div></div></div><div class="panel"><div class="panel-head">页面行为</div><div class="panel-body"><p>• 成功：生成兑换单、卡券已核销。</p><p style="margin-top:8px">• 失败：不形成成功兑换、卡券保持可使用。</p><p style="margin-top:8px">• 结果为同步终态，不再等待后续回调。</p></div></div></div></div>');
   }
 
   function init(){

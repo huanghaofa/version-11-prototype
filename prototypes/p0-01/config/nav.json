@@ -8,7 +8,7 @@
     ]},
     {"key":"mobile","label":"前台原型（App / 小程序）","icon":"▣","children":[
       {"key":"mobile-home","label":"卡券中心"},
-      {"key":"mobile-flow","label":"单一履约兑换流程"},
+      {"key":"mobile-flow","label":"GUI皮肤同步兑换流程"},
       {"key":"mobile-mall-order","label":"商城确认订单（模拟）"},
       {"key":"mobile-store-code","label":"到店核销码"},
       {"key":"mobile-current-record","label":"当前兑换详情"},
