@@ -31,7 +31,7 @@
     return window.MockData.subsidies.filter(function (row) {
       function includes(key, value) { return !value || String(key).toLowerCase().includes(String(value).toLowerCase()); }
       var codeOk = !f.code || includes(row.code, f.code) || includes(window.maskCouponCode(row.code), f.code);
-      return includes(row.id, f.id) && codeOk &&
+      return includes(row.id, f.id) && includes(row.couponName, f.couponName) && codeOk &&
         includes(row.documentNo, f.documentNo) && includes(row.vin, f.vin) && includes(row.phone, f.phone) &&
         includes(row.oneId, f.oneId) && includes(row.ruleId, f.rule) && includes(row.ruleName, f.rule) &&
         (!f.channel || row.channel === f.channel) && (!f.settlementStatus || row.settlementStatus === f.settlementStatus) &&
@@ -47,40 +47,40 @@
     var start = (subsidyState.page - 1) * subsidyState.pageSize;
     var pageRows = rows.slice(start, start + subsidyState.pageSize);
     var body = pageRows.length ? pageRows.map(function (row) {
-      return '<tr><td>' + esc(row.id) + '</td><td>' + esc(window.maskCouponCode(row.code)) + '</td><td>' + esc(row.documentNo) + '</td>' +
+      return '<tr><td>' + esc(row.id) + '</td><td>' + esc(row.couponName) + '</td><td>' + esc(window.maskCouponCode(row.code)) + '</td><td>' + esc(row.documentNo) + '</td>' +
         '<td>' + esc(row.vin) + '</td><td>' + esc(row.phone) + '</td><td>' + esc(row.oneId) + '</td>' +
         '<td>' + (row.channel === '线上' ? '<span class="tag tag-blue">线上</span>' : '<span class="tag tag-green">线下</span>') + '</td><td>' + esc(row.source) + '</td>' +
         '<td>' + esc(row.ruleId) + '</td><td>' + esc(row.ruleName) + '</td><td>' + statusTag(row.documentStatus) + '</td><td>' + statusTag(row.settlementStatus) + '</td>' +
         '<td>' + esc(row.redeemedAt) + '</td><td>' + esc(row.syncedAt) + '</td><td class="operation-cell"><button class="btn-link detail-btn" data-id="' + esc(row.id) + '">查看明细</button></td></tr>';
-    }).join('') : '<tr><td colspan="15"><div class="empty"><span class="empty-icon">⌕</span>未查询到符合条件的卡券补贴数据</div></td></tr>';
+    }).join('') : '<tr><td colspan="16"><div class="empty"><span class="empty-icon">⌕</span>未查询到符合条件的卡券补贴数据</div></td></tr>';
     var pages = '';
     for (var i = 1; i <= totalPages; i += 1) pages += '<button class="page-button ' + (i === subsidyState.page ? 'active' : '') + '" data-page-num="' + i + '">' + i + '</button>';
     return '<div class="table-toolbar"><strong>补贴数据列表</strong><span class="table-meta">共 ' + rows.length + ' 条；一张卡券一行</span></div>' +
-      '<div class="table-wrap"><table><thead><tr><th>卡券ID</th><th>核销码</th><th>订单号/工单号</th><th>VIN</th><th>手机号</th><th>oneID</th><th>核销渠道</th><th>数据来源</th><th>补贴规则ID</th><th>补贴规则名称</th><th>订单/工单状态</th><th>结算状态</th><th>核销时间</th><th>最后同步时间</th><th class="operation-cell">操作</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
+      '<div class="table-wrap"><table><thead><tr><th>卡券ID</th><th>卡券名称</th><th>核销码</th><th>订单号/工单号</th><th>VIN</th><th>手机号</th><th>oneID</th><th>核销渠道</th><th>数据来源</th><th>补贴规则ID</th><th>补贴规则名称</th><th>订单/工单状态</th><th>结算状态</th><th>核销时间</th><th>最后同步时间</th><th class="operation-cell">操作</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
       '<div class="pagination"><span>第 ' + subsidyState.page + ' / ' + totalPages + ' 页</span>' + pages + '</div>';
   }
 
   function renderSubsidyPage() {
     return pageHeader('卡券补贴数据', 'T+1 接收新商城与 E3S 已计算的补贴结果，仅查询和展示当前快照') +
       '<section class="panel filter-panel"><div class="filter-grid">' +
-      field('f-id', '卡券ID', '请输入卡券ID') + field('f-code', '核销码', '支持脱敏码查询') + field('f-doc', '订单号/工单号', '请输入单据编号') +
+      field('f-id', '卡券ID', '请输入卡券ID') + field('f-name', '卡券名称', '请输入卡券名称') + field('f-code', '核销码', '支持脱敏码查询') + field('f-doc', '订单号/工单号', '请输入单据编号') +
       selectField('f-channel', '核销渠道', ['线上', '线下']) + selectField('f-settlement', '结算状态', ['未结算', '已结算', '无需结算']) +
       field('f-start', '核销开始日期', '', 'date') + field('f-end', '核销结束日期', '', 'date') + '</div>' +
       '<div id="advanced-filters" class="filter-grid advanced" style="display:' + (subsidyState.expanded ? 'grid' : 'none') + '">' +
       field('f-vin', 'VIN', '请输入VIN') + field('f-phone', '手机号', '请输入手机号') + field('f-oneid', 'oneID', '请输入oneID') +
       field('f-rule', '补贴规则ID/名称', '请输入规则ID或名称') + selectField('f-doc-status', '订单/工单状态', ['退款期内', '部分退款', '已全额退款', '已完成', '已完工']) + '</div>' +
       '<div class="filter-actions"><button id="expand-filter" class="btn-link expand-btn">' + (subsidyState.expanded ? '收起条件⌃' : '展开更多⌄') + '</button><button id="reset-subsidy" class="btn">重置</button><button id="query-subsidy" class="btn btn-primary">查询</button></div></section>' +
-      '<section class="panel table-panel"><div class="tipbar"><span>ⓘ</span><span>新商城数据展示为线上，E3S 数据展示为线下；预计与实际结算金额由来源系统直接传入，卡券中心不计算。</span></div><div id="subsidy-table">' + subsidyTable() + '</div></section>';
+      '<section class="panel table-panel"><div class="tipbar"><span>ⓘ</span><span>新商城数据展示为线上，E3S 数据展示为线下；预计与实际结算金额由来源系统直接传入，卡券中心不计算。卡券名称当前仅演示包含匹配，正式精确/模糊规则及同名区分方式待确认。</span></div><div id="subsidy-table">' + subsidyTable() + '</div></section>';
   }
 
   function fillFilterValues() {
-    var map = {'f-id':'id','f-code':'code','f-doc':'documentNo','f-channel':'channel','f-settlement':'settlementStatus','f-start':'startDate','f-end':'endDate','f-vin':'vin','f-phone':'phone','f-oneid':'oneId','f-rule':'rule','f-doc-status':'documentStatus'};
+    var map = {'f-id':'id','f-name':'couponName','f-code':'code','f-doc':'documentNo','f-channel':'channel','f-settlement':'settlementStatus','f-start':'startDate','f-end':'endDate','f-vin':'vin','f-phone':'phone','f-oneid':'oneId','f-rule':'rule','f-doc-status':'documentStatus'};
     Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) el.value = subsidyState.filters[map[id]] || ''; });
   }
 
   function readFilters() {
     subsidyState.filters = {
-      id: document.getElementById('f-id').value.trim(), code: document.getElementById('f-code').value.trim(), documentNo: document.getElementById('f-doc').value.trim(),
+      id: document.getElementById('f-id').value.trim(), couponName: document.getElementById('f-name').value.trim(), code: document.getElementById('f-code').value.trim(), documentNo: document.getElementById('f-doc').value.trim(),
       channel: document.getElementById('f-channel').value, settlementStatus: document.getElementById('f-settlement').value,
       startDate: document.getElementById('f-start').value, endDate: document.getElementById('f-end').value,
       vin: document.getElementById('f-vin') ? document.getElementById('f-vin').value.trim() : '', phone: document.getElementById('f-phone') ? document.getElementById('f-phone').value.trim() : '',

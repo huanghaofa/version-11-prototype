@@ -4,7 +4,7 @@
   window.MockData = {
     subsidies: [
       {
-        id: 'DEMO-CPN-001', code: 'DEMO-REDEEM-0001', documentNo: 'DEMO-ORDER-001',
+        id: 'DEMO-CPN-001', couponName: '车主精品焕新券（演示）', code: 'DEMO-REDEEM-0001', documentNo: 'DEMO-ORDER-001',
         vin: 'DEMO-VIN-001', phone: '—', oneId: '—', channel: '线上', source: '新商城',
         ruleId: 'RULE-ONLINE-01', ruleName: '商城精品券补贴规则', documentStatus: '部分退款',
         settlementStatus: '未结算', redeemedAt: '2026-08-18 10:26:32', syncedAt: '2026-08-19 02:05:18',
@@ -14,7 +14,7 @@
         ]
       },
       {
-        id: 'DEMO-CPN-002', code: 'DEMO-REDEEM-0002', documentNo: 'DEMO-ORDER-002',
+        id: 'DEMO-CPN-002', couponName: '用户关怀礼遇券（演示）', code: 'DEMO-REDEEM-0002', documentNo: 'DEMO-ORDER-002',
         vin: '—', phone: 'DEMO-MOBILE-002', oneId: 'DEMO-ONEID-002', channel: '线上', source: '新商城',
         ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '已完成',
         settlementStatus: '已结算', redeemedAt: '2026-08-12 15:08:44', syncedAt: '2026-08-19 02:06:02',
@@ -24,7 +24,7 @@
         ]
       },
       {
-        id: 'DEMO-CPN-003', code: 'DEMO-REDEEM-0003', documentNo: 'DEMO-ORDER-003',
+        id: 'DEMO-CPN-003', couponName: '车主精品焕新券（演示）', code: 'DEMO-REDEEM-0003', documentNo: 'DEMO-ORDER-003',
         vin: 'DEMO-VIN-003', phone: '—', oneId: '—', channel: '线上', source: '新商城',
         ruleId: 'RULE-ONLINE-01', ruleName: '商城精品券补贴规则', documentStatus: '已全额退款',
         settlementStatus: '无需结算', redeemedAt: '2026-08-17 09:42:10', syncedAt: '2026-08-19 02:08:45',
@@ -33,7 +33,7 @@
         ]
       },
       {
-        id: 'DEMO-CPN-004', code: 'DEMO-REDEEM-0004', documentNo: 'DEMO-WORKORDER-004',
+        id: 'DEMO-CPN-004', couponName: '售后养护补贴券（演示）', code: 'DEMO-REDEEM-0004', documentNo: 'DEMO-WORKORDER-004',
         vin: 'DEMO-VIN-004', phone: '—', oneId: '—', channel: '线下', source: 'E3S',
         ruleId: 'RULE-OFFLINE-03', ruleName: '售后备件补贴规则', documentStatus: '已完工',
         settlementStatus: '已结算', redeemedAt: '2026-08-10 13:15:29', syncedAt: '2026-08-19 03:01:12',
@@ -43,7 +43,7 @@
         ]
       },
       {
-        id: 'DEMO-CPN-005', code: 'DEMO-REDEEM-0005', documentNo: 'DEMO-WORKORDER-005',
+        id: 'DEMO-CPN-005', couponName: '用户关怀礼遇券（演示）', code: 'DEMO-REDEEM-0005', documentNo: 'DEMO-WORKORDER-005',
         vin: '—', phone: 'DEMO-MOBILE-005', oneId: 'DEMO-ONEID-005', channel: '线下', source: 'E3S',
         ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '已完工',
         settlementStatus: '未结算', redeemedAt: '2026-08-18 17:36:51', syncedAt: '2026-08-19 03:04:33',
@@ -52,7 +52,7 @@
         ]
       },
       {
-        id: 'DEMO-CPN-006', code: 'DEMO-REDEEM-0006', documentNo: 'DEMO-ORDER-006',
+        id: 'DEMO-CPN-006', couponName: '夏日车品优惠券（演示）', code: 'DEMO-REDEEM-0006', documentNo: 'DEMO-ORDER-006',
         vin: 'DEMO-VIN-006', phone: '—', oneId: '—', channel: '线上', source: '新商城',
         ruleId: 'RULE-COMMON-02', ruleName: '用户关怀通用补贴规则', documentStatus: '退款期内',
         settlementStatus: '未结算', redeemedAt: '2026-08-18 20:05:16', syncedAt: '2026-08-19 02:10:11',
