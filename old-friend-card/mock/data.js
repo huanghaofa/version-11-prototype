@@ -31,44 +31,6 @@
       validity: '领取后 30 天内有效（Mock）',
       selectedType: 'old-friend-card',
       selectedCardIds: ['MOCK-LYC-001', 'MOCK-LYC-002']
-    },
-    walletCoupons: [
-      {
-        id: 'MOCK-WALLET-001',
-        title: '老友卡售后维保券',
-        subtitle: '限时优惠，到店维保可用',
-        couponType: '代金券',
-        channel: '到店',
-        amountPrefix: '¥',
-        amount: '100',
-        amountCaption: '最高优惠',
-        useTime: '2026-09-01～2026-12-31',
-        claimedAt: '2026-09-02 10:00',
-        condition: '满 300 元可使用',
-        notice: '请在有效期内到店使用，具体以活动说明为准。',
-        verificationCode: '0000 0000 0000',
-        artworkLabel: '维保',
-        relatedCarProductIds: ['MOCK-LYC-001', 'MOCK-LYC-002'],
-        status: '新领取'
-      },
-      {
-        id: 'MOCK-WALLET-002',
-        title: '基础保养优惠券',
-        subtitle: '基础保养抵扣',
-        couponType: '代金券',
-        channel: '到店',
-        amountPrefix: '¥',
-        amount: '50',
-        amountCaption: '最高优惠',
-        useTime: '2026-09-01～2026-10-31',
-        claimedAt: '2026-09-01 09:30',
-        condition: '基础保养项目可使用',
-        notice: '具体使用规则以正式卡券配置为准。',
-        verificationCode: '1111 1111 1111',
-        artworkLabel: '保养',
-        relatedCarProductIds: [],
-        status: '即将过期'
-      }
-    ]
+    }
   };
 })();

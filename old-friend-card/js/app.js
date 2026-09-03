@@ -19,6 +19,5 @@
   }
 
   window.Pages['coupon-config'] = placeholder('新增售后维保券', '后台页面');
-  window.Pages.wallet = placeholder('我的卡券 · 售后维保', 'C 端页面');
-  window.Pages.sequence = placeholder('建券至核销完整时序图', '跨系统评审页');
+  window.Pages.sequence = placeholder('建券至核销流程', '业务流程');
 })();

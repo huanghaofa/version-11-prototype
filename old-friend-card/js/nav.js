@@ -6,14 +6,12 @@
   var currentPage = 'coupon-config';
   var titleMap = {
     'coupon-config': '新增售后维保券',
-    wallet: '我的卡券 · 售后维保',
-    sequence: '建券至核销完整时序图'
+    sequence: '建券至核销流程'
   };
 
   function navIcon(item) {
     if (item.key === 'coupon-config') return '<span class="nav-icon el-icon-s-ticket" aria-hidden="true"></span>';
-    if (item.key === 'wallet') return '<span class="nav-icon el-icon-mobile-phone" aria-hidden="true"></span>';
-    return '<span class="nav-icon nav-icon-text" aria-hidden="true">' + window.escapeHTML(item.icon || '序') + '</span>';
+    return '<span class="nav-icon nav-icon-text" aria-hidden="true">' + window.escapeHTML(item.icon || '流') + '</span>';
   }
 
   function normalizePage(value) {

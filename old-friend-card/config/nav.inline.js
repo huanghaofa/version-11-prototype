@@ -1,7 +1,6 @@
 window.InlineNavConfig = {
   menu: [
     { key: 'coupon-config', label: '后台 · 新增售后维保券', icon: '券' },
-    { key: 'wallet', label: 'C端 · 我的卡券', icon: '卡' },
-    { key: 'sequence', label: '建券至核销时序', icon: '序' }
+    { key: 'sequence', label: '建券至核销流程', icon: '流' }
   ]
 };

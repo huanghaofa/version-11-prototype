@@ -5,7 +5,8 @@
     selectedType: 'old-friend-card',
     selectedCardIds: [],
     formError: '',
-    savedAt: ''
+    savedAt: '',
+    savedCodes: []
   };
 
   function fieldRow(label, control, options) {
@@ -123,7 +124,7 @@
           fieldRow('站内信提醒', '<div class="rule-stack"><label><input type="radio" checked name="used-reminder"> 无</label><label><input type="radio" name="used-reminder"> <input class="inline-date-control" placeholder="请填写小程序短信模板" aria-label="核销后小程序站内信模板"> <input class="inline-date-control" placeholder="请填写app短信模板" aria-label="核销后App站内信模板"></label></div>', { required: true }) +
           sectionTitle('到期提醒') +
           fieldRow('站内信提醒', '<div class="rule-stack"><label><input type="radio" checked name="expiry-reminder"> 无</label><label><input type="radio" name="expiry-reminder"> <input class="mini-control" placeholder="天数" inputmode="numeric" aria-label="到期前提醒天数"> 天前提醒 <input class="inline-date-control" placeholder="请输入小程序站内信模板" aria-label="到期小程序站内信模板"> <input class="inline-date-control" placeholder="请输入app站内信模板" aria-label="到期App站内信模板"></label></div>', { required: true, help: '仅展示一次；提醒精确至分。' }) +
-          '<div class="form-actions"><span class="save-state" aria-live="polite">' + (state.savedAt ? '保存成功 · ' + window.escapeHTML(state.savedAt) : '') + '</span><button class="btn btn-primary" type="button" id="save-coupon" data-testid="save-coupon" data-anno="coupon-submit">提交</button><button class="btn" type="button" id="reset-coupon">重置</button></div>' +
+          '<div class="form-actions"><span class="save-state" aria-live="polite">' + (state.savedAt ? '保存成功 · ' + state.savedCodes.length + ' 个商品编码 · ' + window.escapeHTML(state.savedAt) : '') + '</span><button class="btn btn-primary" type="button" id="save-coupon" data-testid="save-coupon" data-anno="coupon-submit">提交</button><button class="btn" type="button" id="reset-coupon">重置</button></div>' +
         '</div>' +
       '</div>' +
       '<div class="workbench-tabs" aria-label="已打开页面"><button class="active" type="button">新增卡券 <span class="el-icon-close" aria-hidden="true"></span></button></div>' +
@@ -274,9 +275,11 @@
       return;
     }
     state.formError = '';
+    state.savedCodes = window.getOldFriendCardsByIds(state.selectedCardIds).map(function (card) { return card.carProductCode; });
     state.savedAt = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    window.__lastSavedCouponPayload = { applicableOldFriendCardCodes: state.savedCodes.slice() };
     rerender();
-    window.showToast('保存成功');
+    window.showToast('已保存 ' + state.savedCodes.length + ' 个商品编码');
   }
 
   function init() {
@@ -304,7 +307,7 @@
     var backButton = document.getElementById('back-button');
     if (backButton) backButton.addEventListener('click', function () { window.showToast('已返回卡券列表'); });
     var resetButton = document.getElementById('reset-coupon');
-    if (resetButton) resetButton.addEventListener('click', function () { state.selectedType = 'old-friend-card'; state.selectedCardIds = []; state.formError = ''; state.savedAt = ''; rerender(); window.showToast('已重置'); });
+    if (resetButton) resetButton.addEventListener('click', function () { state.selectedType = 'old-friend-card'; state.selectedCardIds = []; state.formError = ''; state.savedAt = ''; state.savedCodes = []; window.__lastSavedCouponPayload = null; rerender(); window.showToast('已重置'); });
   }
 
   window.Pages['coupon-config'] = { render: render, init: init };
