@@ -87,7 +87,7 @@
 
   function maybeRefreshConfig() {
     if (window.location.protocol === 'file:') return Promise.resolve();
-    return fetch('config/nav.json')
+    return fetch('config/nav.json?v=20260903-2')
       .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
       .then(function (loaded) { config = loaded; validPages = config.menu.map(function (item) { return item.key; }); renderNav(); })
       .catch(function () { console.info('[Prototype] nav.json 不可用，继续使用内联导航。'); });
