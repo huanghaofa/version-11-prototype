@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DFN P0 活动中心分享海报规则后台配置原型">
+  <link rel="icon" href="data:,">
+  <title>分享海报规则配置｜P0 活动中心</title>
+  <link rel="stylesheet" href="assets/css/app.css?v=20260827-1">
+</head>
+<body class="sit-ui">
+  <div class="prototype-shell">
+    <header class="top-bar">
+      <div class="top-left-tools">
+        <button class="header-text-button" id="menuModeToggle" type="button" aria-expanded="false">菜单模式切换</button>
+      </div>
+      <div class="top-actions">
+        <label class="global-search"><input type="search" placeholder="菜单查询" aria-label="菜单查询"></label>
+        <button class="header-text-button optional-action" type="button">导出记录</button>
+        <button class="header-text-button optional-action" type="button">通知 <span class="top-count">0</span></button>
+        <button class="header-text-button optional-action" type="button">帮助</button>
+        <button class="top-action" id="globalSpecButton" type="button">功能说明</button>
+        <span class="admin-name">超级管理员</span>
+      </div>
+    </header>
+
+    <aside class="app-sidebar" id="mainNav" aria-label="主导航">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>新零售营销系统</strong></div>
+      <div class="nav-caption">功能导航</div>
+      <a class="nav-link" href="#sa-poster-settings"><span class="nav-dot"></span><span>工作台</span></a>
+      <section class="nav-section open">
+        <button class="nav-section-title" type="button" aria-expanded="true"><span>活动中心</span><b>⌄</b></button>
+        <div class="nav-children">
+          <a data-existing-route="sa-placement-manage" href="#"><span>SA活动配置</span></a>
+          <a data-existing-route="sa-qr-settings" href="#"><span>二维码参数</span></a>
+          <a class="selected" href="#sa-poster-settings" aria-current="page"><span>分享海报规则</span></a>
+          <a data-existing-route="activity-overview" href="#"><span>SA活动报表</span></a>
+        </div>
+      </section>
+      <section class="nav-section">
+        <button class="nav-section-title" type="button" aria-expanded="false"><span>卡券中心</span><b>›</b></button>
+      </section>
+    </aside>
+
+    <main class="app-main" id="appMain" tabindex="-1">
+      <nav class="breadcrumb" aria-label="面包屑"><span>工作台</span><b>›</b><span>活动中心</span><b>›</b><strong>SA活动配置</strong><b>›</b><span>分享海报规则</span></nav>
+      <div class="module-nav" aria-label="活动中心快捷入口">
+        <span>组合活动列表</span><span>专属福利活动列表</span><span>保客活动创建</span><span>保客活动互斥关系</span><span>保客活动一店一码</span><strong>SA活动配置</strong><span>SA活动报表</span>
+      </div>
+      <section class="page-heading">
+        <div><h1>分享海报规则配置</h1><p>维护员工端生成分享海报时读取的默认背景和默认文案。</p></div>
+      </section>
+      <div class="ownership-strip"><span>活动配置主责：活动中心</span><strong>员工端仅读取当前生效配置</strong></div>
+
+      <nav class="subtabs placement-subtabs" aria-label="SA活动配置二级页面">
+        <a class="subtab" data-existing-route="sa-placement-manage" href="#">SA活动配置</a>
+        <a class="subtab" data-existing-route="sa-qr-settings" href="#">二维码参数</a>
+        <a class="subtab active" href="#sa-poster-settings" aria-current="page">分享海报规则</a>
+      </nav>
+
+      <div class="rule-alert" data-testid="scope-boundary"><strong>本期唯一增量：</strong>这里只维护员工端海报的默认规则；员工端读取当前生效配置并复用既有编辑、预览、分享和保存流程。普通/组合活动角色、分享权限、员工端页面和报表角色维度不在本次迁移范围。</div>
+
+      <section class="activity-form-section" data-anno="poster-rule-settings">
+        <div class="form-section-head">
+          <div><h2>分享海报规则</h2><p>原型以一套当前已生效配置演示；员工打开既有海报流程时读取以下默认值。</p></div>
+          <span class="lock-badge" id="configBadge" data-testid="config-badge"></span>
+        </div>
+
+        <div class="poster-rule-layout">
+          <div class="poster-rule-editor">
+            <section class="poster-rule-block">
+              <div class="poster-rule-block-head"><div><h3>默认模板 / 背景图</h3><p>系统提供默认模板，也可上传自定义背景图作为员工端默认底图。</p></div></div>
+              <div class="poster-background-current">
+                <span><strong id="currentBackgroundName" data-testid="background-name"></strong><small>建议比例 <b id="backgroundRatio"></b>；正式格式、像素尺寸和文件大小待确认</small></span>
+                <em id="backgroundModeBadge">系统模板</em>
+              </div>
+              <div class="poster-background-actions">
+                <button class="button" id="useSystemTemplate" type="button">使用系统模板</button>
+                <label class="button upload-button">上传背景图<input id="backgroundUpload" type="file" accept="image/*"></label>
+              </div>
+            </section>
+
+            <section class="poster-rule-block">
+              <div class="poster-rule-block-head"><div><h3>默认文案</h3><p>员工端读取后仍可按既有能力编辑，不改变现有生成和分享流程。</p></div></div>
+              <div class="poster-rule-fields">
+                <label class="poster-rule-field"><span><strong>默认标题</strong><small>最多20字</small></span><input id="defaultTitle" data-poster-rule-field="defaultTitle" data-testid="default-title" maxlength="20"></label>
+                <label class="poster-rule-field"><span><strong>默认副标题</strong><small>最多36字</small></span><input id="defaultSubtitle" data-poster-rule-field="defaultSubtitle" data-testid="default-subtitle" maxlength="36"></label>
+                <label class="poster-rule-field"><span><strong>默认二维码引导语</strong><small>最多24字</small></span><input id="defaultGuide" data-poster-rule-field="defaultGuide" data-testid="default-guide" maxlength="24"></label>
+              </div>
+            </section>
+
+            <aside class="poster-rule-pending"><strong>待确认</strong><span>最终按全局还是按活动配置、可维护模板数量、保存/发布/生效版本机制，均未在本原型固化。</span></aside>
+          </div>
+
+          <aside class="poster-rule-preview-panel">
+            <div class="poster-rule-preview-head"><div><h3>海报效果预览</h3><p>示例二维码及员工信息仅用于排版预览</p></div><button class="button" id="refreshPreview" type="button">刷新预览</button></div>
+            <div class="poster-rule-preview" id="posterPreview" data-testid="poster-preview">
+              <div class="poster-rule-brand">东风日产车主礼遇</div>
+              <div class="poster-rule-copy"><strong id="previewTitle"></strong><span id="previewSubtitle"></span></div>
+              <div class="poster-rule-qr"><img src="assets/images/sa-demo-qr.png" alt="海报二维码示意"><div><strong id="previewGuide"></strong><small id="previewIdentity"></small></div></div>
+            </div>
+            <div class="setting-meta"><span>当前配置</span><strong id="currentConfig"></strong><span>最后更新</span><strong id="lastUpdated"></strong></div>
+          </aside>
+        </div>
+
+        <div class="activity-form-footer poster-rule-footer">
+          <span>员工端只读取当前已生效默认值并复用既有流程；正式配置同步与发布架构待研发确认。</span>
+          <div><button class="button" id="resetPosterRule" type="button">恢复当前配置</button><button class="button primary" id="savePosterRule" type="button">保存配置</button></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="spec-drawer" id="specDrawer" aria-hidden="true" aria-labelledby="specTitle">
+    <div class="spec-drawer-head"><div><span>P0 功能标注</span><h2 id="specTitle">分享海报默认规则配置</h2></div><button id="closeSpecDrawer" type="button" aria-label="关闭功能说明">×</button></div>
+    <div class="spec-drawer-body" id="specDrawerBody"></div>
+  </aside>
+  <div class="drawer-mask" id="drawerMask" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="mock/data.js?v=20260827-1"></script>
+  <script src="annotations/annotations.js?v=20260827-1"></script>
+  <script src="js/app.js?v=20260827-1"></script>
+</body>
+</html>

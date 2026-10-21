@@ -394,19 +394,32 @@
   function comboField(label, value, attrs, help, required) {
     return '<div class="field"><label class="' + (required ? 'required' : '') + '">' + esc(label) + '</label><input value="' + esc(value || '') + '" ' + (attrs || '') + '>' + (help ? '<div class="field-help">' + esc(help) + '</div>' : '') + '</div>';
   }
+  function comboTierModeLabel(value) {
+    if (value === 'LEGACY') return '无分级组合活动（旧版）';
+    if (value === 'TIERED') return '分级组合活动（新版）';
+    return '';
+  }
   function comboEditorBody(readonly) {
     var disabled = readonly ? 'readonly' : '';
     var brandOptions = ['东风日产','启辰','英菲尼迪'].map(function (brand) {
       return '<option value="' + esc(brand) + '"' + (brand === comboDraft.brand ? ' selected' : '') + '>' + esc(brand) + '</option>';
     }).join('');
+    var tierModeOptions = [
+      {value:'',label:'请选择组合活动类型'},
+      {value:'LEGACY',label:'无分级组合活动（旧版）'},
+      {value:'TIERED',label:'分级组合活动（新版）'}
+    ].map(function (item) {
+      return '<option value="' + item.value + '"' + (item.value === comboDraft.tierMode ? ' selected' : '') + '>' + item.label + '</option>';
+    }).join('');
     var childRows = (comboDraft.childActivities || []).map(function (id, index) {
       return '<tr><td>' + (index + 1) + '</td><td>' + esc(id) + '</td><td>读取原活动配置</td><td>子活动名称不受展示名称影响</td></tr>';
     }).join('') || '<tr><td colspan="4"><div class="empty-state" style="padding:22px">创建后可继续关联子活动</div></td></tr>';
-    return '<div class="info-callout combo-rule-callout"><strong>展示优先级：</strong>SA 动态二维码链路优先展示“组合活动展示名称”；未配置时回退原组合活动名称。</div>' +
+    return '<div class="info-callout combo-rule-callout"><strong>配置说明：</strong>“组合活动类型”用于区分旧版无分级与新版分级；SA 动态二维码链路优先展示“组合活动展示名称”，未配置时回退原组合活动名称。</div>' +
       '<div class="editor-grid combo-editor-grid" data-anno="combo-editor-fields">' +
       comboField('组合活动ID',comboDraft.id,'readonly','系统生成，不作为对外展示名称') +
       '<div class="field"><label class="required">品牌</label><select data-combo-field="brand" ' + (readonly ? 'disabled' : '') + '>' + brandOptions + '</select></div>' +
       comboField('组合活动名称',comboDraft.name,'data-combo-field="name" maxlength="30" ' + disabled,'后台主体名称，必填',true) +
+      '<div class="field"><label class="required">组合活动类型</label><select data-combo-field="tierMode" ' + (readonly ? 'disabled' : '') + '>' + tierModeOptions + '</select><div class="field-help">旧版：子活动不区分准入等级；新版：子活动可分别配置号码级、绑车级、认证级。</div></div>' +
       comboField('组合活动展示名称',comboDraft.displayName,'data-combo-field="displayName" maxlength="30" ' + disabled,'选填；为空时自动回退组合活动名称') +
       comboField('组合活动时间',comboDraft.period,'data-combo-field="period" ' + disabled,'开始时间默认 00:00:00，结束时间默认 23:59:59',true) +
       comboField('推广渠道',comboDraft.channel,'data-combo-field="channel" ' + disabled,'渠道与品牌对应',true) +
@@ -450,9 +463,12 @@
 
   function openComboEditor(mode, record, readonly) {
     comboEditorMode = mode || comboEditorMode;
-    if (record) comboDraft = cloneCombo(record);
+    if (record) {
+      comboDraft = cloneCombo(record);
+      if (!comboDraft.tierMode) comboDraft.tierMode = 'LEGACY';
+    }
     if (!comboDraft) {
-      comboDraft = {id:'保存后生成',name:'',displayName:'',brand:'东风日产',period:'',channel:'',status:'草稿',activityLink:'',storeScope:{mode:'ALL',storeIds:[]},childActivities:[]};
+      comboDraft = {id:'保存后生成',name:'',tierMode:'',displayName:'',brand:'东风日产',period:'',channel:'',status:'草稿',activityLink:'',storeScope:{mode:'ALL',storeIds:[]},childActivities:[]};
     }
     window.openPrototypeModal({
       title: readonly ? '查看组合活动' : (comboEditorMode === 'create' ? '新增组合活动' : '编辑组合活动'),
@@ -461,10 +477,11 @@
       body:comboEditorBody(Boolean(readonly)),
       onConfirm:function(){
         syncComboDraftFromEditor();
+        if (!comboDraft.tierMode) { window.showToast('请选择组合活动类型'); return; }
         if (!String(comboDraft.name || '').trim()) { window.showToast('请填写组合活动名称'); return; }
         comboDraft.displayName = String(comboDraft.displayName || '').trim();
         window.closePrototypeModal();
-        window.showToast('组合活动草稿已保存为原型模拟；实际展示名：' + (comboDraft.displayName || comboDraft.name));
+        window.showToast('组合活动草稿已保存为原型模拟；类型：' + comboTierModeLabel(comboDraft.tierMode) + '；实际展示名：' + (comboDraft.displayName || comboDraft.name));
       }
     });
     bindComboEditorInteractions();

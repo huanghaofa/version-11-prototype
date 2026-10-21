@@ -10,6 +10,7 @@ window.ExchangeCouponMock = {
     boundVehicle: {vin:'LGBH52E02RS019375',car:'日产轩逸 2024款',plate:'粤B·3X52M'},
     receiver: {name:'黄先生',phone:'138****5208',address:'广东省深圳市南山区深南大道 1001 号'}
   },
+  telematicsFailureReason: '当前车辆暂不支持所选座舱皮肤',
   fulfillmentTypes: [
     {value:'telematics',label:'车联网履约'},
     {value:'direct_ship',label:'直邮'},

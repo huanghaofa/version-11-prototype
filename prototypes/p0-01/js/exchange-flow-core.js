@@ -63,21 +63,28 @@
     var type = coupon.fulfillmentType;
     extra = extra || {};
     var syncFailed = type === 'telematics' && extra.syncResult === 'failed';
+    if (syncFailed) {
+      return {
+        exchangeSucceeded: false,
+        couponStatus: '可使用',
+        failureReason: window.ExchangeCouponMock.telematicsFailureReason
+      };
+    }
     var orderNo = 'RD20260728' + String(Date.now()).slice(-4);
     var record = {
-      orderNo: syncFailed ? '未生成' : orderNo,
+      orderNo: orderNo,
       couponId: coupon.id,
       couponName: coupon.name,
-      couponStatus: syncFailed ? '可使用' : '已核销',
+      couponStatus: '已核销',
       fulfillmentType: type,
       fulfillmentLabel: fulfillmentLabel(type),
-      fulfillmentStatus: type === 'telematics' ? (syncFailed ? '履约失败' : '履约成功') : (type === 'direct_ship' ? '待发货' : '待核销'),
+      fulfillmentStatus: type === 'telematics' ? '履约成功' : (type === 'direct_ship' ? '待发货' : '待核销'),
       responseMode: type === 'telematics' ? '同步实时返回' : '独立履约场景',
-      exchangeSucceeded: !syncFailed,
-      failureReason: syncFailed ? '目标车辆暂不支持所选皮肤版本，请稍后重试或联系客服' : '',
+      exchangeSucceeded: true,
+      failureReason: '',
       exchangeTime: '2026-07-28 14:30:00',
       items: chosen().map(function (item) {
-        return {productId: item.id, qty: quantity(item.id), status: type === 'telematics' ? (syncFailed ? 'failed' : 'success') : item.defaultStatus};
+        return {productId: item.id, qty: quantity(item.id), status: type === 'telematics' ? 'success' : item.defaultStatus};
       })
     };
     Object.keys(extra).forEach(function (key) { record[key] = extra[key]; });

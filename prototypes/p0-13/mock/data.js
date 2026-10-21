@@ -34,14 +34,14 @@ window.PrototypeData = {
   ],
   comboActivities: [
     {
-      id:'C20260716001', name:'暑期服务组合活动（演示）', displayName:'', brand:'东风日产',
+      id:'C20260716001', name:'暑期服务组合活动（演示）', tierMode:'LEGACY', displayName:'', brand:'东风日产',
       period:'2026-07-16 00:00 至 2026-08-31 23:59', channel:'日产服务号', status:'草稿',
       activityLink:'https://m.example.com/activity/combo/C20260716001',
       storeScope:{mode:'ALL',storeIds:[]},
       childActivities:['2072853209359679489','2072852442293971558']
     },
     {
-      id:'C20260710002', name:'车主专享组合活动（演示）', displayName:'夏季车主专属礼遇', brand:'东风日产',
+      id:'C20260710002', name:'车主专享组合活动（演示）', tierMode:'LEGACY', displayName:'夏季车主专属礼遇', brand:'东风日产',
       period:'2026-07-10 00:00 至 2026-09-15 23:59', channel:'APP / 小程序', status:'启用',
       activityLink:'https://m.example.com/activity/combo/C20260710002',
       storeScope:{mode:'SPECIFIED',storeIds:['S001','S002']},

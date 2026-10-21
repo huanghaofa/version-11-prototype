@@ -6,6 +6,9 @@
   var currentAnno = null;
   var dragState = null;
   var observer = null;
+  var drawerCollapsed = false;
+  var highlightedTarget = null;
+  var lastPageKey = null;
 
   var sectionFields = [
     ['functionName', '功能名称'],
@@ -129,12 +132,116 @@
     return overlay;
   }
 
+  function isDrawerPage() {
+    var cfg = getConfig();
+    var pages = cfg.drawerPages || [];
+    return cfg.mode === 'drawer' && pages.indexOf(getPageKey()) > -1;
+  }
+
+  function ensureDrawer() {
+    var drawer = document.getElementById('anno-drawer');
+    if (!drawer) {
+      drawer = document.createElement('aside');
+      drawer.id = 'anno-drawer';
+      drawer.setAttribute('aria-label', '统计口径标注');
+      document.body.appendChild(drawer);
+    }
+    return drawer;
+  }
+
+  function clearTargetHighlight() {
+    if (highlightedTarget) highlightedTarget.classList.remove('anno-target-highlight');
+    highlightedTarget = null;
+  }
+
+  function highlightTarget(selector) {
+    clearTargetHighlight();
+    var target = resolveTarget(selector);
+    if (!target) return null;
+    target.classList.add('anno-target-highlight');
+    highlightedTarget = target;
+    return target;
+  }
+
+  function applyDrawerLayout(expanded) {
+    document.body.classList.toggle('anno-drawer-open', expanded);
+    document.body.classList.toggle('anno-drawer-collapsed', !expanded && visible && isDrawerPage());
+  }
+
+  function drawerSummary(anno) {
+    var sections = anno.sections || {};
+    return sections.valueLogic || sections.functionDesc || '点击定位到页面字段。';
+  }
+
+  function renderDrawer(items) {
+    var drawer = ensureDrawer();
+    var enabled = visible && isDrawerPage() && items.length;
+    if (!enabled) {
+      drawer.hidden = true;
+      drawer.innerHTML = '';
+      applyDrawerLayout(false);
+      clearTargetHighlight();
+      return;
+    }
+
+    drawer.hidden = false;
+    drawer.className = drawerCollapsed ? 'anno-drawer collapsed' : 'anno-drawer expanded';
+    var list = items.map(function (anno) {
+      var sections = anno.sections || {};
+      var pending = /待确认|冲突|不一致|需.{0,8}确认|尚无正式/.test(sections.exceptionRule || '');
+      return ''
+        + '<button class="anno-drawer-item" type="button" data-anno-drawer-id="' + escapeHTML(anno.id) + '">'
+        + '  <span class="anno-drawer-item-top"><b>' + escapeHTML(anno.id) + '</b><strong>' + escapeHTML(anno.title || '未命名标注') + '</strong>' + (pending ? '<em>待确认</em>' : '') + '</span>'
+        + '  <span class="anno-drawer-summary">' + escapeHTML(drawerSummary(anno)) + '</span>'
+        + '</button>';
+    }).join('');
+    drawer.innerHTML = ''
+      + '<div class="anno-drawer-header">'
+      + '  <div class="anno-drawer-heading"><strong>统计口径标注</strong><span>' + items.length + ' 项</span></div>'
+      + '  <button class="anno-drawer-collapse" type="button" aria-label="' + (drawerCollapsed ? '展开统计口径标注' : '收起统计口径标注') + '" title="' + (drawerCollapsed ? '展开' : '收起') + '">' + (drawerCollapsed ? '‹' : '›') + '</button>'
+      + '</div>'
+      + '<div class="anno-drawer-body">' + list + '</div>'
+      + '<div class="anno-drawer-foot">点击定位；悬停或键盘聚焦可高亮对应字段</div>';
+    applyDrawerLayout(!drawerCollapsed);
+
+    drawer.querySelector('.anno-drawer-collapse').addEventListener('click', function () {
+      drawerCollapsed = !drawerCollapsed;
+      render();
+    });
+    drawer.querySelectorAll('[data-anno-drawer-id]').forEach(function (item) {
+      var anno = items.find(function (candidate) { return String(candidate.id) === item.getAttribute('data-anno-drawer-id'); });
+      if (!anno) return;
+      item.addEventListener('mouseenter', function () { highlightTarget(anno.target); });
+      item.addEventListener('mouseleave', clearTargetHighlight);
+      item.addEventListener('focus', function () { highlightTarget(anno.target); });
+      item.addEventListener('blur', clearTargetHighlight);
+      item.addEventListener('click', function () {
+        var target = highlightTarget(anno.target);
+        if (!target) {
+          showToast('当前页面未找到对应字段');
+          return;
+        }
+        target.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+        window.setTimeout(function () {
+          render();
+          highlightTarget(anno.target);
+        }, 360);
+        window.setTimeout(clearTargetHighlight, 1800);
+      });
+    });
+  }
+
   function render() {
     ensureToggle();
     var overlay = ensureOverlay();
     overlay.innerHTML = '';
+    var currentPage = getPageKey();
+    if (lastPageKey !== null && lastPageKey !== currentPage) closePopup();
+    lastPageKey = currentPage;
+    var annotations = getAnnotations();
+    renderDrawer(annotations);
     if (!visible) return;
-    getAnnotations().forEach(function (anno, index) {
+    annotations.forEach(function (anno, index) {
       var target = resolveTarget(anno.target);
       if (!target) return;
       var marker = document.createElement('button');
@@ -142,10 +249,15 @@
       marker.className = 'anno-marker';
       marker.textContent = anno.id || String(index + 1);
       marker.title = anno.title || '';
+      marker.setAttribute('aria-label', '标注' + (anno.id || String(index + 1)) + '：' + (anno.title || '未命名标注'));
       marker.addEventListener('click', function (event) {
         event.stopPropagation();
         openPopup(anno, marker);
       });
+      marker.addEventListener('mouseenter', function () { highlightTarget(anno.target); });
+      marker.addEventListener('mouseleave', clearTargetHighlight);
+      marker.addEventListener('focus', function () { highlightTarget(anno.target); });
+      marker.addEventListener('blur', clearTargetHighlight);
       overlay.appendChild(marker);
       positionMarker(marker, target, anno.position);
     });
@@ -411,7 +523,7 @@
       var shouldRender = false;
       for (var i = 0; i < mutations.length; i++) {
         var target = mutations[i].target;
-        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, .anno-popup, .anno-toast')) {
+        if (target && target.closest && target.closest('#anno-overlay, #anno-toggle-btn, #anno-drawer, .anno-popup, .anno-toast')) {
           continue;
         }
         shouldRender = true;
@@ -446,6 +558,7 @@
     refresh: render,
     getPageKey: getPageKey,
     getAnnotations: getAnnotations,
+    getDrawerState: function () { return {enabled:isDrawerPage(),collapsed:drawerCollapsed,visible:visible}; },
     close: closePopup
   };
 })();

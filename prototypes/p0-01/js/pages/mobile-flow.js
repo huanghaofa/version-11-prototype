@@ -74,13 +74,12 @@
       '<div class="exchange-warning"><b>提交后同步调用车联网</b><p>本次请求直接返回最终成功或失败；成功才创建兑换单并核销券，失败保持可使用。</p></div><button class="mobile-cta" data-sync-result="success">确认兑换（模拟同步成功）</button><button class="mobile-secondary-cta" data-sync-result="failed">模拟同步失败</button>';
   }
 
+  function showRedeemFailure(reason) {
+    window.openModal('<div class="modal-content"><div class="modal-header"><b>核销失败</b><button class="btn btn-link" data-close-modal>×</button></div><div class="modal-body"><p class="helper">本次兑换未成功，请根据提示检查后重新兑换。</p><p class="failure-text" style="margin-top:12px">' + window.escapeHtml(reason || '车联网返回核销失败') + '</p></div><div class="modal-footer"><button class="btn btn-primary" data-close-modal>我知道了</button></div></div>');
+  }
+
   function successPage() {
     var record = window.PrototypeState.currentRedemption;
-    if (!record.exchangeSucceeded) {
-      return '<div class="success-icon" style="background:#fff1f0;color:#cf1322">!</div><h2 style="text-align:center">兑换失败</h2><p class="helper" style="text-align:center;margin:8px 0 22px">车联网已在当前请求中同步返回最终失败</p>' +
-        '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>返回方式</span><b>同步实时返回</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>履约结果</span><span class="tag red">履约失败</span></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>卡券状态</span><span class="tag green">可使用</span></div><p class="failure-text" style="margin-top:12px">失败原因：' + record.failureReason + '</p></div>' +
-        '<button class="mobile-cta" data-retry-exchange>重新兑换</button><button class="mobile-secondary-cta" data-home>返回卡券中心</button>';
-    }
     return '<div class="success-icon">✓</div><h2 style="text-align:center">兑换成功</h2><p class="helper" style="text-align:center;margin:8px 0 22px">兑换单已创建，本张兑换券已核销</p>' +
       '<div class="mobile-card"><div class="inline" style="justify-content:space-between"><span>兑换单号</span><b>' + record.orderNo + '</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>车联网履约</span><span class="tag green">履约成功</span></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>返回方式</span><b>同步实时返回</b></div><div class="inline" style="justify-content:space-between;margin-top:10px"><span>卡券状态</span><span class="tag gray">已核销</span></div></div>' +
       '<button class="mobile-cta" data-current-record>查看兑换详情</button><button class="mobile-secondary-cta" data-home>返回卡券中心</button>';
@@ -173,13 +172,15 @@
     };
     document.querySelectorAll('[data-sync-result]').forEach(function (button) {
       button.onclick = function () {
-        window.ExchangeFlow.createRedemption({vehicle:window.ExchangeCouponMock.coupon.boundVehicle,syncResult:button.dataset.syncResult});
+        var result = window.ExchangeFlow.createRedemption({vehicle:window.ExchangeCouponMock.coupon.boundVehicle,syncResult:button.dataset.syncResult});
+        if (!result.exchangeSucceeded) {
+          showRedeemFailure(result.failureReason);
+          return;
+        }
         window.PrototypeState.exchangeStep = 'success';
         window.navigateTo('mobile-flow');
       };
     });
-    var retry = document.querySelector('[data-retry-exchange]');
-    if (retry) retry.onclick = function () { window.PrototypeState.currentRedemption = null; window.PrototypeState.exchangeStep = 'confirm'; window.navigateTo('mobile-flow'); };
     var back = document.querySelector('[data-back]');
     if (back) back.onclick = function () {
       var previous = {store:'detail',select:coupon.fulfillmentType === 'store_verify' ? 'store' : 'detail',confirm:'select',success:'confirm'};

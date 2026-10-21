@@ -77,10 +77,11 @@
     var hasActivityMulti = fields.some(function (field) { return field.type === 'activity-multi'; });
     function renderField(field) {
       var control;
+      var annotationAttr = field.anno ? ' data-anno="' + esc(field.anno) + '"' : '';
       if (field.type === 'activity-multi') control = renderActivityMultiControl();
       else if (field.type === 'select') control = '<select>' + optionList(field.options || [], field.placeholder) + '</select>';
       else control = '<input type="' + (field.type || 'text') + '" placeholder="' + esc(field.placeholder || '请输入') + '" value="' + esc(field.value || '') + '">';
-      return '<div class="filter-field"><label>' + esc(field.label) + '：</label>' + control + '</div>';
+      return '<div class="filter-field"><label' + annotationAttr + '>' + esc(field.label) + '：</label>' + control + '</div>';
     }
     return '<div class="filter-panel ' + (filtersExpanded ? 'expanded' : '') + '"><div class="filter-grid">' +
       visible.map(renderField).join('') +
@@ -191,13 +192,14 @@
 
   function renderKpis(items) {
     return '<div class="kpi-grid">' + items.map(function (item) {
-      return '<div class="kpi-card" data-kpi-target="' + item.target + '"><span class="label">' + esc(item.label) + '</span><strong>' + esc(item.value) + '</strong><small>' + esc(item.note) + '</small></div>';
+      var annotationAttr = page === 'activity-overview' ? ' data-anno="activity-overview-kpi-' + esc(item.key) + '"' : '';
+      return '<div class="kpi-card" data-kpi-target="' + item.target + '"' + annotationAttr + '><span class="label">' + esc(item.label) + '</span><strong>' + esc(item.value) + '</strong><small>' + esc(item.note) + '</small></div>';
     }).join('') + '</div>';
   }
 
   function renderTrend(items) {
     var max = Math.max.apply(null, items.map(function (item) { return item.scan; }));
-    return '<div class="panel"><div class="panel-head"><div class="panel-title">近7日转化趋势 <span class="panel-subtitle">扫码UV / 活动参与数</span></div><div class="legend"><span><i></i>扫码UV</span><span><i class="primary"></i>活动参与</span></div></div>' +
+    return '<div class="panel"><div class="panel-head"><div class="panel-title" data-anno="activity-overview-trend">近7日转化趋势 <span class="panel-subtitle">扫码UV / 活动参与数</span></div><div class="legend"><span><i></i>扫码UV</span><span><i class="primary"></i>活动参与</span></div></div>' +
       '<div class="panel-body"><div class="trend-chart">' + items.map(function (item) {
         var scanHeight = Math.round(item.scan / max * 120);
         var parHeight = Math.round(item.participation / max * 120);
@@ -207,7 +209,8 @@
 
   function renderRanks(title, items) {
     var max = Math.max.apply(null, items.map(function (item) { return item.value; }));
-    return '<div class="panel"><div class="panel-head"><div class="panel-title">' + esc(title) + '</div></div><div class="panel-body"><ol class="rank-list">' + items.map(function (item, index) {
+    var annotationAttr = page === 'activity-overview' ? ' data-anno="activity-overview-rank"' : '';
+    return '<div class="panel"><div class="panel-head"><div class="panel-title"' + annotationAttr + '>' + esc(title) + '</div></div><div class="panel-body"><ol class="rank-list">' + items.map(function (item, index) {
       return '<li class="rank-item"><span class="rank-no">' + (index + 1) + '</span><span class="rank-name">' + esc(item.name) + '</span><span class="rank-track"><span class="rank-fill" style="display:block;width:' + Math.round(item.value / max * 100) + '%"></span></span><span class="rank-value">' + item.value + '</span></li>';
     }).join('') + '</ol></div></div>';
   }
@@ -226,7 +229,7 @@
 
   function renderActivityOverview() {
     var fields = [
-      {label:'统计时间',type:'text',value:'2026-07-11 至 2026-07-17'},
+      {label:'统计时间',type:'text',value:'2026-07-11 至 2026-07-17',anno:'activity-overview-stat-time'},
       {label:'品牌',type:'select',options:data.meta.brands},
       {label:'区域',type:'select',options:data.meta.regions},
       {label:'来源门店',type:'select',options:data.meta.stores},
@@ -239,16 +242,16 @@
     return renderFilters(fields) + renderKpis(data.activityOverview.kpis) +
       '<div class="overview-grid">' + renderTrend(data.activityOverview.trend) + renderRanks('来源SA活动参与排行', data.activityOverview.ranks) + '</div>' +
       '<div class="panel"><div class="panel-head"><div class="panel-title">来源SA活动汇总 <span class="panel-subtitle">当前显示 ' + rows.length + ' 条演示记录，按来源SA + 活动汇总</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
-      '<div class="table-shell"><table class="data-table"><thead><tr><th>来源SA</th><th>来源门店</th><th>活动ID / 活动名称</th><th>参与级别</th><th>执行方式</th><th>扫码UV</th><th>符合准入主体</th><th>活动参与数</th><th>发券数</th><th>转化率</th><th>最后参与时间</th><th>操作</th></tr></thead><tbody>' +
+      '<div class="table-shell"><table class="data-table"><thead><tr><th>来源SA</th><th>来源门店</th><th>活动ID / 活动名称</th><th>参与级别</th><th>执行方式</th><th data-anno="activity-overview-table-scan-uv">扫码UV</th><th data-anno="activity-overview-table-eligible">符合准入主体</th><th data-anno="activity-overview-table-participation">活动参与数</th><th data-anno="activity-overview-table-coupons">发券数</th><th data-anno="activity-overview-table-rate">转化率</th><th data-anno="activity-overview-table-last">最后参与时间</th><th>操作</th></tr></thead><tbody>' +
       (rows.length ? rows.map(function (row) { return '<tr data-report-activity-id="' + esc(row.activityId) + '"><td>' + esc(row.saName) + '<br><span class="panel-subtitle">' + esc(row.saId) + '</span></td><td>' + esc(row.store) + '</td><td class="wrap">' + esc(row.activityId) + '<br>' + esc(row.activity) + '</td><td>' + status(row.level) + '</td><td>' + esc(row.type) + '</td><td class="number">' + row.scanUv + '</td><td class="number">' + row.eligible + '</td><td class="number"><a class="link-action" href="#activity-participation">' + row.participation + '</a></td><td class="number">' + row.coupons + '</td><td>' + row.rate + '</td><td>' + row.last + '</td><td><a class="link-action" href="#activity-participation">查看明细</a></td></tr>'; }).join('') : emptyReportRow(12)) +
       '</tbody></table></div>' + window.SACommon.pagination(reportActivityFilter.selectedIds.length ? rows.length : 25) + '</div>';
   }
 
   function qrFields() {
     return [
-      {label:'生成时间',type:'text',value:'2026-07-11 至 2026-07-17'},
+      {label:'生成时间',type:'text',value:'2026-07-11 至 2026-07-17',anno:'activity-qr-generated-filter'},
       {label:'sceneId',placeholder:'请输入场景ID'},
-      {label:'二维码状态',type:'select',options:['有效','已过期','重新生成失效']},
+      {label:'二维码状态',type:'select',options:['有效','已过期']},
       {label:'来源SA',type:'select',options:data.meta.sas},
       {label:'来源门店',type:'select',options:data.meta.stores},
       {label:'活动范围',type:'select',options:['全部活动','部分活动']},
@@ -265,12 +268,12 @@
 
   function renderQrPage() {
     return renderFilters(qrFields()) + '<div class="panel"><div class="panel-head"><div class="panel-title">二维码场景列表 <span class="panel-subtitle">活动范围在生成时冻结</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
-      '<div class="table-shell"><table class="data-table"><thead><tr><th>sceneId</th><th>来源SA</th><th>来源门店</th><th>活动范围</th><th>冻结活动数/版本</th><th>生成时间</th><th>失效时间</th><th>状态</th><th>扫码PV/UV</th><th>识别人数</th><th>参与数</th><th>发券数</th><th>操作</th></tr></thead><tbody>' + renderQrRows() + '</tbody></table></div>' + window.SACommon.pagination(128) + '</div>';
+      '<div class="table-shell"><table class="data-table"><thead><tr><th>sceneId</th><th>来源SA</th><th>来源门店</th><th>活动范围</th><th data-anno="activity-qr-frozen-count">冻结活动数/版本</th><th data-anno="activity-qr-generated-time">生成时间</th><th data-anno="activity-qr-expire-time">失效时间</th><th data-anno="activity-qr-status">状态</th><th data-anno="activity-qr-scan-pv-uv">扫码PV/UV</th><th data-anno="activity-qr-identified">识别人数</th><th data-anno="activity-qr-participation">参与数</th><th data-anno="activity-qr-coupons">发券数</th><th>操作</th></tr></thead><tbody>' + renderQrRows() + '</tbody></table></div>' + window.SACommon.pagination(128) + '</div>';
   }
 
   function participationFields() {
     return [
-      {label:'参与时间',type:'text',value:'2026-07-11 至 2026-07-17'},
+      {label:'参与时间',type:'text',value:'2026-07-11 至 2026-07-17',anno:'activity-participation-time-filter'},
       {label:'活动',type:'activity-multi'},
       {label:'来源SA',type:'select',options:data.meta.sas},
       {label:'来源门店',type:'select',options:data.meta.stores},
@@ -294,7 +297,7 @@
   function renderParticipationPage() {
     var count = data.participationRows.filter(function (row) { return reportActivityMatches(row.activityId); }).length;
     return renderFilters(participationFields()) + '<div class="panel"><div class="panel-head"><div class="panel-title">活动参与记录 <span class="panel-subtitle">当前显示 ' + count + ' 条演示记录；一条记录对应一个活动参与主体</span></div><div class="toolbar"><button class="button" data-export type="button">导出</button></div></div>' +
-      '<div class="table-shell"><table class="data-table"><thead><tr><th>参与流水</th><th>活动ID / 名称</th><th>级别</th><th>执行方式</th><th>手机号 / oneID</th><th>执行VIN</th><th>参与主体</th><th>来源SA / 门店</th><th>sceneId</th><th>参与时间</th><th>来源确认时间</th><th>结果</th><th>发券数</th><th>操作</th></tr></thead><tbody>' + renderParticipationRows() + '</tbody></table></div>' + window.SACommon.pagination(reportActivityFilter.selectedIds.length ? count : 1126) + '</div>';
+      '<div class="table-shell"><table class="data-table"><thead><tr><th>参与流水</th><th>活动ID / 名称</th><th>级别</th><th>执行方式</th><th>手机号 / oneID</th><th>执行VIN</th><th data-anno="activity-participation-subject">参与主体</th><th>来源SA / 门店</th><th>sceneId</th><th data-anno="activity-participation-time">参与时间</th><th data-anno="activity-participation-confirmed-time">来源确认时间</th><th data-anno="activity-participation-result">结果</th><th data-anno="activity-participation-coupons">发券数</th><th>操作</th></tr></thead><tbody>' + renderParticipationRows() + '</tbody></table></div>' + window.SACommon.pagination(reportActivityFilter.selectedIds.length ? count : 1126) + '</div>';
   }
 
   function couponOverviewFields() {

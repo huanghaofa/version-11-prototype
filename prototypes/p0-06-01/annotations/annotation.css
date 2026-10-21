@@ -201,3 +201,224 @@
   color: #fff;
   font-size: 13px;
 }
+
+#anno-drawer {
+  position: fixed;
+  top: 36px;
+  right: 0;
+  z-index: 99986;
+  width: 344px;
+  height: calc(100vh - 36px);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #dfe6ee;
+  background: #f7f9fb;
+  box-shadow: -8px 0 22px rgba(21, 38, 56, 0.12);
+  color: #263746;
+  transition: width .18s ease;
+}
+
+#anno-drawer[hidden] {
+  display: none;
+}
+
+#anno-drawer.collapsed {
+  width: 52px;
+}
+
+.anno-drawer-header {
+  min-height: 54px;
+  padding: 0 12px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #e1e7ed;
+  background: #fff;
+}
+
+.anno-drawer-heading {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.anno-drawer-heading strong {
+  font-size: 15px;
+}
+
+.anno-drawer-heading span {
+  color: #7d8995;
+  font-size: 12px;
+}
+
+.anno-drawer-collapse {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 1px solid #cfd8e2;
+  border-radius: 4px;
+  background: #fff;
+  color: #52687c;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 24px;
+}
+
+.anno-drawer-collapse:hover,
+.anno-drawer-collapse:focus-visible {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+  outline: none;
+}
+
+.anno-drawer-body {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.anno-drawer-item {
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 12px;
+  display: block;
+  border: 1px solid #dfe6ee;
+  border-radius: 6px;
+  background: #fff;
+  color: #263746;
+  cursor: pointer;
+  text-align: left;
+}
+
+.anno-drawer-item:hover,
+.anno-drawer-item:focus-visible {
+  border-color: #ff7875;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+  outline: none;
+}
+
+.anno-drawer-item-top {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.anno-drawer-item-top b {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 11px;
+}
+
+.anno-drawer-item-top strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anno-drawer-item-top em {
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: #fff1f0;
+  color: #cf1322;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.anno-drawer-summary {
+  margin-top: 8px;
+  display: -webkit-box;
+  overflow: hidden;
+  color: #667685;
+  font-size: 12px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.anno-drawer-foot {
+  padding: 10px 14px;
+  border-top: 1px solid #e1e7ed;
+  background: #fff;
+  color: #7d8995;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+#anno-drawer.collapsed .anno-drawer-heading,
+#anno-drawer.collapsed .anno-drawer-body,
+#anno-drawer.collapsed .anno-drawer-foot {
+  display: none;
+}
+
+#anno-drawer.collapsed .anno-drawer-header {
+  height: 100%;
+  padding: 12px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.anno-target-highlight {
+  position: relative;
+  z-index: 99982;
+  outline: 3px solid rgba(255, 77, 79, 0.75) !important;
+  outline-offset: 3px;
+  background-color: #fff1f0 !important;
+  transition: outline-color .15s ease, background-color .15s ease;
+}
+
+body.anno-drawer-open .top-bar {
+  right: 344px;
+}
+
+body.anno-drawer-open .app-layout {
+  margin-right: 344px;
+}
+
+body.anno-drawer-collapsed .top-bar {
+  right: 52px;
+}
+
+body.anno-drawer-collapsed .app-layout {
+  margin-right: 52px;
+}
+
+@media (max-width: 720px) {
+  #anno-drawer {
+    width: min(344px, calc(100vw - 24px));
+  }
+  #anno-drawer.collapsed {
+    width: 52px;
+  }
+  body.anno-drawer-open .top-bar,
+  body.anno-drawer-collapsed .top-bar {
+    right: 0;
+  }
+  body.anno-drawer-open .app-layout,
+  body.anno-drawer-collapsed .app-layout {
+    margin-right: 0;
+  }
+}
+
+@media print {
+  #anno-toggle-btn,
+  #anno-overlay,
+  #anno-drawer,
+  .anno-popup,
+  .anno-toast {
+    display: none !important;
+  }
+}

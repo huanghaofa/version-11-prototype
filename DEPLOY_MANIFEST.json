@@ -1,9 +1,9 @@
 {
-  "generatedOn": "2026-08-20",
+  "generatedOn": "2026-10-21",
   "tasks": [
     {
       "title": "P0-兑换券卡券中心方案",
-      "summary": "兑换券卡券中心、商品下钻至 SKU/规格、跨页选择与商品履约",
+      "summary": "产品中心 GUI 皮肤 SKU/规格、固定组合/N选M、同步最终履约；全部失败不改券状态并弹窗展示原因",
       "prototypes": [
         {
           "label": "通用兑换券原型",
@@ -73,7 +73,7 @@
     },
     {
       "title": "P0-梳理SA动态二维码流程",
-      "summary": "SA 动态二维码、海报模板、长期有效、用户聚合页及报表最多 20 个活动组合查询",
+      "summary": "SA 动态二维码、分享海报规则、二维码有效/已过期状态、报表统计口径标注",
       "prototypes": [
         {
           "label": "后台管理原型",
@@ -82,6 +82,10 @@
         {
           "label": "用户端聚合页原型",
           "deployPath": "./prototypes/p0-06-02/index.html"
+        },
+        {
+          "label": "分享海报规则后台配置",
+          "deployPath": "./prototypes/p0-06-03/index.html"
         }
       ],
       "sequence": {
@@ -175,7 +179,7 @@
     },
     {
       "title": "P0-组合活动",
-      "summary": "组合活动展示名称、适用门店覆盖导入及 SA 动态二维码展示与权限规则",
+      "summary": "组合活动新旧类型区分、展示名称、适用门店覆盖导入及 SA 展示权限规则",
       "prototypes": [
         {
           "label": "活动中心组合活动原型",
